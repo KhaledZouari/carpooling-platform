@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Covoiturage - Available Rides</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#47445f",
+                        "surface-variant": "#d9e4ea",
+                        "surface-tint": "#005ac2",
+                        "surface-container-high": "#e1e9ee",
+                        "on-background": "#2a3439",
+                        "on-secondary-fixed": "#3e3f45",
+                        "on-secondary": "#f9f8ff",
+                        "tertiary": "#5f5c78",
+                        "surface-dim": "#cfdce3",
+                        "background": "#f7f9fb",
+                        "surface-container-highest": "#d9e4ea",
+                        "error": "#9f403d",
+                        "outline": "#717c82",
+                        "surface": "#f7f9fb",
+                        "tertiary-dim": "#53506b",
+                        "error-container": "#fe8983",
+                        "outline-variant": "#a9b4b9",
+                        "secondary-container": "#e2e2e9",
+                        "inverse-primary": "#4d8eff",
+                        "tertiary-fixed": "#d3ceef",
+                        "surface-bright": "#f7f9fb",
+                        "on-primary": "#f7f7ff",
+                        "error-dim": "#4e0309",
+                        "on-error-container": "#752121",
+                        "primary-container": "#d8e2ff",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#d8e2ff",
+                        "primary-fixed-dim": "#c3d4ff",
+                        "on-primary-fixed-variant": "#0057bd",
+                        "on-primary-container": "#004eaa",
+                        "inverse-on-surface": "#9a9d9f",
+                        "tertiary-container": "#d3ceef",
+                        "on-primary-fixed": "#003c86",
+                        "secondary-fixed-dim": "#d4d4db",
+                        "on-secondary-fixed-variant": "#5a5b61",
+                        "tertiary-fixed-dim": "#c5c0e0",
+                        "surface-container": "#e8eff3",
+                        "surface-container-low": "#f0f4f7",
+                        "on-tertiary": "#fcf7ff",
+                        "on-surface-variant": "#566166",
+                        "on-secondary-container": "#505157",
+                        "inverse-surface": "#0b0f10",
+                        "on-tertiary-fixed": "#34314b",
+                        "on-tertiary-fixed-variant": "#504e69",
+                        "secondary-dim": "#515359",
+                        "on-surface": "#2a3439",
+                        "on-error": "#fff7f6",
+                        "primary": "#005ac2",
+                        "secondary": "#5e5f65",
+                        "primary-dim": "#004fab",
+                        "secondary-fixed": "#e2e2e9"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md">
+<div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
+<div class="text-xl font-bold text-slate-800 dark:text-slate-100 tracking-tight">Covoiturage</div>
+<!-- Desktop Nav -->
+<div class="hidden md:flex items-center gap-8">
+<a class="text-blue-600 dark:text-blue-400 font-semibold border-b-2 border-blue-600 transition-colors" href="#">Find a Ride</a>
+<a class="text-slate-500 dark:text-slate-400 font-medium hover:text-blue-500 transition-colors" href="#">Offer a Ride</a>
+<a class="text-slate-500 dark:text-slate-400 font-medium hover:text-blue-500 transition-colors" href="#">My Trips</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all active:opacity-80">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-highest ring-2 ring-primary/10">
+<img alt="User profile avatar" data-alt="close-up portrait of a professional man with a friendly expression in a clean studio setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCL-js7KyNdnr5jKNe1ocYGNO9YNusUKtaDLhtVRrR5rp_UHUqiD-ETozF6cLFsNCDEMJXr5To8fRwrXUjVpniOS_UnA1ImkOC-GMN7KCZNNLHnuc04_UPTEyU2OF94tK2D2O_NDYHp5qq4G8wMTAPAIdzMAJNdDmRrgTX4XdEjXTaEsZNBus22Zyq1bjnSoJboMWFmiFCJ39cyaHUW55glWTfPHfqKnRUucQBatO8biILJjlr4uDYGXwncioahohbUD8DBJ2y1CQ0"/>
+</div>
+</div>
+</div>
+</nav>
+<main class="pt-24 pb-12 px-6 max-w-7xl mx-auto">
+<!-- Search & Context Header -->
+<div class="mb-8">
+<h1 class="text-3xl font-bold tracking-tight text-on-surface mb-2">Available rides</h1>
+<p class="text-on-surface-variant">Paris → Lyon • Tomorrow, 24 Oct</p>
+</div>
+<div class="flex flex-col lg:flex-row gap-8">
+<!-- Sidebar Filters -->
+<aside class="w-full lg:w-64 space-y-8">
+<!-- Sorting (Mobile/Tablet visible, integrated into sidebar for desktop) -->
+<div class="bg-surface-container-low p-6 rounded-xl">
+<label class="block text-xs font-bold tracking-widest uppercase text-on-surface-variant mb-4">Sort by</label>
+<select class="w-full bg-transparent border-none focus:ring-0 text-on-surface font-medium cursor-pointer">
+<option>Earliest departure</option>
+<option>Lowest price</option>
+<option>Shortest duration</option>
+</select>
+</div>
+<!-- Price Filter -->
+<div class="bg-surface-container-low p-6 rounded-xl">
+<label class="block text-xs font-bold tracking-widest uppercase text-on-surface-variant mb-6">Price range</label>
+<input class="w-full h-1 bg-surface-variant rounded-lg appearance-none cursor-pointer accent-primary" max="150" min="10" type="range"/>
+<div class="flex justify-between mt-4 text-sm font-medium text-on-surface">
+<span>$10</span>
+<span>$150</span>
+</div>
+</div>
+<!-- Time of Departure -->
+<div class="bg-surface-container-low p-6 rounded-xl">
+<label class="block text-xs font-bold tracking-widest uppercase text-on-surface-variant mb-4">Departure time</label>
+<div class="space-y-3">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="rounded border-outline-variant text-primary focus:ring-primary/20" type="checkbox"/>
+<span class="text-sm font-medium text-on-surface group-hover:text-primary transition-colors">Morning (06:00 - 12:00)</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="rounded border-outline-variant text-primary focus:ring-primary/20" type="checkbox"/>
+<span class="text-sm font-medium text-on-surface group-hover:text-primary transition-colors">Afternoon (12:00 - 18:00)</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input checked="" class="rounded border-outline-variant text-primary focus:ring-primary/20" type="checkbox"/>
+<span class="text-sm font-medium text-on-surface group-hover:text-primary transition-colors">Evening (18:00 - 00:00)</span>
+</label>
+</div>
+</div>
+<!-- Seats Available -->
+<div class="bg-surface-container-low p-6 rounded-xl">
+<label class="block text-xs font-bold tracking-widest uppercase text-on-surface-variant mb-4">Seats needed</label>
+<div class="flex gap-2">
+<button class="flex-1 py-2 bg-primary text-on-primary rounded-md font-medium">1</button>
+<button class="flex-1 py-2 bg-surface-container-highest text-on-surface rounded-md font-medium hover:bg-surface-variant">2</button>
+<button class="flex-1 py-2 bg-surface-container-highest text-on-surface rounded-md font-medium hover:bg-surface-variant">3+</button>
+</div>
+</div>
+</aside>
+<!-- Main Content: Ride List -->
+<section class="flex-1 space-y-4">
+<!-- Ride Card 1 -->
+<div class="group relative bg-surface-container-lowest rounded-xl overflow-hidden transition-all hover:shadow-[0px_8px_24px_rgba(42,52,57,0.06)] flex flex-col md:flex-row border border-transparent hover:border-outline-variant/10">
+<div class="flex-1 p-6 flex flex-col md:flex-row gap-6">
+<!-- Time and Route -->
+<div class="flex flex-col justify-between min-w-[120px]">
+<div>
+<div class="text-2xl font-bold text-on-surface">08:30</div>
+<div class="text-sm text-on-surface-variant font-medium">4h 15m</div>
+<div class="text-2xl font-bold text-on-surface mt-auto">12:45</div>
+</div>
+</div>
+<!-- Route Visualization -->
+<div class="hidden md:flex flex-col items-center py-2">
+<div class="w-3 h-3 rounded-full border-2 border-primary bg-surface"></div>
+<div class="w-px h-full bg-surface-variant"></div>
+<div class="w-3 h-3 rounded-full bg-primary"></div>
+</div>
+<!-- Locations and Driver -->
+<div class="flex-1 space-y-6">
+<div class="space-y-4">
+<div>
+<div class="text-lg font-semibold text-on-surface">Paris</div>
+<div class="text-sm text-on-surface-variant">Porte Maillot</div>
+</div>
+<div>
+<div class="text-lg font-semibold text-on-surface">Lyon</div>
+<div class="text-sm text-on-surface-variant">Lyon Part-Dieu</div>
+</div>
+</div>
+<div class="flex items-center gap-3 pt-2">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="headshot of a smiling middle-aged man with short hair against a soft blurred outdoor background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAImiuVejq9IcIEKHCnqJcoah2qxTnPzdJmiq23lLz1PdbyKFTGMpq_fXTzJBhUml6hI6Z2ljSLsEnbcNdq-FfAJ7q9rjDCw6mysJqC_HxfulCLec5ar4wGjVDfQ2-mIRyBj56UHzO1XGp2pOfNuFxqWrakDq8-b87Ze6RdlwN6yniMVtMPGS2l3n355Q5Hp6pHNLOng-Q7v1lfwzjiUB-uJF_7GAyMC2QGI1IREcLB0gM0rYEA2-wseWszuwNs_JtUYuHEBTnmIFc"/>
+<div>
+<div class="text-sm font-bold text-on-surface">Marc D.</div>
+<div class="flex items-center text-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-xs text-yellow-500" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="ml-1">4.8 • Tesla Model 3</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Pricing and CTA -->
+<div class="flex flex-row md:flex-col justify-between items-end md:items-end border-t md:border-t-0 md:border-l border-surface-variant/30 pt-6 md:pt-0 md:pl-8">
+<div class="text-right">
+<div class="text-3xl font-extrabold text-primary tracking-tight">$34</div>
+<div class="text-xs font-bold uppercase tracking-wider text-on-surface-variant mt-1">2 seats left</div>
+</div>
+<button class="px-6 py-3 bg-primary text-on-primary rounded-md font-semibold text-sm hover:bg-primary-dim transition-all active:scale-95">
+                                Book Ride
+                            </button>
+</div>
+</div>
+</div>
+<!-- Ride Card 2 -->
+<div class="group relative bg-surface-container-lowest rounded-xl overflow-hidden transition-all hover:shadow-[0px_8px_24px_rgba(42,52,57,0.06)] flex flex-col md:flex-row">
+<div class="flex-1 p-6 flex flex-col md:flex-row gap-6">
+<div class="flex flex-col justify-between min-w-[120px]">
+<div>
+<div class="text-2xl font-bold text-on-surface">09:15</div>
+<div class="text-sm text-on-surface-variant font-medium">4h 30m</div>
+<div class="text-2xl font-bold text-on-surface mt-auto">13:45</div>
+</div>
+</div>
+<div class="hidden md:flex flex-col items-center py-2">
+<div class="w-3 h-3 rounded-full border-2 border-primary bg-surface"></div>
+<div class="w-px h-full bg-surface-variant"></div>
+<div class="w-3 h-3 rounded-full bg-primary"></div>
+</div>
+<div class="flex-1 space-y-6">
+<div class="space-y-4">
+<div><div class="text-lg font-semibold text-on-surface">Paris</div><div class="text-sm text-on-surface-variant">Châtelet</div></div>
+<div><div class="text-lg font-semibold text-on-surface">Lyon</div><div class="text-sm text-on-surface-variant">Perrache</div></div>
+</div>
+<div class="flex items-center gap-3 pt-2">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="professional woman in her 30s with a confident smile, neutral office background, soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDiVifxGSnuuC20eOAUMpyIOVzAF7XlQAxdb2DMiKhNhr3JE2chFrpbySW0vON3zAUEa9MvrduzNIRueuTK-SrYvDGK24t9Nd-P3YNsDnRUHxLPO-OxKaQeh5XMlCrsELStC1bGGcbkfgFcdhwbV_ahFzac-j__DCe26frm1PZces1cIOx9CHTDxDTa24_4bb0IS-U6enEsrcKhF9ycGFlLL2xqiwqBUXf7_hneoM9InBUj7RZpreNltSob8ejmJuzV4UQojGtUV1Q"/>
+<div>
+<div class="text-sm font-bold text-on-surface">Sarah L.</div>
+<div class="flex items-center text-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-xs text-yellow-500" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="ml-1">4.9 • Peugeot 3008</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-row md:flex-col justify-between items-end md:items-end border-t md:border-t-0 md:border-l border-surface-variant/30 pt-6 md:pt-0 md:pl-8">
+<div class="text-right">
+<div class="text-3xl font-extrabold text-primary tracking-tight">$28</div>
+<div class="text-xs font-bold uppercase tracking-wider text-on-surface-variant mt-1">1 seat left</div>
+</div>
+<button class="px-6 py-3 bg-primary text-on-primary rounded-md font-semibold text-sm hover:bg-primary-dim transition-all">Book Ride</button>
+</div>
+</div>
+</div>
+<!-- Ride Card 3 (Featured/Fastest) -->
+<div class="group relative bg-primary-container/20 rounded-xl overflow-hidden transition-all hover:shadow-[0px_8px_24px_rgba(42,52,57,0.06)] flex flex-col md:flex-row border-2 border-primary/10">
+<div class="absolute top-0 right-0 bg-primary text-on-primary text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-bl-lg">Fastest</div>
+<div class="flex-1 p-6 flex flex-col md:flex-row gap-6">
+<div class="flex flex-col justify-between min-w-[120px]">
+<div>
+<div class="text-2xl font-bold text-on-surface">11:00</div>
+<div class="text-sm text-primary font-bold">3h 50m</div>
+<div class="text-2xl font-bold text-on-surface mt-auto">14:50</div>
+</div>
+</div>
+<div class="hidden md:flex flex-col items-center py-2">
+<div class="w-3 h-3 rounded-full border-2 border-primary bg-surface"></div>
+<div class="w-px h-full bg-primary/30"></div>
+<div class="w-3 h-3 rounded-full bg-primary"></div>
+</div>
+<div class="flex-1 space-y-6">
+<div class="space-y-4">
+<div><div class="text-lg font-semibold text-on-surface">Paris</div><div class="text-sm text-on-surface-variant">Gare de Lyon</div></div>
+<div><div class="text-lg font-semibold text-on-surface">Lyon</div><div class="text-sm text-on-surface-variant">Lyon-Saint Exupéry</div></div>
+</div>
+<div class="flex items-center gap-3 pt-2">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="young professional man with glasses smiling, bright airy urban environment background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBW9eo_iA2jWkqkoCnjoUSuFb-yy309P42g281olSPzpuEQv0IbwYH0s5ZTz7Cm5ANvm3y_nm6oHBUiY1m2nQlmfk0DwT-nPFNPIe_JGsqKWj7UDVfrOgYYJIH-gLjLfrLTMSR3AMs-hLN1O_jqX0tglgk-Kp1jOw1e5Ogf7XryH8u9qZkjaw718AJdh08YRYmJ6v1zzWNLoyGDZIUsj94LYNKX3eIKcrGdkliJxDN6jVeQ8aaCtNEBnX9wNR2dDvqMbzc-Dl1DHXo"/>
+<div>
+<div class="text-sm font-bold text-on-surface">Thomas B.</div>
+<div class="flex items-center text-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-xs text-yellow-500" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="ml-1">5.0 • BMW i4</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-row md:flex-col justify-between items-end md:items-end border-t md:border-t-0 md:border-l border-primary/10 pt-6 md:pt-0 md:pl-8">
+<div class="text-right">
+<div class="text-3xl font-extrabold text-primary tracking-tight">$42</div>
+<div class="text-xs font-bold uppercase tracking-wider text-on-surface-variant mt-1">3 seats left</div>
+</div>
+<button class="px-6 py-3 bg-primary text-on-primary rounded-md font-semibold text-sm hover:bg-primary-dim transition-all">Book Ride</button>
+</div>
+</div>
+</div>
+<!-- Ride Card 4 -->
+<div class="group relative bg-surface-container-lowest rounded-xl overflow-hidden transition-all hover:shadow-[0px_8px_24px_rgba(42,52,57,0.06)] flex flex-col md:flex-row">
+<div class="flex-1 p-6 flex flex-col md:flex-row gap-6">
+<div class="flex flex-col justify-between min-w-[120px]">
+<div>
+<div class="text-2xl font-bold text-on-surface">14:20</div>
+<div class="text-sm text-on-surface-variant font-medium">4h 25m</div>
+<div class="text-2xl font-bold text-on-surface mt-auto">18:45</div>
+</div>
+</div>
+<div class="hidden md:flex flex-col items-center py-2">
+<div class="w-3 h-3 rounded-full border-2 border-primary bg-surface"></div>
+<div class="w-px h-full bg-surface-variant"></div>
+<div class="w-3 h-3 rounded-full bg-primary"></div>
+</div>
+<div class="flex-1 space-y-6">
+<div class="space-y-4">
+<div><div class="text-lg font-semibold text-on-surface">Paris</div><div class="text-sm text-on-surface-variant">Bercy</div></div>
+<div><div class="text-lg font-semibold text-on-surface">Lyon</div><div class="text-sm text-on-surface-variant">Lyon Part-Dieu</div></div>
+</div>
+<div class="flex items-center gap-3 pt-2">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="close-up portrait of a woman with natural look, soft morning light hitting her face" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJNEJoDIfJB1yI4AjyLIglyZTeupCTcfXDx0Wxx5rHt2B14ehbtewsXGXBsELcyPCSuSrM7X5Pia4YicXYKuq--9KnG9PAkNN1nq7mJzxk4ngVPzJNC6aX_7EKjiD1N5eppnXtHm72PYztbgFqTuozH0rTSUxUvsxDdKeTcaxpnuz2IUcZlO2RE2-gHeZCiqPiZSVlBQNShi1vcbee2ipaj5R5gMHw1TG0Wu_Z28KzMAHQOvI_tOKinulOCiJcPNDbWYelA5e5Mxo"/>
+<div>
+<div class="text-sm font-bold text-on-surface">Julie M.</div>
+<div class="flex items-center text-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-xs text-yellow-500" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="ml-1">4.7 • Renault Zoe</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-row md:flex-col justify-between items-end md:items-end border-t md:border-t-0 md:border-l border-surface-variant/30 pt-6 md:pt-0 md:pl-8">
+<div class="text-right">
+<div class="text-3xl font-extrabold text-primary tracking-tight">$25</div>
+<div class="text-xs font-bold uppercase tracking-wider text-on-surface-variant mt-1">2 seats left</div>
+</div>
+<button class="px-6 py-3 bg-primary text-on-primary rounded-md font-semibold text-sm hover:bg-primary-dim transition-all">Book Ride</button>
+</div>
+</div>
+</div>
+<!-- Ride Card 5 -->
+<div class="group relative bg-surface-container-lowest rounded-xl overflow-hidden transition-all hover:shadow-[0px_8px_24px_rgba(42,52,57,0.06)] flex flex-col md:flex-row">
+<div class="flex-1 p-6 flex flex-col md:flex-row gap-6">
+<div class="flex flex-col justify-between min-w-[120px]">
+<div>
+<div class="text-2xl font-bold text-on-surface">17:45</div>
+<div class="text-sm text-on-surface-variant font-medium">4h 10m</div>
+<div class="text-2xl font-bold text-on-surface mt-auto">21:55</div>
+</div>
+</div>
+<div class="hidden md:flex flex-col items-center py-2">
+<div class="w-3 h-3 rounded-full border-2 border-primary bg-surface"></div>
+<div class="w-px h-full bg-surface-variant"></div>
+<div class="w-3 h-3 rounded-full bg-primary"></div>
+</div>
+<div class="flex-1 space-y-6">
+<div class="space-y-4">
+<div><div class="text-lg font-semibold text-on-surface">Paris</div><div class="text-sm text-on-surface-variant">Porte de Versailles</div></div>
+<div><div class="text-lg font-semibold text-on-surface">Lyon</div><div class="text-sm text-on-surface-variant">Villeurbanne</div></div>
+</div>
+<div class="flex items-center gap-3 pt-2">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="smiling man in his late 20s with a neatly trimmed beard, soft cinematic lighting, urban street background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_nKjS7wYJW-tMAOVM7hs6xAMfZnEcEBGdAzRYiX_xA6tCfsRTjm-osPqp2Dv8UEpno5L-RSAkSw63aagsxkQ2wK660D8oaeT7BIPzlDq0Uhm8dX8dnFvC8C2FpQmIYRpYXklHoZjG9xbYjwgBO-WkFExZ1z8Skpodcgxilhjkae4xSFnXlKkPo8-KYLTJ1pxQaeZsyqfi9SmgRYt4oAdlH9hjpp39FoOm7INRBOwBojDFMXDptesy-0q8cMDGrwnQLo5KC1Pi734"/>
+<div>
+<div class="text-sm font-bold text-on-surface">Antoine R.</div>
+<div class="flex items-center text-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-xs text-yellow-500" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="ml-1">4.5 • VW Golf</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-row md:flex-col justify-between items-end md:items-end border-t md:border-t-0 md:border-l border-surface-variant/30 pt-6 md:pt-0 md:pl-8">
+<div class="text-right">
+<div class="text-3xl font-extrabold text-primary tracking-tight">$31</div>
+<div class="text-xs font-bold uppercase tracking-wider text-on-surface-variant mt-1">4 seats left</div>
+</div>
+<button class="px-6 py-3 bg-primary text-on-primary rounded-md font-semibold text-sm hover:bg-primary-dim transition-all">Book Ride</button>
+</div>
+</div>
+</div>
+<!-- Empty State Check (Hidden) -->
+<div class="hidden flex-col items-center justify-center py-24 text-center">
+<span class="material-symbols-outlined text-6xl text-surface-variant mb-4" data-icon="directions_car">directions_car</span>
+<h3 class="text-xl font-bold text-on-surface">No rides found</h3>
+<p class="text-on-surface-variant">Try adjusting your filters or searching for another date.</p>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-slate-50 dark:bg-slate-950 w-full py-12">
+<div class="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto border-t border-slate-200/20 pt-12">
+<div class="text-slate-500 dark:text-slate-400 text-sm font-inter mb-6 md:mb-0">
+                © 2024 Covoiturage Logistics. All rights reserved.
+            </div>
+<div class="flex gap-8">
+<a class="text-sm font-inter tracking-wide uppercase text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors" href="#">Help Center</a>
+<a class="text-sm font-inter tracking-wide uppercase text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors" href="#">Terms of Service</a>
+<a class="text-sm font-inter tracking-wide uppercase text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors" href="#">Privacy Policy</a>
+<a class="text-sm font-inter tracking-wide uppercase text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors" href="#">Contact</a>
+</div>
+</div>
+</footer>
+<!-- Mobile Navigation Bar (Shown only on small screens) -->
+<div class="md:hidden fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md z-50 px-6 py-3 flex justify-around items-center border-t border-surface-container-high shadow-lg">
+<button class="flex flex-col items-center gap-1 text-blue-600">
+<span class="material-symbols-outlined" data-icon="search" style="font-variation-settings: 'FILL' 1;">search</span>
+<span class="text-[10px] font-bold uppercase tracking-wider">Search</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-500 hover:text-blue-500 transition-colors">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="text-[10px] font-bold uppercase tracking-wider">Publish</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-500 hover:text-blue-500 transition-colors">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+<span class="text-[10px] font-bold uppercase tracking-wider">Trips</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-500 hover:text-blue-500 transition-colors">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="text-[10px] font-bold uppercase tracking-wider">Profile</span>
+</button>
+</div>
+</body></html>

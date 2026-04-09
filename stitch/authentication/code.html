@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-container": "#47445f",
+                    "surface-variant": "#d9e4ea",
+                    "surface-tint": "#005ac2",
+                    "surface-container-high": "#e1e9ee",
+                    "on-background": "#2a3439",
+                    "on-secondary-fixed": "#3e3f45",
+                    "on-secondary": "#f9f8ff",
+                    "tertiary": "#5f5c78",
+                    "surface-dim": "#cfdce3",
+                    "background": "#f7f9fb",
+                    "surface-container-highest": "#d9e4ea",
+                    "error": "#9f403d",
+                    "outline": "#717c82",
+                    "surface": "#f7f9fb",
+                    "tertiary-dim": "#53506b",
+                    "error-container": "#fe8983",
+                    "outline-variant": "#a9b4b9",
+                    "secondary-container": "#e2e2e9",
+                    "inverse-primary": "#4d8eff",
+                    "tertiary-fixed": "#d3ceef",
+                    "surface-bright": "#f7f9fb",
+                    "on-primary": "#f7f7ff",
+                    "error-dim": "#4e0309",
+                    "on-error-container": "#752121",
+                    "primary-container": "#d8e2ff",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-fixed": "#d8e2ff",
+                    "primary-fixed-dim": "#c3d4ff",
+                    "on-primary-fixed-variant": "#0057bd",
+                    "on-primary-container": "#004eaa",
+                    "inverse-on-surface": "#9a9d9f",
+                    "tertiary-container": "#d3ceef",
+                    "on-primary-fixed": "#003c86",
+                    "secondary-fixed-dim": "#d4d4db",
+                    "on-secondary-fixed-variant": "#5a5b61",
+                    "tertiary-fixed-dim": "#c5c0e0",
+                    "surface-container": "#e8eff3",
+                    "surface-container-low": "#f0f4f7",
+                    "on-tertiary": "#fcf7ff",
+                    "on-surface-variant": "#566166",
+                    "on-secondary-container": "#505157",
+                    "inverse-surface": "#0b0f10",
+                    "on-tertiary-fixed": "#34314b",
+                    "on-tertiary-fixed-variant": "#504e69",
+                    "secondary-dim": "#515359",
+                    "on-surface": "#2a3439",
+                    "on-error": "#fff7f6",
+                    "primary": "#005ac2",
+                    "secondary": "#5e5f65",
+                    "primary-dim": "#004fab",
+                    "secondary-fixed": "#e2e2e9"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Inter"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased overflow-x-hidden">
+<!-- Auth Section Layout -->
+<main class="min-h-screen flex flex-col items-center justify-center p-6 md:p-12">
+<!-- Logo/Brand Anchor (Transactional State: Nav is suppressed per shell visibility rule) -->
+<div class="mb-10 text-center">
+<div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary mb-4 shadow-[0px_8px_24px_rgba(0,90,194,0.15)]">
+<span class="material-symbols-outlined text-on-primary text-2xl" style="font-variation-settings: 'FILL' 1;">directions_car</span>
+</div>
+<h1 class="text-3xl font-extrabold tracking-tight text-on-surface">Covoiturage</h1>
+<p class="text-on-surface-variant text-sm mt-2 font-medium tracking-wide">Shared journeys, smarter logistics.</p>
+</div>
+<!-- Auth Card -->
+<div class="w-full max-w-[440px] bg-surface-container-lowest rounded-xl shadow-[0px_8px_24px_rgba(42,52,57,0.06)] overflow-hidden">
+<!-- Tab Toggle -->
+<div class="flex bg-surface-container-low p-1.5 m-6 rounded-lg">
+<button class="flex-1 py-2.5 text-sm font-semibold rounded-md transition-all bg-surface-container-lowest text-primary shadow-sm">
+                    Login
+                </button>
+<button class="flex-1 py-2.5 text-sm font-medium rounded-md transition-all text-on-surface-variant hover:text-on-surface">
+                    Sign Up
+                </button>
+</div>
+<!-- Form Content -->
+<div class="px-8 pb-10">
+<div class="space-y-6">
+<!-- Email Input -->
+<div class="space-y-1.5">
+<label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant" for="email">Email Address</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-0 top-1/2 -translate-y-1/2 text-outline-variant group-focus-within:text-primary transition-colors text-xl">mail</span>
+<input class="w-full pl-8 pr-0 py-3 bg-transparent border-0 border-b border-outline-variant/20 focus:ring-0 focus:border-primary focus:border-b-2 transition-all placeholder:text-outline-variant text-on-surface" id="email" placeholder="name@company.com" type="email"/>
+</div>
+</div>
+<!-- Password Input -->
+<div class="space-y-1.5">
+<div class="flex justify-between items-center">
+<label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant" for="password">Password</label>
+<a class="text-[11px] font-bold text-primary hover:text-primary-dim uppercase tracking-wider" href="#">Forgot?</a>
+</div>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-0 top-1/2 -translate-y-1/2 text-outline-variant group-focus-within:text-primary transition-colors text-xl">lock</span>
+<input class="w-full pl-8 pr-10 py-3 bg-transparent border-0 border-b border-outline-variant/20 focus:ring-0 focus:border-primary focus:border-b-2 transition-all placeholder:text-outline-variant text-on-surface" id="password" placeholder="••••••••" type="password"/>
+<button class="absolute right-0 top-1/2 -translate-y-1/2 text-outline-variant hover:text-on-surface">
+<span class="material-symbols-outlined text-xl">visibility</span>
+</button>
+</div>
+</div>
+<!-- CTA Button -->
+<button class="w-full bg-primary hover:bg-primary-dim text-on-primary py-4 rounded-md font-bold text-sm tracking-wide shadow-[0px_4px_12px_rgba(0,90,194,0.1)] active:scale-[0.98] transition-all">
+                        SIGN IN TO YOUR ACCOUNT
+                    </button>
+<!-- Divider -->
+<div class="relative flex items-center py-2">
+<div class="flex-grow border-t border-outline-variant/20"></div>
+<span class="flex-shrink mx-4 text-[10px] font-bold uppercase tracking-[0.2em] text-outline-variant">Or continue with</span>
+<div class="flex-grow border-t border-outline-variant/20"></div>
+</div>
+<!-- Social Grid -->
+<div class="grid grid-cols-2 gap-4">
+<button class="flex items-center justify-center gap-3 py-3 px-4 bg-surface-container-low hover:bg-surface-container-high rounded-md transition-colors text-on-surface text-sm font-semibold">
+<img alt="" class="w-5 h-5" data-alt="Google colorful letter G logo on a transparent circular background icon for social login" src="https://lh3.googleusercontent.com/aida-public/AB6AXuALIa_gLtSLxPElAqhHJoR7IdZXd3Y0ulx47zMbphmKaf88pPOgmTbhGs6QkufSpYd3WqBmqy-UwjvpuTxQYAbcYxiBVLDTMe8sO21c2-vLMcbKnNKXooP42OhTkeeVz9uqeiVTzzH17uhsCMszCM5PYpFeQ92HKryWv4VqOHFCu7H9GDl7mCEF7VkQ1xc2110IawtJ04PHfE5d-rYsvhCbWDKBekgeIHsB9kgh4R6KRCAyujELBBLl3Iwhz0RFlHvvq78RSFwNe5w"/>
+                            Google
+                        </button>
+<button class="flex items-center justify-center gap-3 py-3 px-4 bg-surface-container-low hover:bg-surface-container-high rounded-md transition-colors text-on-surface text-sm font-semibold">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">ios</span>
+                            Apple
+                        </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Supportive Branding Message -->
+<div class="mt-12 max-w-[500px] grid grid-cols-3 gap-8">
+<div class="text-center">
+<span class="material-symbols-outlined text-primary mb-2">verified_user</span>
+<p class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Verified</p>
+</div>
+<div class="text-center">
+<span class="material-symbols-outlined text-primary mb-2">eco</span>
+<p class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Green</p>
+</div>
+<div class="text-center">
+<span class="material-symbols-outlined text-primary mb-2">group</span>
+<p class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Community</p>
+</div>
+</div>
+</main>
+<!-- Footer Component (suppressed content logic: simple version for auth) -->
+<footer class="w-full py-8 border-t border-outline-variant/10">
+<div class="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-[10px] font-medium uppercase tracking-[0.1em] text-outline-variant">© 2024 Covoiturage Logistics. All rights reserved.</p>
+<div class="flex gap-6">
+<a class="text-[10px] font-bold uppercase tracking-[0.1em] text-outline-variant hover:text-primary transition-colors" href="#">Help Center</a>
+<a class="text-[10px] font-bold uppercase tracking-[0.1em] text-outline-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="text-[10px] font-bold uppercase tracking-[0.1em] text-outline-variant hover:text-primary transition-colors" href="#">Contact</a>
+</div>
+</div>
+</footer>
+</body></html>

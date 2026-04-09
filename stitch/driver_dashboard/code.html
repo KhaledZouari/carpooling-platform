@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Driver Dashboard | Covoiturage</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-container": "#47445f",
+                    "surface-variant": "#d9e4ea",
+                    "surface-tint": "#005ac2",
+                    "surface-container-high": "#e1e9ee",
+                    "on-background": "#2a3439",
+                    "on-secondary-fixed": "#3e3f45",
+                    "on-secondary": "#f9f8ff",
+                    "tertiary": "#5f5c78",
+                    "surface-dim": "#cfdce3",
+                    "background": "#f7f9fb",
+                    "surface-container-highest": "#d9e4ea",
+                    "error": "#9f403d",
+                    "outline": "#717c82",
+                    "surface": "#f7f9fb",
+                    "tertiary-dim": "#53506b",
+                    "error-container": "#fe8983",
+                    "outline-variant": "#a9b4b9",
+                    "secondary-container": "#e2e2e9",
+                    "inverse-primary": "#4d8eff",
+                    "tertiary-fixed": "#d3ceef",
+                    "surface-bright": "#f7f9fb",
+                    "on-primary": "#f7f7ff",
+                    "error-dim": "#4e0309",
+                    "on-error-container": "#752121",
+                    "primary-container": "#d8e2ff",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-fixed": "#d8e2ff",
+                    "primary-fixed-dim": "#c3d4ff",
+                    "on-primary-fixed-variant": "#0057bd",
+                    "on-primary-container": "#004eaa",
+                    "inverse-on-surface": "#9a9d9f",
+                    "tertiary-container": "#d3ceef",
+                    "on-primary-fixed": "#003c86",
+                    "secondary-fixed-dim": "#d4d4db",
+                    "on-secondary-fixed-variant": "#5a5b61",
+                    "tertiary-fixed-dim": "#c5c0e0",
+                    "surface-container": "#e8eff3",
+                    "surface-container-low": "#f0f4f7",
+                    "on-tertiary": "#fcf7ff",
+                    "on-surface-variant": "#566166",
+                    "on-secondary-container": "#505157",
+                    "inverse-surface": "#0b0f10",
+                    "on-tertiary-fixed": "#34314b",
+                    "on-tertiary-fixed-variant": "#504e69",
+                    "secondary-dim": "#515359",
+                    "on-surface": "#2a3439",
+                    "on-error": "#fff7f6",
+                    "primary": "#005ac2",
+                    "secondary": "#5e5f65",
+                    "primary-dim": "#004fab",
+                    "secondary-fixed": "#e2e2e9"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Inter"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md">
+<nav class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
+<div class="text-xl font-bold text-slate-800 dark:text-slate-100 font-inter tracking-tight">Covoiturage</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-slate-500 dark:text-slate-400 font-medium hover:text-blue-500 dark:hover:text-blue-300 transition-colors" href="#">Find a Ride</a>
+<a class="text-blue-600 dark:text-blue-400 font-semibold border-b-2 border-blue-600 transition-colors" href="#">Offer a Ride</a>
+<a class="text-slate-500 dark:text-slate-400 font-medium hover:text-blue-500 dark:hover:text-blue-300 transition-colors" href="#">My Trips</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:opacity-80 transition-all scale-95 active:opacity-80">notifications</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-surface-container-high">
+<img alt="User profile avatar" class="w-full h-full object-cover" data-alt="Close-up portrait of a professional man with a friendly expression in a modern office environment, natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzsQutf3gAsRM7hZEfBNtp9P5JdZUK4QlvrIhnRneA7KOiwN5hBoKjMlPpY4kq-D3PigbyAPQcLm8g7gkuJH76p2rx73qEhiNa02J_BNCdNJQkHDZV7gpwJEbcOZT2QHqJwsvIVoReDqtd_VxETnqp1TOhyNVCwTMd_RdBwcBJVC_88yHzRCqEIfXRnYvlzZL3xArFWh5hNnqAswrAAIhuFDpY3uhjUR3c8dYB3MxW1shxwqZHuD7V0fTtGKfbfAcbGt2uDP5upYI"/>
+</div>
+</div>
+</nav>
+</header>
+<main class="pt-24 pb-12 px-6 max-w-7xl mx-auto space-y-8">
+<!-- Welcome Section -->
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h1 class="text-3xl font-extrabold tracking-tight text-on-surface font-headline">Driver Dashboard</h1>
+<p class="text-on-surface-variant font-body">Manage your active routes and passenger requests.</p>
+</div>
+<div class="flex gap-2 p-1 bg-surface-container-low rounded-xl">
+<button class="px-4 py-2 bg-surface-container-lowest text-primary text-sm font-semibold rounded-lg shadow-sm">Active Rides</button>
+<button class="px-4 py-2 text-on-surface-variant text-sm font-medium hover:bg-surface-variant/50 rounded-lg transition-all">Past History</button>
+</div>
+</section>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Column 1: Stats & Quick Form -->
+<div class="lg:col-span-4 space-y-8">
+<!-- Quick Stats -->
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10">
+<div class="text-on-surface-variant text-xs font-label uppercase tracking-widest mb-2">Total Earned</div>
+<div class="text-2xl font-bold text-primary">€1,240</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10">
+<div class="text-on-surface-variant text-xs font-label uppercase tracking-widest mb-2">Rating</div>
+<div class="flex items-center gap-1">
+<span class="text-2xl font-bold text-on-surface">4.9</span>
+<span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+</div>
+<!-- Post a Ride Form Container -->
+<div class="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/10">
+<h2 class="text-xl font-bold mb-6 text-on-surface">Post a Ride</h2>
+<form class="space-y-6">
+<div class="space-y-4">
+<div class="group border-b border-outline-variant/20 focus-within:border-primary transition-all duration-300">
+<label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Departure City</label>
+<input class="w-full py-2 bg-transparent border-none focus:ring-0 text-on-surface placeholder:text-outline-variant/60 font-medium" placeholder="Where from?" type="text"/>
+</div>
+<div class="group border-b border-outline-variant/20 focus-within:border-primary transition-all duration-300">
+<label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Destination City</label>
+<input class="w-full py-2 bg-transparent border-none focus:ring-0 text-on-surface placeholder:text-outline-variant/60 font-medium" placeholder="Where to?" type="text"/>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="group border-b border-outline-variant/20 focus-within:border-primary transition-all duration-300">
+<label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Date</label>
+<input class="w-full py-2 bg-transparent border-none focus:ring-0 text-on-surface font-medium" type="date"/>
+</div>
+<div class="group border-b border-outline-variant/20 focus-within:border-primary transition-all duration-300">
+<label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Seats</label>
+<input class="w-full py-2 bg-transparent border-none focus:ring-0 text-on-surface font-medium" type="number" value="3"/>
+</div>
+</div>
+<button class="w-full py-4 bg-primary text-on-primary font-bold rounded-lg bg-gradient-to-b from-primary to-primary-dim shadow-[0px_8px_24px_rgba(0,90,194,0.15)] active:scale-95 transition-all" type="submit">Publish Route</button>
+</form>
+</div>
+</div>
+<!-- Column 2: Hosted Rides List -->
+<div class="lg:col-span-8 space-y-4">
+<h3 class="text-sm font-label uppercase tracking-widest text-on-surface-variant mb-2 px-2">Manage Your Rides</h3>
+<!-- Ride Card 1: Published -->
+<div class="bg-surface-container-lowest p-6 rounded-xl flex flex-col md:flex-row gap-6 items-center hover:bg-surface-container-low/30 transition-colors">
+<div class="w-full md:w-32 h-24 rounded-xl bg-surface-dim overflow-hidden relative">
+<img class="w-full h-full object-cover opacity-60" data-alt="Stylized map showing a straight route through a dense pine forest, viewed from above, minimalist blue and gray tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkQVP5O581OVr2CJE0EMx3Npf3BtHru2YjOkxFBqGd3TaCJauC888S9LU5_62G7snLKw2wJL8AJeLO_p2nGV0s5RC_e6uuYiqxUVL-5Du2HoNo-hZFKRkiowbZnUgU8aAx-VpU6y7SK87v1bQ-PIBksv-5bHZqlUWM9Jv-3N_2vOHF49omQo01L7axfGe9Kt_t-TppjXtdAZ6PrgoBc8DTo1sWWhalutmVjGp116jA25cgo8nSY2jmjHqMlBe3NsfIzFNT-JAExJ0"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-3xl">route</span>
+</div>
+</div>
+<div class="flex-1 space-y-1 w-full">
+<div class="flex justify-between items-start">
+<h4 class="text-lg font-bold text-on-surface">Paris to Lyon</h4>
+<span class="px-3 py-1 bg-primary-container text-on-primary-container text-[10px] font-bold rounded-full uppercase">Published</span>
+</div>
+<p class="text-sm text-on-surface-variant font-medium">Monday, Oct 24 • 08:30 AM</p>
+<div class="flex items-center gap-4 mt-4">
+<div class="flex -space-x-2">
+<img class="w-8 h-8 rounded-full border-2 border-surface-container-lowest object-cover" data-alt="Portrait of a woman with curly hair, natural light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3KFIPXNYLuRS-MqzsNgjN5Qqec3CZDnmphyzQM4ZHefw-AeAnUJ_YIeJxNRVrS7UU0w0lo0_a5Tz0PrT2HlxIicZTtaT2lL97LVMNt5EhpUVuvelidkHOf7xMwxjwmyjhIU5cN5ja8EOBMt94FpeKnnX4SVbi5A00i8ttkvdQ6tG4QVEgv3V4ny46yYoA9lM3vEMu7TxxYONo6jkaGsVUKP43RMGcW7UAl68OWN7wp4xBPsyKesia2xhCiYz9ZwL6dhpPVvye5sw"/>
+<div class="w-8 h-8 rounded-full border-2 border-surface-container-lowest bg-surface-container flex items-center justify-center text-[10px] font-bold">+2</div>
+</div>
+<span class="text-xs text-on-surface-variant">2/4 Seats Booked</span>
+</div>
+</div>
+<div class="flex gap-2 w-full md:w-auto">
+<button class="flex-1 md:flex-none px-4 py-2 border border-outline-variant/20 text-on-surface text-sm font-semibold rounded-lg hover:bg-surface-container transition-all">Details</button>
+<button class="flex-1 md:flex-none px-4 py-2 bg-secondary-container text-on-secondary-container text-sm font-semibold rounded-lg hover:opacity-90 transition-all">Message</button>
+</div>
+</div>
+<!-- Ride Card 2: Full -->
+<div class="bg-surface-container-lowest p-6 rounded-xl flex flex-col md:flex-row gap-6 items-center hover:bg-surface-container-low/30 transition-colors">
+<div class="w-full md:w-32 h-24 rounded-xl bg-surface-dim overflow-hidden relative">
+<img class="w-full h-full object-cover opacity-60" data-alt="Aerial road through a city at night with light trails, long exposure, deep blue and electric primary colors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWzrMCrVJcV8sdy_2d8NGC2UAhK1d_fWAAcxAeFH4Oku_kALloAueB2CuZ9qLxiQG9JVDL0EXqRz3QAKeY3ZhyZN8qBjqskk6SbQokxlj4dE8G_8TAIMh5L3LVSJqr6XFkvDuNcDQ-gGeHIiDTk1EWQL5Q3hLt2dCAJvyEZMHVe5SJCaYQtObRHR_P4XDMwbSMgYGc25eUjAgfqFljoe38HfI9an7B5ved7QlCA2vp7Wzq5tCfjy4ttlNh9P1AdHSTuknkHWJw7UE"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-3xl">route</span>
+</div>
+</div>
+<div class="flex-1 space-y-1 w-full">
+<div class="flex justify-between items-start">
+<h4 class="text-lg font-bold text-on-surface">Berlin to Munich</h4>
+<span class="px-3 py-1 bg-surface-variant text-on-surface-variant text-[10px] font-bold rounded-full uppercase">Full</span>
+</div>
+<p class="text-sm text-on-surface-variant font-medium">Tuesday, Oct 25 • 06:15 PM</p>
+<div class="flex items-center gap-4 mt-4">
+<div class="flex -space-x-2">
+<img class="w-8 h-8 rounded-full border-2 border-surface-container-lowest object-cover" data-alt="Portrait of a smiling young man in a casual t-shirt" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZsr721pCjnmS8gNzughBZK1wvZ0fwnOhffemsVG4hftZuLLTKXt2KYrpwqTPZ3668UozoeDq7wFcvJVL76iGPJ_GmWcjXdBVyLGhIoqC_8zh7jyFsTwE1mPE2Bga45JcZx3t6jdWU5idAAEZB6XWsOYtSChdD41nMkhYWvgAZiYC42Dmk7WcLbx3qxZntZ4FFsuBmUNS05yyVSXvj-QVKlxhY-gNBSv-rFJhxy_0pKfzRUPLjkusryk5l35LUT57hcolruF9TSq4"/>
+<img class="w-8 h-8 rounded-full border-2 border-surface-container-lowest object-cover" data-alt="Professional woman portrait with neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANvvwTHTfR2j4r59Bc5a2LnpVNsg6G-6wEND9NBZKmPWDEUBV4LnmAS6kzBu4lsMo3Qh3bD0ZsC2vsdEPSyiHjf0oHfoBT_CVjEH1g2Ag4Uljs3Dim2Uj7TikTPmgEB2XKn2TPFJ1pWk3KR64pro73jabWM7FJe_WFFJZqfqDhuCSMPAF42o7sThmwmqjdqcfHTHLFf5vF1rhCuFJXzcP_6x78I6zB4XTBwtJgcnwVQc_nmOWBqtyYpjfwSO74eudRrq_ba4ioLqI"/>
+<img class="w-8 h-8 rounded-full border-2 border-surface-container-lowest object-cover" data-alt="Young man with beard, soft daylight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_19GLIBl1KsoDDGEE7jJlhFn2kNDlnuAgNwYQDVHS1ZcKOvGsKYgBqBqmu3rjqBTwGatZ04gcaoLeb6-jLT3hdIk2Qc8onKuHKi0V5mUB8HJDcjyDxDVteVRiOgak9mCiRfYY8h0V-JkavjG1l6R5PyPUOZI8TF1RbrW25HTBrrKay1HjjUKqrQXyTnCaJCsUGLpUnqmztEa-JcWbZHFGmm_FlxQZs1npZpOgoaxutCXFQADfmZXS6oywzmiFCrZhwycb1hQShn0"/>
+</div>
+<span class="text-xs text-on-surface-variant">3/3 Seats Filled</span>
+</div>
+</div>
+<div class="flex gap-2 w-full md:w-auto">
+<button class="flex-1 md:flex-none px-4 py-2 border border-outline-variant/20 text-on-surface text-sm font-semibold rounded-lg hover:bg-surface-container transition-all">Details</button>
+<button class="flex-1 md:flex-none px-4 py-2 bg-secondary-container text-on-secondary-container text-sm font-semibold rounded-lg hover:opacity-90 transition-all">Message</button>
+</div>
+</div>
+<!-- Ride Card 3: Completed -->
+<div class="bg-surface-container-low/50 p-6 rounded-xl flex flex-col md:flex-row gap-6 items-center opacity-70 grayscale">
+<div class="w-full md:w-32 h-24 rounded-xl bg-surface-dim overflow-hidden relative">
+<img class="w-full h-full object-cover opacity-60" data-alt="Morning mist over a winding mountain road, atmospheric and calm, ethereal lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAX7GCRTuS6-Bg49BGdbfBNkeG4yR-C1dqBmrUwjXZuOwrMebgK_lRv60AKY-S8wMYV3aCknu9H25acZQW7vFc1042kSoQ2Ylb6xXs_m1vpds1E61-BPEKEnXvZ3cO1ZmUVFjx2pS5vryA1Ai8C6Srln8xzgYIvAatpYBJkbN1tQUa4uETYTzkLwVku9zalal_BMPCY5aH9y5ZKGIHAD2hLYkbILg9kabF_c7grdq2ynqFWsfxUizBRpBO7HKd3X9LAzd-JmSUpmkE"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-outline text-3xl">check_circle</span>
+</div>
+</div>
+<div class="flex-1 space-y-1 w-full">
+<div class="flex justify-between items-start">
+<h4 class="text-lg font-bold text-on-surface">Madrid to Valencia</h4>
+<span class="px-3 py-1 bg-surface-container-high text-on-surface-variant text-[10px] font-bold rounded-full uppercase">Completed</span>
+</div>
+<p class="text-sm text-on-surface-variant font-medium">Sunday, Oct 23 • Arrived 02:00 PM</p>
+</div>
+<div class="flex gap-2 w-full md:w-auto">
+<button class="flex-1 md:flex-none px-4 py-2 border border-outline-variant/20 text-on-surface text-sm font-semibold rounded-lg hover:bg-surface-container transition-all">Review</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full py-12 bg-slate-50 dark:bg-slate-950 border-t border-slate-200/20">
+<div class="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto gap-8">
+<div class="text-sm font-inter tracking-wide uppercase text-slate-500 dark:text-slate-400">
+                © 2024 Covoiturage Logistics. All rights reserved.
+            </div>
+<div class="flex gap-8">
+<a class="text-sm font-inter tracking-wide uppercase text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors opacity-80 hover:opacity-100" href="#">Help Center</a>
+<a class="text-sm font-inter tracking-wide uppercase text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors opacity-80 hover:opacity-100" href="#">Terms of Service</a>
+<a class="text-sm font-inter tracking-wide uppercase text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors opacity-80 hover:opacity-100" href="#">Privacy Policy</a>
+<a class="text-sm font-inter tracking-wide uppercase text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors opacity-80 hover:opacity-100" href="#">Contact</a>
+</div>
+</div>
+</footer>
+</body></html>

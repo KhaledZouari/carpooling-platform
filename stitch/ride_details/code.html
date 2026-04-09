@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-container": "#47445f",
+                    "surface-variant": "#d9e4ea",
+                    "surface-tint": "#005ac2",
+                    "surface-container-high": "#e1e9ee",
+                    "on-background": "#2a3439",
+                    "on-secondary-fixed": "#3e3f45",
+                    "on-secondary": "#f9f8ff",
+                    "tertiary": "#5f5c78",
+                    "surface-dim": "#cfdce3",
+                    "background": "#f7f9fb",
+                    "surface-container-highest": "#d9e4ea",
+                    "error": "#9f403d",
+                    "outline": "#717c82",
+                    "surface": "#f7f9fb",
+                    "tertiary-dim": "#53506b",
+                    "error-container": "#fe8983",
+                    "outline-variant": "#a9b4b9",
+                    "secondary-container": "#e2e2e9",
+                    "inverse-primary": "#4d8eff",
+                    "tertiary-fixed": "#d3ceef",
+                    "surface-bright": "#f7f9fb",
+                    "on-primary": "#f7f7ff",
+                    "error-dim": "#4e0309",
+                    "on-error-container": "#752121",
+                    "primary-container": "#d8e2ff",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-fixed": "#d8e2ff",
+                    "primary-fixed-dim": "#c3d4ff",
+                    "on-primary-fixed-variant": "#0057bd",
+                    "on-primary-container": "#004eaa",
+                    "inverse-on-surface": "#9a9d9f",
+                    "tertiary-container": "#d3ceef",
+                    "on-primary-fixed": "#003c86",
+                    "secondary-fixed-dim": "#d4d4db",
+                    "on-secondary-fixed-variant": "#5a5b61",
+                    "tertiary-fixed-dim": "#c5c0e0",
+                    "surface-container": "#e8eff3",
+                    "surface-container-low": "#f0f4f7",
+                    "on-tertiary": "#fcf7ff",
+                    "on-surface-variant": "#566166",
+                    "on-secondary-container": "#505157",
+                    "inverse-surface": "#0b0f10",
+                    "on-tertiary-fixed": "#34314b",
+                    "on-tertiary-fixed-variant": "#504e69",
+                    "secondary-dim": "#515359",
+                    "on-surface": "#2a3439",
+                    "on-error": "#fff7f6",
+                    "primary": "#005ac2",
+                    "secondary": "#5e5f65",
+                    "primary-dim": "#004fab",
+                    "secondary-dim": "#515359",
+                    "secondary-fixed": "#e2e2e9"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.375rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "1.5rem"
+            },
+            "fontFamily": {
+                    "headline": ["Inter"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f7f9fb; color: #2a3439; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .no-line-border { border: none !important; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface selection:bg-primary-container">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md">
+<div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold text-slate-800 tracking-tight">Covoiturage</span>
+<div class="hidden md:flex gap-6">
+<a class="text-slate-500 font-medium hover:text-blue-500 transition-colors" href="#">Find a Ride</a>
+<a class="text-slate-500 font-medium hover:text-blue-500 transition-colors" href="#">Offer a Ride</a>
+<a class="text-blue-600 font-semibold border-b-2 border-blue-600" href="#">My Trips</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-all active:opacity-80">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-surface-variant">
+<img alt="User profile avatar" data-alt="Close up portrait of a professional male driver in his 30s with a friendly smile, clean modern studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDa6hoWFsyF4uQuc7BfO1fAb75ezfxkMDigpBF0IQhXRNLQ_YG6b3Zy0MQiVmorHZUwm4GL8OSR4UcxtmBi5HYSQlKikCoBn0_OLDXr9CJgz6F7a9Xe8eH6enMyjtG6sFOU1xytFDe4ytjnmS8KSLVtQOQFRiCWXrFR4yUCyzOLlvpzx_fstp3W2YxTOhgbV0hsxyphwr9w6oZeMNAR48hEf4wce95Pk4k79z9GtNOJUJrleqvsChj1-as6fk7wqRBAKOLuy_AsnCI"/>
+</div>
+</div>
+</div>
+</nav>
+<main class="pt-24 pb-12 px-6 max-w-7xl mx-auto">
+<!-- Back Action -->
+<div class="mb-8">
+<button class="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors group">
+<span class="material-symbols-outlined text-lg">arrow_back</span>
+<span class="font-medium">Back to search results</span>
+</button>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Left Column: Main Ride Content -->
+<div class="lg:col-span-8 space-y-8">
+<!-- Large Ride Header Card -->
+<section class="bg-surface-container-lowest rounded-xl p-8 shadow-[0px_8px_24px_rgba(42,52,57,0.04)]">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
+<div>
+<span class="text-xs font-bold tracking-widest text-primary uppercase mb-2 block">Scheduled Trip</span>
+<h1 class="text-4xl font-extrabold tracking-tight text-on-surface">Paris to Lyon</h1>
+<p class="text-on-surface-variant mt-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+                                Friday, Oct 24 • 08:30 AM
+                            </p>
+</div>
+<div class="text-right">
+<div class="text-4xl font-extrabold text-primary">€34.00</div>
+<div class="text-sm font-medium text-on-surface-variant">per seat</div>
+</div>
+</div>
+<!-- Route details with custom visualization -->
+<div class="relative py-4">
+<div class="absolute left-4 top-8 bottom-8 w-0.5 bg-surface-variant"></div>
+<div class="space-y-12 relative">
+<!-- Start Point -->
+<div class="flex gap-8 items-start">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center z-10">
+<div class="w-3 h-3 bg-white rounded-full"></div>
+</div>
+<div class="flex-1">
+<div class="text-lg font-bold text-on-surface">08:30 • Paris, Gare de Lyon</div>
+<p class="text-on-surface-variant text-sm mt-1">Main entrance under the clock tower.</p>
+</div>
+</div>
+<!-- Stop Point -->
+<div class="flex gap-8 items-start">
+<div class="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center z-10">
+<div class="w-2 h-2 bg-on-surface-variant rounded-full"></div>
+</div>
+<div class="flex-1">
+<div class="text-lg font-semibold text-on-surface">10:45 • Auxerre (Short break)</div>
+<p class="text-on-surface-variant text-sm mt-1">Total duration including stop: 4h 15m</p>
+</div>
+</div>
+<!-- Destination -->
+<div class="flex gap-8 items-start">
+<div class="w-8 h-8 rounded-full bg-on-surface flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-white text-lg">location_on</span>
+</div>
+<div class="flex-1">
+<div class="text-lg font-bold text-on-surface">12:45 • Lyon, Part-Dieu</div>
+<p class="text-on-surface-variant text-sm mt-1">Drop-off at the taxi rank station exit.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Trip Micro-Map -->
+<div class="w-full h-64 bg-surface-dim rounded-xl overflow-hidden relative border border-outline-variant/10">
+<img class="w-full h-full object-cover grayscale-[20%]" data-alt="Abstract minimalist topographic map of France showing a subtle blue route line from Paris to Lyon with high-end aesthetic" data-location="France" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFfeZjBwlNZq2VYECPXdgej9Fs8e8DFXswHcM7NuS_xLSWBtc1aYYAWJYGVHIZ4TQCsU4d_zMEoCe-DU5La67_CPiXeUn0JroCTN4ExfirJ5mFVASoU_owB8GF8Wwk7zzsoEhUOXtgdBwElJuoMa9SRySFKWKmpEHEbrvLWI62O3Cv4knL4K6HD2i-RjJUdRtIBbLqZ_OTWlIUEms8Ujm-zJQemWChIjwJd45gSgXyB82TKnzgXgveWAiOnAmYjhA9x6IAUxU7xjI"/>
+<div class="absolute inset-0 bg-primary/5"></div>
+<div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur-md px-4 py-2 rounded-lg text-xs font-bold text-on-surface shadow-sm">
+                        VIEW FULL ROUTE
+                    </div>
+</div>
+<!-- Driver Profile Summary -->
+<section class="bg-surface-container-low rounded-xl p-8">
+<h2 class="text-sm font-bold tracking-widest text-on-surface-variant uppercase mb-6">Driver Profile</h2>
+<div class="flex flex-col md:flex-row gap-8 items-start">
+<div class="relative">
+<img class="w-24 h-24 rounded-full object-cover border-4 border-surface-container-lowest" data-alt="Professional headshot of a friendly middle-aged man with short hair, wearing a casual polo shirt against a neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEFH_ohBpvT1yb8iYehdsSoQxtNBwNPAG7sewiL1fAdFYXGfHzT3qjFUzaR565cwL8f3ZoCSY7-wPdVG0GWtjf8BLjsNoc_JERCB66vdhjGk1-7XGBacYTe4zBRZdHc8EaII2oXYw-kEk_YzKO9JytuSju4WS1kBP4awkxDVSpgylViGvRLukRaJ5gITn2SmTfFW1_x2Z5LfASLqCUkI6_89QhCbwfxwH72ZrMLBiMVy1VyDghkUjrRrUO8CsYWzjrt5c3PPNafZs"/>
+<div class="absolute -bottom-1 -right-1 bg-green-500 w-6 h-6 rounded-full border-4 border-surface-container-low flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[10px]" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+</div>
+<div class="flex-1 space-y-4">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-2xl font-bold text-on-surface">Marc D.</h3>
+<div class="flex items-center gap-2 mt-1">
+<div class="flex text-yellow-500">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star_half</span>
+</div>
+<span class="text-sm font-semibold text-on-surface">4.8</span>
+<span class="text-sm text-on-surface-variant">(124 reviews)</span>
+</div>
+</div>
+<button class="bg-secondary-container text-on-secondary-container px-4 py-2 rounded-md font-semibold text-sm hover:opacity-90 transition-all active:scale-95">
+                                    Message Driver
+                                </button>
+</div>
+<p class="text-on-surface-variant leading-relaxed italic">
+                                "Experienced driver, commuting for work twice a week. I value punctuality and good conversation, but happy to travel in silence if preferred. Non-smoker."
+                            </p>
+<div class="flex flex-wrap gap-4 pt-2">
+<div class="flex items-center gap-2 bg-surface-container-lowest px-3 py-1.5 rounded-full border border-outline-variant/20">
+<span class="material-symbols-outlined text-sm">directions_car</span>
+<span class="text-xs font-semibold">Tesla Model 3 • White</span>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-lowest px-3 py-1.5 rounded-full border border-outline-variant/20">
+<span class="material-symbols-outlined text-sm">verified_user</span>
+<span class="text-xs font-semibold">ID Verified</span>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-lowest px-3 py-1.5 rounded-full border border-outline-variant/20">
+<span class="material-symbols-outlined text-sm">chat_bubble</span>
+<span class="text-xs font-semibold">Responds fast</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Trip Summary Sidebar -->
+<aside class="lg:col-span-4 space-y-6 lg:sticky lg:top-24">
+<div class="bg-surface-container-highest rounded-xl p-8 shadow-[0px_16px_48px_rgba(42,52,57,0.08)]">
+<h3 class="text-xl font-bold text-on-surface mb-6">Reservation Summary</h3>
+<div class="space-y-4 mb-8">
+<div class="flex justify-between items-center py-3 border-b border-on-surface/5">
+<span class="text-on-surface-variant font-medium">1 Seat</span>
+<span class="font-bold">€34.00</span>
+</div>
+<div class="flex justify-between items-center py-3 border-b border-on-surface/5">
+<span class="text-on-surface-variant font-medium">Service Fee</span>
+<span class="font-bold">€4.50</span>
+</div>
+<div class="flex justify-between items-center pt-4">
+<span class="text-lg font-bold">Total Price</span>
+<span class="text-2xl font-extrabold text-primary">€38.50</span>
+</div>
+</div>
+<div class="space-y-4">
+<button class="w-full bg-primary text-white py-4 rounded-lg font-bold text-lg hover:bg-primary-dim transition-all active:scale-[0.98] shadow-lg shadow-primary/20">
+                            Reserve Seat
+                        </button>
+<p class="text-[10px] text-center text-on-surface-variant uppercase tracking-widest px-4 leading-relaxed">
+                            Secured payment processing. Cancellation free up to 24h before departure.
+                        </p>
+</div>
+<div class="mt-8 pt-8 border-t border-on-surface/5 space-y-4">
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined text-primary">info</span>
+<div>
+<p class="text-sm font-bold text-on-surface">Instant Confirmation</p>
+<p class="text-xs text-on-surface-variant mt-1">No need to wait for driver approval.</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined text-primary">event_seat</span>
+<div>
+<p class="text-sm font-bold text-on-surface">2 Seats Remaining</p>
+<p class="text-xs text-on-surface-variant mt-1">Limited availability for this trip.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Preferences Card -->
+<div class="bg-surface-container-low rounded-xl p-6">
+<h4 class="text-xs font-bold tracking-widest text-on-surface-variant uppercase mb-4">Ride Amenities</h4>
+<div class="grid grid-cols-2 gap-y-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant text-lg">smoke_free</span>
+<span class="text-xs font-medium">No Smoking</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant text-lg">pets</span>
+<span class="text-xs font-medium">Pets Allowed</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant text-lg">music_note</span>
+<span class="text-xs font-medium">Music Okay</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant text-lg">ac_unit</span>
+<span class="text-xs font-medium">Air Conditioning</span>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-slate-50 dark:bg-slate-950 w-full py-12 mt-12 border-t border-slate-200/20">
+<div class="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="text-slate-500 dark:text-slate-400 text-sm font-inter tracking-wide uppercase">
+                © 2024 COVOITURAGE LOGISTICS. ALL RIGHTS RESERVED.
+            </div>
+<div class="flex gap-8">
+<a class="text-slate-500 dark:text-slate-400 text-sm font-inter tracking-wide uppercase hover:text-slate-800 transition-colors" href="#">Help Center</a>
+<a class="text-slate-500 dark:text-slate-400 text-sm font-inter tracking-wide uppercase hover:text-slate-800 transition-colors" href="#">Terms of Service</a>
+<a class="text-slate-500 dark:text-slate-400 text-sm font-inter tracking-wide uppercase hover:text-slate-800 transition-colors" href="#">Privacy Policy</a>
+<a class="text-slate-500 dark:text-slate-400 text-sm font-inter tracking-wide uppercase hover:text-slate-800 transition-colors" href="#">Contact</a>
+</div>
+</div>
+</footer>
+</body></html>
