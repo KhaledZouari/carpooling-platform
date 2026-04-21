@@ -1,0 +1,76 @@
+import type {
+  TrajetResponse,
+  UserResponse,
+  VehiculeResponse,
+} from "../types/covoiturage";
+
+export const demoUser: UserResponse = {
+  id: 1,
+  nom: "Marc",
+  prenom: "Driver",
+  email: "driver@cov.local",
+  telephone: "0600000000",
+  role: "CONDUCTEUR",
+  actif: true,
+  dateInscription: new Date().toISOString(),
+  permisConduire: "B",
+  note: 4.8,
+};
+
+export const demoVehicules: VehiculeResponse[] = [
+  {
+    id: 1,
+    marque: "Tesla",
+    modele: "Model 3",
+    immatriculation: "AA-123-AA",
+    nbPlaces: 4,
+    couleur: "White",
+    annee: 2024,
+    conducteurId: 1,
+  },
+];
+
+export const demoTrajets: TrajetResponse[] = [
+  {
+    id: 1,
+    villeDepart: "Paris",
+    villeArrivee: "Lyon",
+    dateDepart: "2026-10-24T08:30:00",
+    nbPlacesTotal: 4,
+    nbPlacesDisponibles: 2,
+    prix: 24,
+    statut: "OUVERT",
+    conducteurId: 1,
+    conducteurNom: "Marc L.",
+    vehiculeId: 1,
+    vehiculeDescription: "Tesla Model 3",
+  },
+  {
+    id: 2,
+    villeDepart: "Bordeaux",
+    villeArrivee: "Toulouse",
+    dateDepart: "2026-10-24T10:15:00",
+    nbPlacesTotal: 3,
+    nbPlacesDisponibles: 1,
+    prix: 18,
+    statut: "OUVERT",
+    conducteurId: 2,
+    conducteurNom: "Sophie R.",
+    vehiculeId: 2,
+    vehiculeDescription: "Peugeot 3008",
+  },
+  {
+    id: 3,
+    villeDepart: "Nantes",
+    villeArrivee: "Rennes",
+    dateDepart: "2026-10-24T14:45:00",
+    nbPlacesTotal: 4,
+    nbPlacesDisponibles: 4,
+    prix: 12,
+    statut: "OUVERT",
+    conducteurId: 3,
+    conducteurNom: "David M.",
+    vehiculeId: 3,
+    vehiculeDescription: "BMW i4",
+  },
+];
