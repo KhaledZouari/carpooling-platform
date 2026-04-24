@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { PageShell } from "../components/layout/PageShell";
 import { MaterialIcon } from "../components/MaterialIcon";
-import { adminApi, authApi } from "../api/covoiturage";
+import { adminApi } from "../api/covoiturage";
 import { useAuth } from "../context/AuthContext";
 import type { AdminStatsResponse, UserResponse, TrajetResponse } from "../types/covoiturage";
 import { Toast, ConfirmModal } from "../components/IHM";
@@ -24,9 +24,9 @@ export function AdminPage() {
   const [confirmState, setConfirmState] = useState<{ isOpen: boolean; title: string; message: string; action: () => void; danger?: boolean }>({ isOpen: false, title: "", message: "", action: () => {} });
 
   const fetchData = () => {
-    adminApi.getStats().then(setStats).catch(() => {});
-    adminApi.getUsers().then(setUsers).catch(() => {});
-    adminApi.getTrajets().then(setTrajets).catch(() => {});
+    adminApi.stats().then(setStats).catch(() => {});
+    adminApi.users().then(setUsers).catch(() => {});
+    adminApi.trajets().then(setTrajets).catch(() => {});
   };
 
   useEffect(() => {
@@ -52,8 +52,8 @@ export function AdminPage() {
       danger: currentStatus,
       action: async () => {
         try {
-          if (currentStatus) await adminApi.deactivateUser(id);
-          else await adminApi.activateUser(id);
+          if (currentStatus) await adminApi.block(id);
+          else await adminApi.unblock(id);
           setToast({ message: `User successfully ${currentStatus ? "deactivated" : "activated"}.`, type: "success" });
           fetchData();
         } catch {
@@ -73,7 +73,7 @@ export function AdminPage() {
       danger: true,
       action: async () => {
         try {
-          await adminApi.cancelTrajet(id);
+          await adminApi.deleteTrajet(id);
           setToast({ message: "Trip cancelled.", type: "success" });
           fetchData();
         } catch {
