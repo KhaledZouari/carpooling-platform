@@ -24,6 +24,32 @@ const toSearchParams = (params: TripSearchParams) => {
   return searchParams.toString();
 };
 
+const toLocalDateTimeString = (date: Date) => {
+  const pad = (value: number) => String(value).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+};
+
+const normalizeTrajetPayload = (payload: TrajetRequest): TrajetRequest => {
+  const dateDepart = payload.dateDepart.trim();
+
+  if (!dateDepart) {
+    return payload;
+  }
+
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(dateDepart)) {
+    return { ...payload, dateDepart: `${dateDepart}:00` };
+  }
+
+  if (dateDepart.endsWith("Z")) {
+    const parsedDate = new Date(dateDepart);
+    if (!Number.isNaN(parsedDate.getTime())) {
+      return { ...payload, dateDepart: toLocalDateTimeString(parsedDate) };
+    }
+  }
+
+  return payload;
+};
+
 export const authApi = {
   login: async (payload: LoginRequest) =>
     (await api.post<AuthResponse>("/auth/login", payload)).data,
@@ -41,9 +67,19 @@ export const trajetApi = {
   getById: async (id: number) =>
     (await api.get<TrajetResponse>(`/trajets/${id}`)).data,
   create: async (payload: TrajetRequest) =>
-    (await api.post<TrajetResponse>("/trajets", payload)).data,
+    (
+      await api.post<TrajetResponse>(
+        "/trajets",
+        normalizeTrajetPayload(payload),
+      )
+    ).data,
   update: async (id: number, payload: TrajetRequest) =>
-    (await api.put<TrajetResponse>(`/trajets/${id}`, payload)).data,
+    (
+      await api.put<TrajetResponse>(
+        `/trajets/${id}`,
+        normalizeTrajetPayload(payload),
+      )
+    ).data,
   cancel: async (id: number) =>
     (await api.delete<TrajetResponse>(`/trajets/${id}`)).data,
   myTrajets: async () =>
@@ -55,6 +91,9 @@ export const reservationApi = {
     (await api.post<ReservationResponse>("/reservations", payload)).data,
   myReservations: async () =>
     (await api.get<ReservationResponse[]>("/reservations/mes-reservations"))
+      .data,
+  pourMesTrajets: async () =>
+    (await api.get<ReservationResponse[]>("/reservations/pour-mes-trajets"))
       .data,
   confirmer: async (id: number) =>
     (await api.put<ReservationResponse>(`/reservations/${id}/confirmer`)).data,
@@ -71,6 +110,15 @@ export const vehiculeApi = {
     (await api.get<VehiculeResponse[]>("/vehicules/mes-vehicules")).data,
   remove: async (id: number) => {
     await api.delete(`/vehicules/${id}`);
+  },
+  uploadImage: async (id: number, file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    return (
+      await api.post<VehiculeResponse>(`/vehicules/${id}/image`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+    ).data;
   },
 };
 

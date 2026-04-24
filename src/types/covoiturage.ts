@@ -37,6 +37,7 @@ export type TrajetResponse = {
   conducteurNom?: string | null;
   vehiculeId?: number | null;
   vehiculeDescription?: string | null;
+  vehiculeImageUrl?: string | null;
   createdAt?: string | null;
 };
 
