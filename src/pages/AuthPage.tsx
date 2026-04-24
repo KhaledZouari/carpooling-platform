@@ -22,12 +22,19 @@ export function AuthPage() {
     role: "VOYAGEUR",
   });
 
+  const getDashboardPath = (role: string) =>
+    role === "ADMIN"
+      ? "/admin"
+      : role === "CONDUCTEUR"
+        ? "/conducteur"
+        : "/voyageur";
+
   const submitLogin = async () => {
     setError("");
     try {
       const response = await authApi.login(login);
       setSession(response);
-      navigate("/");
+      navigate(getDashboardPath(response.user.role));
     } catch {
       setError("Unable to login. Check your credentials.");
     }
@@ -38,7 +45,7 @@ export function AuthPage() {
     try {
       const response = await authApi.register(register);
       setSession(response);
-      navigate("/");
+      navigate(getDashboardPath(response.user.role));
     } catch {
       setError("Unable to create the account.");
     }

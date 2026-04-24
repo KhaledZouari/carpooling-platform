@@ -28,9 +28,12 @@ export function AdminPage() {
   }, []);
 
   return (
-    <PageShell>
+    <PageShell role="admin">
       <main className="mx-auto max-w-7xl space-y-8 px-6 pb-12 pt-24">
         <div>
+          <div className="mb-3 inline-flex rounded-full bg-slate-200 px-3 py-1 text-xs font-bold uppercase tracking-widest text-slate-800">
+            Admin control room
+          </div>
           <h1 className="text-4xl font-extrabold tracking-tight">
             Admin Panel
           </h1>
@@ -38,16 +41,16 @@ export function AdminPage() {
             User management and platform overview.
           </p>
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <div className="rounded-xl bg-surface-container-lowest p-6">
+        <div id="stats" className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div className="rounded-2xl border border-slate-100 bg-slate-900 p-6 text-white">
             <p className="text-xs uppercase tracking-widest text-on-surface-variant">
               Users
             </p>
-            <p className="text-3xl font-bold text-primary">
+            <p className="text-3xl font-bold text-white">
               {stats?.nbUsers ?? 0}
             </p>
           </div>
-          <div className="rounded-xl bg-surface-container-lowest p-6">
+          <div className="rounded-2xl border border-slate-100 bg-white p-6">
             <p className="text-xs uppercase tracking-widest text-on-surface-variant">
               Trajets
             </p>
@@ -55,7 +58,7 @@ export function AdminPage() {
               {stats?.nbTrajets ?? 0}
             </p>
           </div>
-          <div className="rounded-xl bg-surface-container-lowest p-6">
+          <div className="rounded-2xl border border-slate-100 bg-white p-6">
             <p className="text-xs uppercase tracking-widest text-on-surface-variant">
               Reservations
             </p>
@@ -64,7 +67,10 @@ export function AdminPage() {
             </p>
           </div>
         </div>
-        <section className="space-y-4 rounded-xl bg-surface-container-lowest p-6">
+        <section
+          id="users"
+          className="space-y-4 rounded-2xl bg-white p-6 shadow-sm"
+        >
           <h2 className="text-xl font-bold">Users</h2>
           {users.map((user) => (
             <div
@@ -98,7 +104,10 @@ export function AdminPage() {
             </div>
           ))}
         </section>
-        <section className="space-y-4 rounded-xl bg-surface-container-lowest p-6">
+        <section
+          id="trajets"
+          className="space-y-4 rounded-2xl bg-white p-6 shadow-sm"
+        >
           <h2 className="text-xl font-bold">Trajets</h2>
           {trajets.map((trip) => (
             <div

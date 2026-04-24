@@ -54,15 +54,18 @@ export function DriverDashboardPage() {
   };
 
   return (
-    <PageShell>
+    <PageShell role="conducteur">
       <main className="mx-auto max-w-7xl space-y-8 px-6 pb-12 pt-24">
         <section className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
+            <div className="mb-3 inline-flex rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold uppercase tracking-widest text-emerald-700">
+              Conducteur workspace
+            </div>
             <h1 className="text-4xl font-extrabold tracking-tight">
-              Driver Dashboard
+              Conducteur Dashboard
             </h1>
             <p className="text-on-surface-variant">
-              Manage your active routes and passenger requests.
+              Manage your active routes, vehicle fleet, and passenger requests.
             </p>
           </div>
           <div className="flex gap-2 rounded-xl bg-surface-container-low p-1">
@@ -82,7 +85,7 @@ export function DriverDashboardPage() {
         </section>
 
         {!isDriver ? (
-          <section className="rounded-xl bg-surface-container-lowest p-8 text-center">
+          <section className="rounded-2xl border border-dashed border-emerald-200 bg-emerald-50 p-8 text-center">
             <h2 className="text-2xl font-bold">Driver access required</h2>
             <p className="mt-2 text-on-surface-variant">
               Sign in with a conductor account to publish and manage rides.
@@ -97,10 +100,10 @@ export function DriverDashboardPage() {
         ) : (
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
             <div className="space-y-8 lg:col-span-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div id="stats" className="grid grid-cols-2 gap-4">
                 <div className="rounded-xl border border-outline-variant/10 bg-surface-container-lowest p-6">
                   <div className="mb-2 text-xs uppercase tracking-widest text-on-surface-variant">
-                    Total Earned
+                    Revenue
                   </div>
                   <div className="text-3xl font-bold text-primary">
                     €{totalEarned.toFixed(0)}
@@ -120,8 +123,11 @@ export function DriverDashboardPage() {
                   </div>
                 </div>
               </div>
-              <section className="rounded-xl border border-outline-variant/10 bg-surface-container-lowest p-8">
-                <h2 className="mb-6 text-2xl font-bold">Post a Ride</h2>
+              <section
+                id="publish"
+                className="rounded-xl border border-outline-variant/10 bg-surface-container-lowest p-8"
+              >
+                <h2 className="mb-6 text-2xl font-bold">Publish a Ride</h2>
                 <form
                   className="space-y-6"
                   onSubmit={(event) => {
@@ -234,7 +240,7 @@ export function DriverDashboardPage() {
                 </form>
               </section>
             </div>
-            <section className="space-y-4 lg:col-span-8">
+            <section id="trajets" className="space-y-4 lg:col-span-8">
               <h3 className="mb-2 px-2 text-sm uppercase tracking-widest text-on-surface-variant">
                 Manage Your Rides
               </h3>

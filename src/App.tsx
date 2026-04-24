@@ -6,6 +6,7 @@ import { RideDetailsPage } from "./pages/RideDetailsPage";
 import { DriverDashboardPage } from "./pages/DriverDashboardPage";
 import { AuthPage } from "./pages/AuthPage";
 import { AdminPage } from "./pages/AdminPage";
+import { VoyageurPage } from "./pages/VoyageurPage";
 
 function App() {
   return (
@@ -17,6 +18,8 @@ function App() {
           <Route path="/rides/:id" element={<RideDetailsPage />} />
           <Route path="/ride-details" element={<RideDetailsPage />} />
           <Route path="/ride-details/:id" element={<RideDetailsPage />} />
+          <Route path="/voyageur" element={<VoyageurPage />} />
+          <Route path="/conducteur" element={<DriverDashboardPage />} />
           <Route path="/driver" element={<DriverDashboardPage />} />
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/admin" element={<AdminPage />} />
