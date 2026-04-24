@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+﻿import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import gsap from "gsap";
 import { PageShell } from "../components/layout/PageShell";
@@ -46,7 +46,7 @@ export function AuthPage() {
         setSession(authData);
         navigate(authData.user.role === "CONDUCTEUR" ? "/conducteur" : "/voyageur");
       }
-    } catch (err) {
+    } catch {
       setError("Authentication failed. Please check your credentials.");
     } finally {
       setIsLoading(false);
@@ -62,7 +62,7 @@ export function AuthPage() {
           <form
             ref={formRef}
             onSubmit={handleSubmit}
-            className="rounded-[2.5rem] bg-surface-container-lowest/80 backdrop-blur-2xl p-10 shadow-2xl border border-white/5"
+            className="rounded-2xl bg-surface-container-lowest/80 backdrop-blur-2xl p-10 shadow-[0_12px_32px_rgba(31,41,51,0.08)] border border-outline-variant/60"
           >
             <div className="text-center mb-10">
                <MaterialIcon name="api" className="text-primary text-5xl mb-4" />
@@ -124,7 +124,7 @@ export function AuthPage() {
                 </div>
               )}
 
-              <button type="submit" disabled={isLoading} className="mt-8 w-full rounded-xl bg-primary py-4 font-headline font-extrabold text-lg text-black shadow-lg shadow-primary/20 transition-all hover:bg-primary-dim active:scale-95 disabled:opacity-70 flex items-center justify-center gap-2">
+              <button type="submit" disabled={isLoading} className="mt-8 w-full rounded-xl bg-primary py-4 font-headline font-extrabold text-lg text-on-primary shadow-lg shadow-primary/20 transition-all hover:bg-primary-dim active:scale-95 disabled:opacity-70 flex items-center justify-center gap-2">
                 {isLoading ? <MaterialIcon name="refresh" className="animate-spin" /> : isLogin ? "Sign In" : "Create Account"}
               </button>
             </div>
@@ -135,7 +135,7 @@ export function AuthPage() {
               </button>
             </div>
             
-            <div className="mt-6 pt-6 border-t border-white/5 text-center">
+            <div className="mt-6 pt-6 border-t border-outline-variant/60 text-center">
                <div className="text-xs font-medium text-on-surface-variant">Demo Accounts:</div>
                <div className="flex justify-center gap-4 mt-2 text-xs font-bold">
                   <button type="button" onClick={() => { setEmail("voyageur@test.com"); setPassword("password"); }} className="text-primary hover:underline">Voyageur</button>

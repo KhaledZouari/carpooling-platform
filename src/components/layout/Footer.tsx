@@ -1,35 +1,20 @@
 export function Footer() {
   return (
-    <footer className="w-full border-t border-slate-200/20 bg-slate-50 py-12">
-      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-8 px-8 md:flex-row">
-        <div className="text-sm uppercase tracking-wide text-slate-500">
-          © 2024 Covoiturage Logistics. All rights reserved.
+    <footer className="w-full border-t-2 border-outline bg-on-surface py-8 text-surface">
+      <div className="mx-auto flex max-w-7xl flex-col justify-between gap-6 px-4 sm:px-6 md:flex-row md:items-center">
+        <div className="font-mono text-xs font-bold uppercase">
+          © 2026 Covoiturage. Réseau de places partagées.
         </div>
-        <div className="flex gap-8">
-          <a
-            href="#"
-            className="text-sm uppercase tracking-wide text-slate-500 transition-colors hover:text-slate-800"
-          >
-            Help Center
-          </a>
-          <a
-            href="#"
-            className="text-sm uppercase tracking-wide text-slate-500 transition-colors hover:text-slate-800"
-          >
-            Terms of Service
-          </a>
-          <a
-            href="#"
-            className="text-sm uppercase tracking-wide text-slate-500 transition-colors hover:text-slate-800"
-          >
-            Privacy Policy
-          </a>
-          <a
-            href="#"
-            className="text-sm uppercase tracking-wide text-slate-500 transition-colors hover:text-slate-800"
-          >
-            Contact
-          </a>
+        <div className="flex flex-wrap gap-4 font-mono text-xs font-bold uppercase">
+          {["Aide", "Conditions", "Confidentialité", "Contact"].map((item) => (
+            <a
+              key={item}
+              href="#"
+              className="border-b-2 border-transparent transition-colors hover:border-primary hover:text-primary"
+            >
+              {item}
+            </a>
+          ))}
         </div>
       </div>
     </footer>

@@ -61,6 +61,7 @@ export type VehiculeResponse = {
   couleur?: string | null;
   annee: number;
   conducteurId?: number | null;
+  imageUrl?: string | null;
 };
 
 export type AvisResponse = {

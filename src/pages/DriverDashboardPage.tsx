@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useRef } from "react";
+﻿import { useEffect, useMemo, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { PageShell } from "../components/layout/PageShell";
@@ -244,7 +244,7 @@ export function DriverDashboardPage() {
     return (
       <PageShell>
         <main className="mx-auto flex w-full max-w-7xl items-center justify-center flex-1 px-6 pb-24 pt-32">
-          <div className="text-center bg-surface-container-lowest p-12 rounded-3xl border border-white/5 shadow-2xl max-w-md">
+          <div className="text-center bg-surface-container-lowest p-12 rounded-3xl border border-outline-variant/60 shadow-[0_12px_32px_rgba(31,41,51,0.08)] max-w-md">
             <MaterialIcon name="block" className="text-error text-6xl mb-4" />
             <h2 className="text-3xl font-headline font-bold mb-2">
               Driver Access Required
@@ -254,7 +254,7 @@ export function DriverDashboardPage() {
             </p>
             <Link
               to="/auth"
-              className="inline-flex rounded-xl bg-primary px-6 py-3 font-bold text-black shadow-lg shadow-primary/20 hover:scale-105 transition-transform"
+              className="inline-flex rounded-xl bg-primary px-6 py-3 font-bold text-on-primary shadow-lg shadow-primary/20 hover:scale-105 transition-transform"
             >
               Go to login
             </Link>
@@ -278,7 +278,7 @@ export function DriverDashboardPage() {
             </p>
           </div>
 
-          <div className="flex bg-surface-container-low p-1.5 rounded-2xl border border-white/5 shadow-inner self-start md:self-auto overflow-x-auto no-scrollbar">
+          <div className="flex bg-surface-container-low p-1.5 rounded-2xl border border-outline-variant/60 shadow-inner self-start md:self-auto overflow-x-auto no-scrollbar">
             {[
               { id: "requests", label: "Trips & Requests", icon: "forum" },
               { id: "fleet", label: "Fleet & Stats", icon: "directions_car" },
@@ -286,10 +286,12 @@ export function DriverDashboardPage() {
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() =>
+                  setActiveTab(tab.id as "fleet" | "requests" | "publish")
+                }
                 className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold transition-all duration-300 whitespace-nowrap ${
                   activeTab === tab.id
-                    ? "bg-primary text-black shadow-lg shadow-primary/20 scale-105"
+                    ? "bg-primary text-on-primary shadow-lg shadow-primary/20 scale-105"
                     : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container"
                 }`}
               >
@@ -345,7 +347,7 @@ export function DriverDashboardPage() {
                               Pending
                             </span>
                           </div>
-                          <div className="text-sm text-on-surface bg-surface-container-lowest p-3 rounded-xl mb-4 border border-white/5">
+                          <div className="text-sm text-on-surface bg-surface-container-lowest p-3 rounded-xl mb-4 border border-outline-variant/60">
                             <MaterialIcon
                               name="route"
                               className="text-[14px] inline align-text-bottom mr-1"
@@ -365,7 +367,7 @@ export function DriverDashboardPage() {
                               onClick={() =>
                                 handleReservation(res.id, "confirmer")
                               }
-                              className="flex-1 py-2 rounded-xl bg-primary text-black font-bold hover:bg-primary-dim transition-colors shadow-md shadow-primary/20"
+                              className="flex-1 py-2 rounded-xl bg-primary text-on-primary font-bold hover:bg-primary-dim transition-colors shadow-md shadow-primary/20"
                             >
                               Approve
                             </button>
@@ -400,7 +402,7 @@ export function DriverDashboardPage() {
                       return (
                         <article
                           key={trip.id}
-                          className={`flex flex-col gap-6 rounded-3xl p-6 md:flex-row shadow-xl border border-white/5 ${
+                          className={`flex flex-col gap-6 rounded-3xl p-6 md:flex-row shadow-[0_8px_24px_rgba(31,41,51,0.06)] border border-outline-variant/60 ${
                             isCancelled
                               ? "bg-error/5 opacity-75 grayscale"
                               : isCompleted
@@ -467,7 +469,7 @@ export function DriverDashboardPage() {
                                 </span>
                               </div>
                             </div>
-                            <div className="flex items-center gap-3 mt-4 pt-4 border-t border-white/5">
+                            <div className="flex items-center gap-3 mt-4 pt-4 border-t border-outline-variant/60">
                               <Link
                                 to={`/ride-details/${trip.id}`}
                                 className="text-sm font-bold text-on-surface bg-surface-container px-4 py-2 rounded-lg hover:bg-surface-variant transition-colors"
@@ -501,7 +503,7 @@ export function DriverDashboardPage() {
                   Overview
                 </h2>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="rounded-3xl border border-white/5 bg-surface-container-lowest p-6 shadow-xl">
+                  <div className="rounded-3xl border border-outline-variant/60 bg-surface-container-lowest p-6 shadow-[0_8px_24px_rgba(31,41,51,0.06)]">
                     <div className="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">
                       Total Revenue
                     </div>
@@ -509,7 +511,7 @@ export function DriverDashboardPage() {
                       €{totalEarned.toFixed(0)}
                     </div>
                   </div>
-                  <div className="rounded-3xl border border-white/5 bg-surface-container-lowest p-6 shadow-xl">
+                  <div className="rounded-3xl border border-outline-variant/60 bg-surface-container-lowest p-6 shadow-[0_8px_24px_rgba(31,41,51,0.06)]">
                     <div className="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">
                       Driver Rating
                     </div>
@@ -537,7 +539,7 @@ export function DriverDashboardPage() {
                 </div>
 
                 {showVehicleForm && (
-                  <div className="rounded-3xl border border-primary/30 bg-primary/5 p-6 shadow-xl animate-in slide-in-from-top-4 duration-300">
+                  <div className="rounded-3xl border border-primary/30 bg-primary/5 p-6 shadow-[0_8px_24px_rgba(31,41,51,0.06)] animate-in slide-in-from-top-4 duration-300">
                     <h3 className="font-headline font-bold mb-4">
                       Register New Vehicle
                     </h3>
@@ -624,7 +626,7 @@ export function DriverDashboardPage() {
                     </div>
                     <button
                       onClick={handleAddVehicle}
-                      className="w-full rounded-xl bg-primary py-3 font-bold text-black hover:bg-primary-dim transition-colors shadow-lg shadow-primary/20"
+                      className="w-full rounded-xl bg-primary py-3 font-bold text-on-primary hover:bg-primary-dim transition-colors shadow-lg shadow-primary/20"
                     >
                       Save Vehicle
                     </button>
@@ -643,12 +645,12 @@ export function DriverDashboardPage() {
                     vehicules.map((v) => (
                       <div
                         key={v.id}
-                        className="relative rounded-3xl border border-white/5 bg-surface-container-lowest overflow-hidden shadow-xl group hover:border-primary/50 transition-colors"
+                        className="relative rounded-3xl border border-outline-variant/60 bg-surface-container-lowest overflow-hidden shadow-[0_8px_24px_rgba(31,41,51,0.06)] group hover:border-primary/50 transition-colors"
                       >
                         {v.imageUrl ? (
                           <div className="h-40 w-full overflow-hidden bg-surface-container relative">
                             <img
-                              src={`http://localhost:8080${v.imageUrl}`}
+                              src={`http://localhost:8089${v.imageUrl}`}
                               alt={v.marque}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                             />
@@ -694,8 +696,8 @@ export function DriverDashboardPage() {
                               {v.annee}
                             </span>
                           </div>
-                          <div className="mt-6 pt-4 border-t border-white/5">
-                            <label className="cursor-pointer flex items-center justify-center gap-2 w-full py-2 rounded-xl bg-surface-container-high hover:bg-primary hover:text-black font-bold text-sm transition-colors text-on-surface">
+                          <div className="mt-6 pt-4 border-t border-outline-variant/60">
+                            <label className="cursor-pointer flex items-center justify-center gap-2 w-full py-2 rounded-xl bg-surface-container-high hover:bg-primary hover:text-on-primary font-bold text-sm transition-colors text-on-surface">
                               <MaterialIcon
                                 name="add_a_photo"
                                 className="text-[16px]"
@@ -735,7 +737,7 @@ export function DriverDashboardPage() {
           )}
 
           {activeTab === "publish" && (
-            <div className="max-w-3xl mx-auto rounded-3xl border border-white/5 bg-surface-container-lowest p-8 shadow-2xl">
+            <div className="max-w-3xl mx-auto rounded-3xl border border-outline-variant/60 bg-surface-container-lowest p-8 shadow-[0_12px_32px_rgba(31,41,51,0.08)]">
               <h2 className="text-3xl font-headline font-bold mb-8 text-center text-primary">
                 Publish a new ride
               </h2>
@@ -895,11 +897,11 @@ export function DriverDashboardPage() {
                   </div>
                 </div>
 
-                <div className="pt-6 border-t border-white/5 mt-8">
+                <div className="pt-6 border-t border-outline-variant/60 mt-8">
                   <button
                     type="submit"
                     disabled={vehicules.length === 0}
-                    className="w-full rounded-2xl bg-primary py-5 text-lg font-headline font-extrabold text-black shadow-2xl shadow-primary/30 transition-all hover:bg-primary-dim hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full rounded-2xl bg-primary py-5 text-lg font-headline font-extrabold text-on-primary shadow-[0_12px_32px_rgba(31,41,51,0.08)] shadow-primary/30 transition-all hover:bg-primary-dim hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Publish Ride
                   </button>

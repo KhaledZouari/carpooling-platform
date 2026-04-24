@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MaterialIcon } from "../MaterialIcon";
 
 type TripSearchBarProps = {
   initialDepart?: string;
@@ -14,74 +13,76 @@ export function TripSearchBar({
   initialDepart = "",
   initialArrivee = "",
   initialDate = "",
-  initialPlaces = "",
+  initialPlaces = "1",
   compact = false,
 }: TripSearchBarProps) {
   const navigate = useNavigate();
+  const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
   const [depart, setDepart] = useState(initialDepart);
   const [arrivee, setArrivee] = useState(initialArrivee);
   const [date, setDate] = useState(initialDate);
   const [places, setPlaces] = useState(initialPlaces);
+  const sameRoute =
+    depart.trim().length > 0 &&
+    arrivee.trim().length > 0 &&
+    depart.trim().toLowerCase() === arrivee.trim().toLowerCase();
+  const canSearch = depart.trim() && arrivee.trim() && date && !sameRoute;
 
   const handleSearch = () => {
+    if (!canSearch) return;
     const searchParams = new URLSearchParams();
-    if (depart) searchParams.set("depart", depart);
-    if (arrivee) searchParams.set("arrivee", arrivee);
-    if (date) searchParams.set("date", date);
+    searchParams.set("depart", depart.trim());
+    searchParams.set("arrivee", arrivee.trim());
+    searchParams.set("date", date);
     if (places) searchParams.set("places", places);
-    navigate(
-      `/rides${searchParams.toString() ? `?${searchParams.toString()}` : ""}`,
-    );
+    navigate(`/rides?${searchParams.toString()}`);
   };
 
   return (
-    <div
-      className={`mx-auto w-full rounded-xl bg-surface-container-lowest/90 p-2 shadow-[0px_8px_24px_rgba(42,52,57,0.06)] backdrop-blur-xl ${compact ? "max-w-5xl" : "max-w-5xl"}`}
-    >
-      <div className="flex flex-col items-stretch gap-2 md:flex-row">
-        <label className="flex flex-1 items-center rounded-lg bg-surface-container-low px-4 py-3">
-          <MaterialIcon
-            name="my_location"
-            className="mr-3 text-outline-variant"
-          />
+    <div className={`transport-panel mx-auto w-full ${compact ? "max-w-5xl" : "max-w-6xl"}`}>
+      <div className="grid gap-3 p-3 md:grid-cols-[1fr_1fr_168px_116px_auto]">
+        <label className="grid gap-2">
+          <span className="field-label">Départ</span>
           <input
-            className="w-full border-none bg-transparent font-medium placeholder:text-on-surface-variant focus:ring-0"
-            placeholder="Departure"
+            required
+            placeholder="Paris"
             value={depart}
             onChange={(event) => setDepart(event.target.value)}
           />
         </label>
-        <label className="flex flex-1 items-center rounded-lg bg-surface-container-low px-4 py-3">
-          <MaterialIcon
-            name="location_on"
-            className="mr-3 text-outline-variant"
-          />
+        <label className="grid gap-2">
+          <span className="field-label">Destination</span>
           <input
-            className="w-full border-none bg-transparent font-medium placeholder:text-on-surface-variant focus:ring-0"
-            placeholder="Destination"
+            required
+            placeholder="Lyon"
+            aria-invalid={sameRoute}
             value={arrivee}
             onChange={(event) => setArrivee(event.target.value)}
           />
+          {sameRoute ? (
+            <span className="font-mono text-[11px] font-bold uppercase text-error">
+              Choisissez deux villes différentes.
+            </span>
+          ) : null}
         </label>
-        <label className="flex w-full items-center rounded-lg bg-surface-container-low px-4 py-3 md:w-40">
-          <MaterialIcon
-            name="calendar_month"
-            className="mr-3 text-outline-variant"
-          />
+        <label className="grid gap-2">
+          <span className="field-label">Date</span>
           <input
             type="date"
-            className="w-full border-none bg-transparent font-medium placeholder:text-on-surface-variant focus:ring-0"
+            required
+            min={today}
             value={date}
             onChange={(event) => setDate(event.target.value)}
           />
         </label>
-        <label className="flex w-full items-center rounded-lg bg-surface-container-low px-4 py-3 md:w-32">
-          <MaterialIcon name="person" className="mr-3 text-outline-variant" />
+        <label className="grid gap-2">
+          <span className="field-label">Places</span>
           <input
             type="number"
             min="1"
-            className="w-full border-none bg-transparent font-medium placeholder:text-on-surface-variant focus:ring-0"
-            placeholder="Seats"
+            max="8"
+            required
+            placeholder="1"
             value={places}
             onChange={(event) => setPlaces(event.target.value)}
           />
@@ -89,9 +90,10 @@ export function TripSearchBar({
         <button
           type="button"
           onClick={handleSearch}
-          className="w-full whitespace-nowrap rounded-lg bg-primary px-8 py-3 font-semibold text-on-primary transition-all hover:bg-primary-dim active:scale-95 md:w-auto"
+          disabled={!canSearch}
+          className="app-button-primary self-end"
         >
-          Search
+          Rechercher
         </button>
       </div>
     </div>

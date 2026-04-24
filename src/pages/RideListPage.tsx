@@ -1,34 +1,44 @@
-import { useEffect, useMemo, useState, useRef } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import gsap from "gsap";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { PageShell } from "../components/layout/PageShell";
-import { MaterialIcon } from "../components/MaterialIcon";
+import { TripCard } from "../components/rides/TripCard";
 import { demoTrajets } from "../data/demo";
 import { trajetApi } from "../api/covoiturage";
 import type { TrajetResponse } from "../types/covoiturage";
 
+type SortOption = "Earliest departure" | "Lowest price" | "Most seats";
+
+const timeFilters = [
+  { id: "morning", label: "06:00-12:00" },
+  { id: "afternoon", label: "12:00-18:00" },
+  { id: "evening", label: "18:00-06:00" },
+];
+
 export function RideListPage() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
   const [rides, setRides] = useState<TrajetResponse[]>(demoTrajets);
   const [isLoading, setIsLoading] = useState(true);
-  const listRef = useRef<HTMLDivElement>(null);
 
-  // Search parameters
   const [depart, setDepart] = useState(searchParams.get("depart") ?? "");
   const [arrivee, setArrivee] = useState(searchParams.get("arrivee") ?? "");
   const [date, setDate] = useState(searchParams.get("date") ?? "");
-  const [places, setPlaces] = useState(searchParams.get("places") ?? "");
-
-  // Local filter states
-  const [sortBy, setSortBy] = useState("Earliest departure");
+  const [places, setPlaces] = useState(searchParams.get("places") ?? "1");
+  const [sortBy, setSortBy] = useState<SortOption>("Earliest departure");
   const [maxPrice, setMaxPrice] = useState(150);
-  const [timeMorning, setTimeMorning] = useState(true);
-  const [timeAfternoon, setTimeAfternoon] = useState(true);
-  const [timeEvening, setTimeEvening] = useState(true);
-  const [minSeats, setMinSeats] = useState<string>("1");
+  const [activeTimes, setActiveTimes] = useState<string[]>([
+    "morning",
+    "afternoon",
+    "evening",
+  ]);
+  const [showMoreFilters, setShowMoreFilters] = useState(false);
+
+  const sameRoute =
+    depart.trim().length > 0 &&
+    arrivee.trim().length > 0 &&
+    depart.trim().toLowerCase() === arrivee.trim().toLowerCase();
 
   useEffect(() => {
-    setIsLoading(true);
     trajetApi
       .search({
         depart: searchParams.get("depart") ?? undefined,
@@ -44,204 +54,232 @@ export function RideListPage() {
   }, [searchParams]);
 
   const filteredRides = useMemo(() => {
-    let result = [...rides];
-    result = result.filter(trip => trip.prix <= maxPrice);
-    const requiredSeats = minSeats === "3+" ? 3 : Number(minSeats);
-    result = result.filter(trip => trip.nbPlacesDisponibles >= requiredSeats);
-    result = result.filter(trip => {
-      const hour = new Date(trip.dateDepart).getHours();
-      if (hour >= 6 && hour < 12 && timeMorning) return true;
-      if (hour >= 12 && hour < 18 && timeAfternoon) return true;
-      if ((hour >= 18 || hour < 6) && timeEvening) return true;
-      return false;
-    });
+    const requiredSeats = Number(places || 1);
+    const result = rides
+      .filter((trip) => trip.prix <= maxPrice)
+      .filter((trip) => trip.nbPlacesDisponibles >= requiredSeats)
+      .filter((trip) => {
+        const hour = new Date(trip.dateDepart).getHours();
+        if (hour >= 6 && hour < 12) return activeTimes.includes("morning");
+        if (hour >= 12 && hour < 18) return activeTimes.includes("afternoon");
+        return activeTimes.includes("evening");
+      });
+
     result.sort((a, b) => {
       if (sortBy === "Lowest price") return a.prix - b.prix;
-      if (sortBy === "Earliest departure") return new Date(a.dateDepart).getTime() - new Date(b.dateDepart).getTime();
-      if (sortBy === "Shortest duration") return a.prix - b.prix; 
-      return 0;
+      if (sortBy === "Most seats") {
+        return b.nbPlacesDisponibles - a.nbPlacesDisponibles;
+      }
+      return new Date(a.dateDepart).getTime() - new Date(b.dateDepart).getTime();
     });
-    return result;
-  }, [rides, maxPrice, timeMorning, timeAfternoon, timeEvening, minSeats, sortBy]);
 
-  useEffect(() => {
-    if (!isLoading && listRef.current && filteredRides.length > 0) {
-      gsap.fromTo(
-        listRef.current.children,
-        { opacity: 0, x: 20 },
-        { opacity: 1, x: 0, stagger: 0.1, duration: 0.5, ease: "power2.out" }
-      );
-    }
-  }, [filteredRides, isLoading]);
+    return result;
+  }, [activeTimes, maxPrice, places, rides, sortBy]);
 
   const updateSearch = () => {
+    if (sameRoute) return;
+    setIsLoading(true);
     const nextParams = new URLSearchParams();
-    if (depart) nextParams.set("depart", depart);
-    if (arrivee) nextParams.set("arrivee", arrivee);
+    if (depart.trim()) nextParams.set("depart", depart.trim());
+    if (arrivee.trim()) nextParams.set("arrivee", arrivee.trim());
     if (date) nextParams.set("date", date);
     if (places) nextParams.set("places", places);
     setSearchParams(nextParams);
   };
 
+  const resetFilters = () => {
+    setMaxPrice(150);
+    setActiveTimes(["morning", "afternoon", "evening"]);
+    setPlaces("1");
+    setSortBy("Earliest departure");
+  };
+
   return (
     <PageShell>
-      <main className="mx-auto flex max-w-7xl flex-col gap-8 px-6 pb-24 pt-32 w-full">
-        <div>
-          <h1 className="text-6xl font-headline font-extrabold tracking-tighter text-on-surface mb-2">
-            Available Rides
-          </h1>
-          <p className="text-xl text-on-surface-variant font-medium">
-            {depart || "Anywhere"} &rarr; {arrivee || "Anywhere"} 
-            {date ? ` • ${new Date(date).toLocaleDateString()}` : ""}
-          </p>
+      <main className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 pb-20 pt-28 sm:px-6">
+        <div className="grid gap-4 border-b-2 border-outline pb-6 md:grid-cols-[1fr_auto] md:items-end">
+          <div>
+            <p className="font-mono text-xs font-bold uppercase text-primary">
+              Résultats triés par départ le plus tôt
+            </p>
+            <h1 className="mt-2 font-headline text-6xl font-extrabold uppercase leading-none text-on-surface">
+              Tableau des trajets
+            </h1>
+            <p className="mt-3 font-mono text-sm font-bold uppercase text-on-surface-variant">
+              {depart || "Toutes villes"} → {arrivee || "Toutes villes"}
+              {date ? ` / ${new Date(date).toLocaleDateString()}` : ""}
+            </p>
+          </div>
+          <div className="border-2 border-outline bg-primary-container px-4 py-3 font-mono text-sm font-bold uppercase">
+            {filteredRides.length} départ(s)
+          </div>
         </div>
-        
-        <div className="flex flex-col gap-8 lg:flex-row items-start">
-          <aside className="w-full space-y-6 lg:w-80 shrink-0 sticky top-24">
-             {/* Global Search Box */}
-             <div className="rounded-3xl bg-surface-container-low p-6 shadow-2xl border border-white/5 space-y-4">
-              <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant">Global Search</label>
-              <div className="relative">
-                 <MaterialIcon name="my_location" className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
-                 <input className="w-full rounded-xl border-none bg-surface-container py-3 pl-10 pr-3 text-sm focus:ring-2 focus:ring-primary font-medium" placeholder="Leaving from..." value={depart} onChange={(e) => setDepart(e.target.value)} />
-              </div>
-              <div className="relative">
-                 <MaterialIcon name="location_on" className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
-                 <input className="w-full rounded-xl border-none bg-surface-container py-3 pl-10 pr-3 text-sm focus:ring-2 focus:ring-primary font-medium" placeholder="Going to..." value={arrivee} onChange={(e) => setArrivee(e.target.value)} />
-              </div>
+
+        <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
+          <aside className="transport-panel h-fit lg:sticky lg:top-24">
+            <div className="border-b-2 border-outline bg-on-surface px-4 py-3 font-mono text-xs font-bold uppercase text-surface">
+              Recherche
+            </div>
+            <div className="grid gap-4 p-4">
+              <label className="grid gap-2">
+                <span className="field-label">Départ</span>
+                <input
+                  required
+                  placeholder="Paris"
+                  value={depart}
+                  onChange={(e) => setDepart(e.target.value)}
+                />
+              </label>
+              <label className="grid gap-2">
+                <span className="field-label">Destination</span>
+                <input
+                  required
+                  placeholder="Lyon"
+                  aria-invalid={sameRoute}
+                  value={arrivee}
+                  onChange={(e) => setArrivee(e.target.value)}
+                />
+                {sameRoute ? (
+                  <span className="font-mono text-[11px] font-bold uppercase text-error">
+                    Départ et destination identiques.
+                  </span>
+                ) : null}
+              </label>
               <div className="grid grid-cols-2 gap-3">
-                 <input type="date" className="w-full rounded-xl border-none bg-surface-container px-3 py-3 text-sm focus:ring-2 focus:ring-primary font-medium" value={date} onChange={(e) => setDate(e.target.value)} />
-                 <input type="number" min="1" className="w-full rounded-xl border-none bg-surface-container px-3 py-3 text-sm focus:ring-2 focus:ring-primary font-medium" placeholder="Seats" value={places} onChange={(e) => setPlaces(e.target.value)} />
+                <label className="grid gap-2">
+                  <span className="field-label">Date</span>
+                  <input
+                    type="date"
+                    min={today}
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                  />
+                </label>
+                <label className="grid gap-2">
+                  <span className="field-label">Places</span>
+                  <input
+                    type="number"
+                    min="1"
+                    max="8"
+                    value={places}
+                    onChange={(e) => setPlaces(e.target.value)}
+                  />
+                </label>
               </div>
-              <button onClick={updateSearch} className="w-full rounded-xl bg-primary px-4 py-3 font-bold text-black hover:bg-primary-dim transition-colors shadow-lg shadow-primary/20">
-                Update Search
+              <button
+                type="button"
+                onClick={updateSearch}
+                disabled={sameRoute}
+                className="app-button-primary"
+              >
+                Mettre à jour
               </button>
             </div>
 
-            {/* Local Filters */}
-            <div className="rounded-3xl bg-surface-container-low p-6 shadow-2xl border border-white/5 space-y-6">
-              <div>
-                <label className="mb-3 block text-xs font-bold uppercase tracking-widest text-on-surface-variant">Sort by</label>
-                <select className="w-full cursor-pointer rounded-xl border-none bg-surface-container px-4 py-3 font-medium text-sm focus:ring-2 focus:ring-primary appearance-none" value={sortBy} onChange={e => setSortBy(e.target.value)}>
+            <div className="border-y-2 border-outline bg-surface-container px-4 py-3 font-mono text-xs font-bold uppercase">
+              Filtres visibles
+            </div>
+            <div className="grid gap-4 p-4">
+              <label className="grid gap-2">
+                <span className="field-label">Tri</span>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as SortOption)}
+                >
                   <option>Earliest departure</option>
                   <option>Lowest price</option>
-                  <option>Shortest duration</option>
+                  <option>Most seats</option>
                 </select>
-              </div>
-              
-              <div>
-                <label className="mb-3 block text-xs font-bold uppercase tracking-widest text-on-surface-variant flex justify-between">
-                  <span>Max Price</span>
-                  <span className="text-primary">€{maxPrice}</span>
-                </label>
-                <input type="range" min="5" max="150" value={maxPrice} onChange={e => setMaxPrice(Number(e.target.value))} className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-surface-container accent-primary" />
-              </div>
-              
-              <div>
-                <label className="mb-3 block text-xs font-bold uppercase tracking-widest text-on-surface-variant">Departure time</label>
-                <div className="space-y-2 text-sm font-medium">
-                  {[
-                     { state: timeMorning, set: setTimeMorning, label: "Morning (06:00 - 12:00)" },
-                     { state: timeAfternoon, set: setTimeAfternoon, label: "Afternoon (12:00 - 18:00)" },
-                     { state: timeEvening, set: setTimeEvening, label: "Evening (18:00 - 06:00)" }
-                  ].map((time, i) => (
-                     <label key={i} className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-colors border ${time.state ? "bg-primary/5 border-primary/30" : "bg-surface-container border-transparent"}`}>
-                        <span>{time.label}</span>
-                        <input type="checkbox" checked={time.state} onChange={e => time.set(e.target.checked)} className="rounded border-outline-variant bg-surface text-primary focus:ring-primary focus:ring-offset-surface" />
-                     </label>
-                  ))}
-                </div>
-              </div>
+              </label>
 
-              <div>
-                <label className="mb-3 block text-xs font-bold uppercase tracking-widest text-on-surface-variant">Seats needed</label>
-                <div className="flex gap-2 text-sm">
-                  {["1", "2", "3+"].map((value) => (
-                    <button key={value} type="button" onClick={() => setMinSeats(value)} className={`flex-1 rounded-xl py-2 font-bold transition-colors border ${value === minSeats ? "bg-primary/10 border-primary text-primary" : "bg-surface-container border-transparent text-on-surface-variant hover:bg-surface-variant"}`}>
-                      {value}
-                    </button>
+              <label className="grid gap-2">
+                <span className="field-label">Prix max / {maxPrice}€</span>
+                <input
+                  type="range"
+                  min="5"
+                  max="150"
+                  value={maxPrice}
+                  onChange={(e) => setMaxPrice(Number(e.target.value))}
+                  className="accent-primary"
+                />
+              </label>
+
+              <fieldset className="grid gap-2">
+                <legend className="field-label">Départ</legend>
+                <div className="grid gap-2">
+                  {timeFilters.map((filter) => (
+                    <label
+                      key={filter.id}
+                      className="flex min-h-11 items-center justify-between border-2 border-outline px-3 font-mono text-xs font-bold uppercase transition-colors hover:bg-surface-container"
+                    >
+                      {filter.label}
+                      <input
+                        type="checkbox"
+                        checked={activeTimes.includes(filter.id)}
+                        onChange={(e) =>
+                          setActiveTimes((current) =>
+                            e.target.checked
+                              ? [...current, filter.id]
+                              : current.filter((item) => item !== filter.id),
+                          )
+                        }
+                        className="h-5 min-h-0 w-5 accent-primary"
+                      />
+                    </label>
                   ))}
                 </div>
-              </div>
+              </fieldset>
+
+              {showMoreFilters ? (
+                <button type="button" onClick={resetFilters} className="app-button-secondary">
+                  Réinitialiser
+                </button>
+              ) : null}
+
+              <button
+                type="button"
+                onClick={() => setShowMoreFilters((value) => !value)}
+                className="border-t-2 border-outline pt-3 text-left font-mono text-xs font-bold uppercase text-on-surface hover:text-primary"
+              >
+                {showMoreFilters ? "Masquer options" : "Afficher options"}
+              </button>
             </div>
           </aside>
-          
-          <section className="flex-1 w-full">
+
+          <section aria-live="polite" aria-busy={isLoading}>
             {isLoading ? (
-               <div className="flex flex-col justify-center items-center h-64 text-on-surface-variant">
-                  <MaterialIcon name="refresh" className="animate-spin text-5xl mb-4 text-primary" />
-                  <span className="font-headline font-bold text-xl">Scanning routes...</span>
-               </div>
+              <div className="grid gap-4">
+                {[0, 1, 2, 3].map((item) => (
+                  <div key={item} className="skeleton h-48 border-2 border-outline" />
+                ))}
+              </div>
             ) : filteredRides.length === 0 ? (
-               <div className="flex flex-col items-center justify-center py-20 px-6 bg-surface-container-lowest rounded-3xl border border-dashed border-outline-variant/30 text-center shadow-xl">
-                  <MaterialIcon name="search_off" className="text-7xl text-outline-variant mb-6" />
-                  <h3 className="text-3xl font-headline font-bold mb-3">No rides found</h3>
-                  <p className="text-on-surface-variant max-w-md mb-8 font-medium text-lg">We couldn't find any rides matching your current filters. Try adjusting the price range or departure time.</p>
-                  <button onClick={() => { setMaxPrice(150); setTimeMorning(true); setTimeAfternoon(true); setTimeEvening(true); setMinSeats("1"); }} className="px-6 py-3 bg-surface-container-high hover:bg-surface-variant rounded-xl font-bold transition-colors">
-                     Reset Filters
+              <div className="transport-panel route-map grid min-h-[420px] place-items-center p-6 text-center">
+                <div className="max-w-lg">
+                  <div className="mx-auto mb-6 grid h-28 w-28 place-items-center border-2 border-outline bg-surface">
+                    <div className="h-12 w-12 border-2 border-outline border-r-primary" />
+                  </div>
+                  <h2 className="font-headline text-4xl font-extrabold uppercase leading-none">
+                    Aucun départ sur cette ligne
+                  </h2>
+                  <p className="mt-4 font-mono text-sm font-bold uppercase text-on-surface-variant">
+                    Élargissez l’heure de départ ou remettez le prix maximum à 150€.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={resetFilters}
+                    className="app-button-primary mt-6"
+                  >
+                    Relancer avec filtres larges
                   </button>
-               </div>
+                </div>
+              </div>
             ) : (
-               <div ref={listRef} className="space-y-6">
-                 {filteredRides.map((trip, index) => (
-                   <article key={trip.id} className="group relative overflow-hidden rounded-3xl border border-white/5 bg-surface-container-lowest flex flex-col transition-all duration-300 hover:shadow-2xl hover:border-primary/50 md:flex-row">
-                     {index === 0 && sortBy === "Lowest price" && (
-                       <div className="absolute top-0 right-0 rounded-bl-2xl bg-secondary px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-white z-10">Best Value</div>
-                     )}
-                     <div className="flex flex-1 flex-col gap-6 p-8 md:flex-row">
-                       <div className="min-w-[120px] flex flex-col justify-between">
-                         <div>
-                           <div className="text-3xl font-headline font-bold text-on-surface">{new Date(trip.dateDepart).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</div>
-                           <div className="text-xs font-bold uppercase tracking-widest text-on-surface-variant mt-1">{Math.max(1, Math.round((trip.nbPlacesTotal * 2.5) / 2))}h 15m duration</div>
-                         </div>
-                         <div className="mt-4">
-                           <div className="text-3xl font-headline font-bold text-on-surface">{new Date(new Date(trip.dateDepart).getTime() + 2 * 60 * 60 * 1000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</div>
-                         </div>
-                       </div>
-                       
-                       <div className="hidden flex-col items-center py-2 md:flex px-2">
-                         <div className="h-4 w-4 rounded-full border-4 border-surface-container-lowest bg-primary z-10 shadow-sm" />
-                         <div className="w-0.5 flex-1 bg-gradient-to-b from-primary via-surface-variant to-secondary" />
-                         <div className="h-4 w-4 rounded-full border-4 border-surface-container-lowest bg-secondary z-10 shadow-sm" />
-                       </div>
-                       
-                       <div className="flex-1 space-y-8 flex flex-col justify-between">
-                         <div className="space-y-6">
-                           <div>
-                             <div className="text-xl font-bold text-on-surface">{trip.villeDepart}</div>
-                           </div>
-                           <div>
-                             <div className="text-xl font-bold text-on-surface">{trip.villeArrivee}</div>
-                           </div>
-                         </div>
-                         <div className="flex items-center gap-3 pt-4 border-t border-white/5">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-surface-container-high text-lg font-headline font-extrabold text-on-surface">
-                             {trip.conducteurNom?.slice(0, 1) ?? "D"}
-                           </div>
-                           <div>
-                             <div className="text-sm font-bold text-on-surface">{trip.conducteurNom ?? "Driver"}</div>
-                             <div className="flex items-center text-xs text-on-surface-variant font-medium mt-0.5">
-                               <MaterialIcon name="star" filled className="text-[14px] text-primary mr-0.5" /> 4.9 &bull; {trip.vehiculeDescription ?? "Standard Vehicle"}
-                             </div>
-                           </div>
-                         </div>
-                       </div>
-                       
-                       <div className="flex flex-row items-end justify-between border-t border-white/5 pt-6 md:flex-col md:justify-between md:border-l md:border-t-0 md:pl-8 md:pt-0">
-                         <div className="text-right">
-                           <div className="text-5xl font-headline font-extrabold tracking-tighter text-primary">€{trip.prix.toFixed(0)}</div>
-                           <div className={`mt-2 text-xs font-bold uppercase tracking-wider ${trip.nbPlacesDisponibles <= 1 ? "text-error" : "text-on-surface-variant"}`}>
-                             {trip.nbPlacesDisponibles} seat(s) left
-                           </div>
-                         </div>
-                         <Link to={`/ride-details/${trip.id}`} className="rounded-xl bg-surface-container px-6 py-3 text-sm font-bold text-on-surface transition-all group-hover:bg-primary group-hover:text-black group-hover:shadow-lg group-hover:shadow-primary/20">
-                           Book Ride
-                         </Link>
-                       </div>
-                     </div>
-                   </article>
-                 ))}
-               </div>
+              <div className="grid gap-4">
+                {filteredRides.map((trip, index) => (
+                  <TripCard key={trip.id} trip={trip} revealDelayMs={index * 50} />
+                ))}
+              </div>
             )}
           </section>
         </div>

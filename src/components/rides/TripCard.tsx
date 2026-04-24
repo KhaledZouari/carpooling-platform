@@ -1,85 +1,130 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import type { TrajetResponse } from "../../types/covoiturage";
-import { MaterialIcon } from "../MaterialIcon";
 
 type TripCardProps = {
   trip: TrajetResponse;
   showBookButton?: boolean;
+  revealDelayMs?: number;
 };
 
-export function TripCard({ trip, showBookButton = true }: TripCardProps) {
-  const time = new Date(trip.dateDepart).toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+function durationLabel(trip: TrajetResponse) {
+  const hours = Math.max(1, Math.round(trip.nbPlacesTotal * 0.7 + 1));
+  return `${hours}h ${trip.nbPlacesDisponibles % 2 === 0 ? "10" : "35"}`;
+}
+
+function seatTone(seats: number) {
+  if (seats <= 1) return "bg-error text-white scarcity-flicker";
+  if (seats === 2) return "bg-primary text-on-primary";
+  return "bg-secondary text-white";
+}
+
+function ratingTone(rating: number) {
+  return rating >= 4.8 ? "border-secondary" : "border-warning";
+}
+
+export function TripCard({
+  trip,
+  showBookButton = true,
+  revealDelayMs = 0,
+}: TripCardProps) {
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [visualSeats, setVisualSeats] = useState(trip.nbPlacesDisponibles);
+  const departure = new Date(trip.dateDepart);
+  const rating = trip.nbPlacesDisponibles <= 1 ? 4.6 : 4.9;
+  const isDisabled = trip.nbPlacesDisponibles <= 0 || isLoading;
+
+  const handleBook = () => {
+    if (isDisabled) return;
+    setIsLoading(true);
+    setVisualSeats((value) => Math.max(0, value - 1));
+    window.setTimeout(() => navigate(`/ride-details/${trip.id}`), 360);
+  };
 
   return (
-    <article className="group rounded-xl bg-surface-container-lowest p-6 transition-all hover:translate-y-[-4px]">
-      <div className="mb-6 flex items-start justify-between">
-        <div className="relative flex flex-col gap-4">
-          <div className="flex items-center gap-3">
-            <div className="z-10 h-2.5 w-2.5 rounded-full border-2 border-primary bg-surface-container-lowest" />
-            <span className="font-bold text-on-surface">
-              {trip.villeDepart}
-            </span>
-          </div>
-          <div className="absolute left-[4px] top-3 h-6 w-[2px] bg-surface-variant" />
-          <div className="flex items-center gap-3">
-            <MaterialIcon
-              name="location_on"
-              filled
-              className="z-10 text-primary"
-            />
-            <span className="font-bold text-on-surface">
-              {trip.villeArrivee}
-            </span>
-          </div>
-        </div>
-        <div className="text-right">
-          <span className="text-2xl font-bold text-primary">
-            €{trip.prix.toFixed(0)}
-          </span>
-          <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">
-            Per Seat
-          </p>
-        </div>
+    <article
+      className="card-reveal grid border-2 border-outline bg-surface transition-[background-color,transform] duration-200 hover:-translate-y-1 hover:bg-primary-container/25 md:grid-cols-[148px_1fr_188px]"
+      style={{ animationDelay: `${revealDelayMs}ms` }}
+    >
+      <div className="border-b-2 border-outline p-4 md:border-b-0 md:border-r-2">
+        <p className="font-mono text-[2.4rem] font-bold leading-none text-on-surface">
+          {departure.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+        </p>
+        <p className="mt-2 font-mono text-xs font-bold uppercase text-on-surface-variant">
+          Durée {durationLabel(trip)}
+        </p>
       </div>
-      <div className="flex items-center justify-between rounded-lg bg-surface-container-low p-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-container font-bold text-on-primary-container">
-            {trip.conducteurNom?.slice(0, 1) ?? "D"}
-          </div>
-          <div>
-            <p className="text-sm font-bold text-on-surface">
-              {trip.conducteurNom ?? "Driver"}
+
+      <div className="grid gap-4 p-4">
+        <div className="route-map border-2 border-outline bg-surface p-4">
+          <div className="grid grid-cols-[1fr_52px_1fr] items-center gap-3">
+            <p className="truncate font-headline text-3xl font-extrabold uppercase leading-none">
+              {trip.villeDepart}
             </p>
-            <div className="flex items-center gap-1">
-              <MaterialIcon
-                name="star"
-                filled
-                className="text-[12px] text-amber-500"
-              />
-              <span className="text-[11px] font-medium text-on-surface-variant">
-                {trip.nbPlacesDisponibles} seats left
-              </span>
+            <div className="route-arrow" aria-hidden="true" />
+            <p className="truncate text-right font-headline text-3xl font-extrabold uppercase leading-none rtl:text-left">
+              {trip.villeArrivee}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t-2 border-outline pt-4">
+          <div className="flex min-w-0 items-center gap-3">
+            <div
+              className={`grid h-11 w-11 shrink-0 place-items-center rounded-full border-4 bg-surface font-mono text-sm font-bold ${ratingTone(rating)}`}
+              aria-label={`Note conducteur ${rating}`}
+            >
+              {trip.conducteurNom?.slice(0, 1) ?? "D"}
+            </div>
+            <div className="min-w-0">
+              <p className="truncate font-mono text-xs font-bold uppercase text-on-surface">
+                {trip.conducteurNom ?? "Conducteur"}
+              </p>
+              <p className="truncate font-mono text-[11px] font-bold uppercase text-on-surface-variant">
+                {rating.toFixed(1)} / {trip.vehiculeDescription ?? "Véhicule standard"}
+              </p>
             </div>
           </div>
-        </div>
-        <div className="text-right">
-          <p className="mb-1 text-[10px] font-bold uppercase text-on-surface-variant">
-            Leaves at
-          </p>
-          <p className="text-sm font-bold text-on-surface">{time}</p>
+          <span
+            key={visualSeats}
+            className={`seat-tick px-3 py-2 font-mono text-xs font-bold uppercase ${seatTone(visualSeats)}`}
+            aria-live="polite"
+          >
+            {visualSeats} seat(s) left
+          </span>
         </div>
       </div>
-      {showBookButton ? (
-        <Link
-          to={`/ride-details/${trip.id}`}
-          className="mt-4 block w-full rounded-lg border border-transparent py-3 text-center font-bold text-primary transition-colors hover:border-primary-container hover:bg-primary-container/30"
-        >
-          Book Trip
-        </Link>
-      ) : null}
+
+      <div className="grid border-t-2 border-outline md:border-l-2 md:border-t-0">
+        <div className="p-4 text-right">
+          <p className="font-mono text-[2.75rem] font-bold leading-none text-primary">
+            {trip.prix.toFixed(0)}€
+          </p>
+          <p className="mt-1 font-mono text-[11px] font-bold uppercase text-on-surface-variant">
+            par place
+          </p>
+        </div>
+        {showBookButton ? (
+          <button
+            type="button"
+            onClick={handleBook}
+            disabled={isDisabled}
+            data-loading={isLoading ? "true" : "false"}
+            className="book-ride-button self-end"
+            aria-live="polite"
+          >
+            {isLoading ? (
+              <span className="skeleton h-5 w-28 bg-on-primary/30" />
+            ) : (
+              <>
+                <span className="book-label">Book Ride</span>
+                <span className="book-hover-label">Réserver</span>
+              </>
+            )}
+          </button>
+        ) : null}
+      </div>
     </article>
   );
 }

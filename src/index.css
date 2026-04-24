@@ -1,42 +1,261 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Syne:wght@400;500;600;700;800&display=swap');
-@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@500;600;700;800&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  :root {
+    color-scheme: light;
+    --motion-fast: 160ms;
+    --motion-medium: 280ms;
+    --motion-page: 520ms;
+  }
+
   * {
     @apply box-border;
   }
 
-  body {
-    @apply m-0 bg-surface font-sans text-on-surface antialiased selection:bg-primary selection:text-black;
+  html {
+    min-width: 320px;
+    background: #ffffff;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-headline tracking-tight;
+  body {
+    @apply m-0 bg-surface font-sans text-on-surface antialiased selection:bg-primary selection:text-on-primary;
+    font-size: 17px;
+    letter-spacing: 0;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p {
+    margin: 0;
   }
 
   a {
-    @apply no-underline;
+    @apply text-inherit no-underline;
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+
+  button,
+  [role="button"],
+  a[href],
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+  }
+
+  input,
+  select,
+  textarea {
+    @apply border-2 border-outline bg-surface px-4 py-3 text-on-surface transition-[border-color,background-color,box-shadow] duration-200 placeholder:text-on-surface-variant;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    @apply border-primary bg-primary-container/40;
+  }
+
+  input:not(:placeholder-shown),
+  textarea:not(:placeholder-shown) {
+    @apply border-outline bg-surface;
+  }
+
+  input:invalid:not(:placeholder-shown),
+  textarea:invalid:not(:placeholder-shown) {
+    @apply border-error bg-red-50;
+  }
+
+  input:valid:not(:placeholder-shown),
+  textarea:valid:not(:placeholder-shown) {
+    @apply border-secondary bg-secondary-container/50;
+  }
+
+  input[type="date"]:invalid {
+    @apply border-error bg-red-50;
   }
 }
 
-.material-symbols-outlined {
-  font-variation-settings:
-    "FILL" 0,
-    "wght" 400,
-    "GRAD" 0,
-    "opsz" 24;
-  line-height: 1;
+@layer components {
+  .app-card {
+    @apply border-2 border-outline bg-surface shadow-none;
+  }
+
+  .app-button-primary {
+    @apply inline-flex min-h-11 items-center justify-center border-2 border-outline bg-primary px-6 py-3 font-mono text-sm font-bold uppercase text-on-primary transition-[background-color,transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:bg-primary-dim active:translate-y-0 disabled:cursor-not-allowed disabled:border-outline-variant disabled:bg-surface-container disabled:text-on-surface-variant;
+  }
+
+  .app-button-secondary {
+    @apply inline-flex min-h-11 items-center justify-center border-2 border-outline bg-surface px-6 py-3 font-mono text-sm font-bold uppercase text-on-surface transition-[background-color,transform] duration-200 hover:-translate-y-0.5 hover:bg-surface-container active:translate-y-0 disabled:cursor-not-allowed disabled:border-outline-variant disabled:text-on-surface-variant;
+  }
+
+  .field-label {
+    @apply block font-mono text-[11px] font-bold uppercase tracking-normal text-on-surface-variant;
+  }
+
+  .transport-panel {
+    @apply border-2 border-outline bg-surface;
+  }
+
+  .transport-rule {
+    background-image:
+      linear-gradient(90deg, rgba(5, 5, 5, 0.08) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(5, 5, 5, 0.08) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .route-map {
+    background:
+      radial-gradient(circle at 14% 22%, rgba(255, 90, 0, 0.18) 0 7px, transparent 8px),
+      radial-gradient(circle at 78% 70%, rgba(255, 90, 0, 0.18) 0 7px, transparent 8px),
+      linear-gradient(135deg, transparent 0 48%, rgba(5, 5, 5, 0.18) 49% 51%, transparent 52%),
+      linear-gradient(22deg, transparent 0 46%, rgba(5, 5, 5, 0.12) 47% 49%, transparent 50%),
+      linear-gradient(90deg, rgba(5, 5, 5, 0.08) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(5, 5, 5, 0.08) 1px, transparent 1px);
+    background-size: auto, auto, auto, auto, 32px 32px, 32px 32px;
+  }
+
+  .skeleton {
+    @apply relative overflow-hidden bg-surface-container;
+  }
+
+  .skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.72), transparent);
+    animation: skeleton-pass 1.2s ease-out infinite;
+  }
+
+  .seat-tick {
+    animation: seat-tick 220ms ease-out;
+  }
+
+  .card-reveal {
+    animation: card-reveal var(--motion-page) ease-out both;
+  }
+
+  .scarcity-flicker {
+    animation: scarcity-flicker 900ms ease-out infinite;
+  }
+
+  .book-ride-button {
+    @apply relative flex w-full min-h-14 items-center justify-center overflow-hidden border-2 border-outline bg-primary px-6 py-4 font-mono text-sm font-bold uppercase text-on-primary transition-[background-color,transform] duration-200 hover:bg-primary-dim active:translate-y-0.5 disabled:cursor-not-allowed disabled:border-outline-variant disabled:bg-surface-container disabled:text-on-surface-variant;
+  }
+
+  .book-ride-button .book-label {
+    @apply transition-transform duration-200 ease-out;
+  }
+
+  .book-ride-button .book-hover-label {
+    @apply absolute translate-y-8 transition-transform duration-200 ease-out;
+  }
+
+  .book-ride-button:hover .book-label {
+    @apply -translate-y-8;
+  }
+
+  .book-ride-button:hover .book-hover-label {
+    @apply translate-y-0;
+  }
+
+  .book-ride-button[data-loading="true"] .book-label,
+  .book-ride-button[data-loading="true"] .book-hover-label {
+    @apply hidden;
+  }
+
+  .route-arrow {
+    position: relative;
+    height: 2px;
+    background: #050505;
+  }
+
+  .route-arrow::after {
+    content: "";
+    position: absolute;
+    inset-block-start: -5px;
+    inset-inline-end: 0;
+    width: 12px;
+    height: 12px;
+    border-block-start: 2px solid #050505;
+    border-inline-end: 2px solid #050505;
+    transform: rotate(45deg);
+  }
+
+  [dir="rtl"] .route-arrow::after {
+    inset-inline-end: auto;
+    inset-inline-start: 0;
+    transform: rotate(-135deg);
+  }
 }
 
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
+@keyframes skeleton-pass {
+  to {
+    transform: translateX(100%);
+  }
 }
 
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+@keyframes card-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes seat-tick {
+  0% {
+    transform: translateY(-6px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scarcity-flicker {
+  0%,
+  100% {
+    background-color: #b00020;
+  }
+  50% {
+    background-color: #ff5a00;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 1ms !important;
+  }
 }

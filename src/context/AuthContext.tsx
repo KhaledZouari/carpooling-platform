@@ -1,7 +1,6 @@
 import {
   createContext,
   useContext,
-  useEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -19,19 +18,19 @@ type AuthState = {
 const AuthContext = createContext<AuthState | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<UserResponse | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-
-  useEffect(() => {
+  const [user, setUser] = useState<UserResponse | null>(() => {
     const storedUser = localStorage.getItem("user");
-    const storedToken = localStorage.getItem("token");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser) as UserResponse);
+    if (!storedUser) return null;
+    try {
+      return JSON.parse(storedUser) as UserResponse;
+    } catch {
+      localStorage.removeItem("user");
+      return null;
     }
-    if (storedToken) {
-      setToken(storedToken);
-    }
-  }, []);
+  });
+  const [token, setToken] = useState<string | null>(() =>
+    localStorage.getItem("token"),
+  );
 
   const setSession = (payload: AuthResponse) => {
     setUser(payload.user);
@@ -61,6 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {

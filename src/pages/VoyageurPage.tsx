@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { authApi, reservationApi, trajetApi, avisApi } from "../api/covoiturage";
@@ -91,7 +91,7 @@ export function VoyageurPage() {
             </p>
           </div>
           
-          <div className="flex bg-surface-container-low p-1.5 rounded-2xl border border-white/5 shadow-inner self-start md:self-auto">
+          <div className="flex bg-surface-container-low p-1.5 rounded-2xl border border-outline-variant/60 shadow-inner self-start md:self-auto">
             {[
               { id: "bookings", label: "My Bookings", icon: "book_online" },
               { id: "discover", label: "Discover", icon: "explore" },
@@ -99,10 +99,12 @@ export function VoyageurPage() {
             ].map(tab => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() =>
+                  setActiveTab(tab.id as "bookings" | "discover" | "profile")
+                }
                 className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all duration-300 ${
                   activeTab === tab.id 
-                    ? "bg-primary text-black shadow-lg shadow-primary/20 scale-105" 
+                    ? "bg-primary text-on-primary shadow-lg shadow-primary/20 scale-105" 
                     : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container"
                 }`}
               >
@@ -132,7 +134,7 @@ export function VoyageurPage() {
                   const isDone = res.statut === "CONFIRMEE"; // Mocking completion
 
                   return (
-                    <article key={res.id} className="group relative overflow-hidden rounded-3xl bg-surface-container-lowest p-6 border border-white/5 hover:border-primary/50 transition-colors shadow-2xl shadow-black/5">
+                    <article key={res.id} className="group relative overflow-hidden rounded-2xl bg-surface-container-lowest p-6 border border-outline-variant/60 hover:border-primary/50 transition-colors shadow-[0_12px_32px_rgba(31,41,51,0.08)]">
                       <div className="absolute top-0 right-0 p-4">
                         <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${
                           res.statut === "CONFIRMEE" ? "bg-primary/20 text-primary" :
@@ -160,7 +162,7 @@ export function VoyageurPage() {
                           </button>
                         )}
                         {isDone && (
-                          <button onClick={() => setReviewModal({ isOpen: true, trajetId: res.trajetId ?? null })} className="flex-1 py-2.5 rounded-xl bg-primary text-black font-bold text-sm hover:bg-primary-dim transition-colors shadow-lg shadow-primary/20">
+                          <button onClick={() => setReviewModal({ isOpen: true, trajetId: res.trajetId ?? null })} className="flex-1 py-2.5 rounded-xl bg-primary text-on-primary font-bold text-sm hover:bg-primary-dim transition-colors shadow-lg shadow-primary/20">
                             Leave Review
                           </button>
                         )}
@@ -182,7 +184,7 @@ export function VoyageurPage() {
               </div>
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {trips.slice(0, 3).map((trip) => (
-                  <Link key={trip.id} to={`/ride-details/${trip.id}`} className="group block rounded-3xl bg-surface-container-lowest border border-white/5 hover:border-primary/50 transition-all hover:-translate-y-1 shadow-2xl shadow-black/5 overflow-hidden">
+                  <Link key={trip.id} to={`/ride-details/${trip.id}`} className="group block rounded-2xl bg-surface-container-lowest border border-outline-variant/60 hover:border-primary/50 transition-all hover:-translate-y-1 shadow-[0_12px_32px_rgba(31,41,51,0.08)] overflow-hidden">
                     <div className="h-32 bg-surface-container-high relative overflow-hidden">
                        <div className="absolute inset-0 bg-gradient-to-tr from-surface-container-lowest to-transparent opacity-50 z-10" />
                        <MaterialIcon name="map" className="absolute -bottom-4 -right-4 text-8xl text-on-surface/5 transform group-hover:rotate-12 transition-transform" />
@@ -211,8 +213,8 @@ export function VoyageurPage() {
           )}
 
           {activeTab === "profile" && (
-            <div className="max-w-2xl mx-auto rounded-3xl bg-surface-container-lowest p-8 border border-white/5 shadow-2xl shadow-black/5 flex flex-col md:flex-row gap-8 items-center md:items-start">
-               <div className="h-32 w-32 rounded-full bg-primary flex items-center justify-center text-5xl font-headline font-extrabold text-black shrink-0">
+            <div className="max-w-2xl mx-auto rounded-2xl bg-surface-container-lowest p-8 border border-outline-variant/60 shadow-[0_12px_32px_rgba(31,41,51,0.08)] flex flex-col md:flex-row gap-8 items-center md:items-start">
+               <div className="h-32 w-32 rounded-full bg-primary flex items-center justify-center text-5xl font-headline font-extrabold text-on-primary shrink-0">
                   {profile?.prenom?.[0] ?? "U"}{profile?.nom?.[0] ?? ""}
                </div>
                <div className="flex-1 text-center md:text-left">
@@ -243,7 +245,7 @@ export function VoyageurPage() {
       {/* Review Modal powered by GSAP in IHM components isn't built for full custom forms, so we inline a GSAP modal here or just use CSS. We will use a simple CSS one for now, or build a custom one if needed. */}
       {reviewModal.isOpen && (
          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-300">
-            <div className="w-full max-w-md rounded-3xl bg-surface-container-lowest p-8 shadow-2xl border border-outline-variant/30 animate-in zoom-in-95 duration-300">
+            <div className="w-full max-w-md rounded-2xl bg-surface-container-lowest p-8 shadow-[0_12px_32px_rgba(31,41,51,0.08)] border border-outline-variant/30 animate-in zoom-in-95 duration-300">
                <h3 className="text-2xl font-headline font-bold text-on-surface mb-2">Leave a Review</h3>
                <p className="text-sm text-on-surface-variant mb-8 font-medium">How was your trip? Leave a rating and a comment for the driver.</p>
                
@@ -284,7 +286,7 @@ export function VoyageurPage() {
                   <button
                      onClick={submitReview}
                      disabled={!reviewForm.commentaire}
-                     className="rounded-xl bg-primary px-6 py-3 font-bold text-black hover:bg-primary-dim transition-colors shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                     className="rounded-xl bg-primary px-6 py-3 font-bold text-on-primary hover:bg-primary-dim transition-colors shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                      Submit Review
                   </button>

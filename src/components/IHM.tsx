@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+﻿import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { MaterialIcon } from "./MaterialIcon";
 
@@ -48,7 +48,7 @@ export function ConfirmModal({
     >
       <div
         ref={modalRef}
-        className="w-full max-w-md rounded-3xl bg-surface-container-lowest p-8 shadow-2xl border border-outline-variant/30"
+        className="w-full max-w-md rounded-3xl bg-surface-container-lowest p-8 shadow-[0_12px_32px_rgba(31,41,51,0.08)] border border-outline-variant/30"
       >
         <h3 className="text-2xl font-headline font-bold text-on-surface mb-2">{title}</h3>
         <p className="text-on-surface-variant text-sm leading-relaxed">{message}</p>
@@ -63,7 +63,7 @@ export function ConfirmModal({
           <button
             type="button"
             onClick={onConfirm}
-            className={`rounded-xl px-5 py-2.5 text-sm font-bold text-black transition-all hover:scale-105 active:scale-95 ${
+            className={`rounded-xl px-5 py-2.5 text-sm font-bold text-on-primary transition-all hover:scale-105 active:scale-95 ${
               danger ? "bg-error text-white hover:bg-error/90" : "bg-primary hover:bg-primary-dim"
             }`}
           >
@@ -108,7 +108,7 @@ export function Toast({
 
   const bgClass =
     type === "success"
-      ? "bg-primary text-black"
+      ? "bg-primary text-on-primary"
       : type === "error"
         ? "bg-error text-white"
         : "bg-surface-container-high text-on-surface";
@@ -123,7 +123,7 @@ export function Toast({
   return (
     <div
       ref={toastRef}
-      className={`fixed bottom-8 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-full px-6 py-3 shadow-2xl border border-white/10 ${bgClass}`}
+      className={`fixed bottom-8 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-full px-6 py-3 shadow-[0_12px_32px_rgba(31,41,51,0.08)] border border-outline-variant/70 ${bgClass}`}
     >
       <MaterialIcon name={iconName} className="text-xl" />
       <span className="font-semibold text-sm">{message}</span>

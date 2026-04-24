@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+﻿import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { PageShell } from "../components/layout/PageShell";
@@ -8,6 +8,14 @@ import { useAuth } from "../context/AuthContext";
 import type { AdminStatsResponse, UserResponse, TrajetResponse } from "../types/covoiturage";
 import { Toast, ConfirmModal } from "../components/IHM";
 
+type AdminTab = "overview" | "users" | "trips";
+
+const adminTabs: { id: AdminTab; label: string; icon: string }[] = [
+  { id: "overview", label: "Overview", icon: "dashboard" },
+  { id: "users", label: "Manage Users", icon: "group" },
+  { id: "trips", label: "System Trips", icon: "route" },
+];
+
 export function AdminPage() {
   const { user } = useAuth();
   const isAdmin = user?.role === "ADMIN";
@@ -16,7 +24,7 @@ export function AdminPage() {
   const [trajets, setTrajets] = useState<TrajetResponse[]>([]);
 
   // Tabs
-  const [activeTab, setActiveTab] = useState<"overview" | "users" | "trips">("overview");
+  const [activeTab, setActiveTab] = useState<AdminTab>("overview");
   const contentRef = useRef<HTMLDivElement>(null);
 
   // IHM States
@@ -89,11 +97,11 @@ export function AdminPage() {
     return (
       <PageShell>
         <main className="mx-auto flex w-full max-w-7xl items-center justify-center flex-1 px-6 pb-24 pt-32">
-          <div className="text-center bg-surface-container-lowest p-12 rounded-3xl border border-white/5 shadow-2xl max-w-md">
+          <div className="text-center bg-surface-container-lowest p-12 rounded-3xl border border-outline-variant/60 shadow-[0_12px_32px_rgba(31,41,51,0.08)] max-w-md">
             <MaterialIcon name="admin_panel_settings" className="text-error text-6xl mb-4" />
             <h2 className="text-3xl font-headline font-bold mb-2">Admin Access Required</h2>
             <p className="text-on-surface-variant font-medium mb-8">This area is restricted to system administrators.</p>
-            <Link to="/" className="inline-flex rounded-xl bg-primary px-6 py-3 font-bold text-black shadow-lg shadow-primary/20 hover:scale-105 transition-transform">
+            <Link to="/" className="inline-flex rounded-xl bg-primary px-6 py-3 font-bold text-on-primary shadow-lg shadow-primary/20 hover:scale-105 transition-transform">
               Return Home
             </Link>
           </div>
@@ -116,15 +124,11 @@ export function AdminPage() {
             </p>
           </div>
           
-          <div className="flex bg-surface-container-low p-1.5 rounded-2xl border border-white/5 shadow-inner self-start md:self-auto overflow-x-auto no-scrollbar">
-            {[
-              { id: "overview", label: "Overview", icon: "dashboard" },
-              { id: "users", label: "Manage Users", icon: "group" },
-              { id: "trips", label: "System Trips", icon: "route" }
-            ].map(tab => (
+          <div className="flex bg-surface-container-low p-1.5 rounded-2xl border border-outline-variant/60 shadow-inner self-start md:self-auto overflow-x-auto no-scrollbar">
+            {adminTabs.map(tab => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all duration-300 whitespace-nowrap ${
                   activeTab === tab.id 
                     ? "bg-secondary text-white shadow-lg shadow-secondary/20 scale-105" 
@@ -142,19 +146,19 @@ export function AdminPage() {
         <div ref={contentRef} className="flex-1 w-full">
           {activeTab === "overview" && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-               <div className="rounded-[2rem] bg-surface-container-lowest p-8 border border-white/5 shadow-2xl relative overflow-hidden group">
+               <div className="rounded-2xl bg-surface-container-lowest p-8 border border-outline-variant/60 shadow-[0_12px_32px_rgba(31,41,51,0.08)] relative overflow-hidden group">
                   <MaterialIcon name="group" className="absolute -bottom-6 -right-6 text-9xl text-primary/5 group-hover:scale-110 transition-transform duration-500" />
                   <div className="text-sm font-bold uppercase tracking-widest text-on-surface-variant mb-2">Total Users</div>
                   <div className="text-6xl font-headline font-extrabold text-on-surface">{stats?.nbUsers ?? 0}</div>
                   <div className="mt-4 text-sm font-semibold text-primary flex items-center gap-1"><MaterialIcon name="trending_up" className="text-[16px]" /> Active platform</div>
                </div>
-               <div className="rounded-[2rem] bg-surface-container-lowest p-8 border border-white/5 shadow-2xl relative overflow-hidden group">
+               <div className="rounded-2xl bg-surface-container-lowest p-8 border border-outline-variant/60 shadow-[0_12px_32px_rgba(31,41,51,0.08)] relative overflow-hidden group">
                   <MaterialIcon name="commute" className="absolute -bottom-6 -right-6 text-9xl text-secondary/5 group-hover:scale-110 transition-transform duration-500" />
                   <div className="text-sm font-bold uppercase tracking-widest text-on-surface-variant mb-2">Total Trips</div>
                   <div className="text-6xl font-headline font-extrabold text-on-surface">{stats?.nbTrajets ?? 0}</div>
                   <div className="mt-4 text-sm font-semibold text-secondary flex items-center gap-1"><MaterialIcon name="show_chart" className="text-[16px]" /> Published overall</div>
                </div>
-               <div className="rounded-[2rem] bg-surface-container-lowest p-8 border border-white/5 shadow-2xl relative overflow-hidden group">
+               <div className="rounded-2xl bg-surface-container-lowest p-8 border border-outline-variant/60 shadow-[0_12px_32px_rgba(31,41,51,0.08)] relative overflow-hidden group">
                   <MaterialIcon name="confirmation_number" className="absolute -bottom-6 -right-6 text-9xl text-primary/5 group-hover:scale-110 transition-transform duration-500" />
                   <div className="text-sm font-bold uppercase tracking-widest text-on-surface-variant mb-2">Reservations</div>
                   <div className="text-6xl font-headline font-extrabold text-on-surface">{stats?.nbReservations ?? 0}</div>
@@ -164,10 +168,10 @@ export function AdminPage() {
           )}
 
           {activeTab === "users" && (
-            <div className="rounded-[2rem] bg-surface-container-lowest p-8 border border-white/5 shadow-2xl overflow-x-auto">
+            <div className="rounded-2xl bg-surface-container-lowest p-8 border border-outline-variant/60 shadow-[0_12px_32px_rgba(31,41,51,0.08)] overflow-x-auto">
                <table className="w-full text-left border-collapse">
                   <thead>
-                     <tr className="border-b border-white/10 text-xs font-bold uppercase tracking-widest text-on-surface-variant">
+                     <tr className="border-b border-outline-variant/70 text-xs font-bold uppercase tracking-widest text-on-surface-variant">
                         <th className="pb-4 pr-4">ID</th>
                         <th className="pb-4 px-4">Name</th>
                         <th className="pb-4 px-4">Email</th>
@@ -178,7 +182,7 @@ export function AdminPage() {
                   </thead>
                   <tbody>
                      {users.map(u => (
-                        <tr key={u.id} className="border-b border-white/5 hover:bg-surface-container-low transition-colors group">
+                        <tr key={u.id} className="border-b border-outline-variant/60 hover:bg-surface-container-low transition-colors group">
                            <td className="py-4 pr-4 font-bold text-on-surface-variant">#{u.id}</td>
                            <td className="py-4 px-4 font-bold text-on-surface">{u.prenom} {u.nom}</td>
                            <td className="py-4 px-4 font-medium text-on-surface-variant">{u.email}</td>
@@ -195,7 +199,7 @@ export function AdminPage() {
                               </span>
                            </td>
                            <td className="py-4 pl-4 text-right">
-                              <button onClick={() => toggleUserStatus(u.id, u.actif)} className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${u.actif ? "bg-surface-container hover:bg-error/20 hover:text-error" : "bg-primary text-black hover:bg-primary-dim"}`}>
+                              <button onClick={() => toggleUserStatus(u.id, u.actif)} className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${u.actif ? "bg-surface-container hover:bg-error/20 hover:text-error" : "bg-primary text-on-primary hover:bg-primary-dim"}`}>
                                  {u.actif ? "Deactivate" : "Activate"}
                               </button>
                            </td>
@@ -209,7 +213,7 @@ export function AdminPage() {
           {activeTab === "trips" && (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                {trajets.map(trip => (
-                  <article key={trip.id} className="rounded-[2rem] bg-surface-container-lowest p-6 border border-white/5 shadow-xl">
+                  <article key={trip.id} className="rounded-2xl bg-surface-container-lowest p-6 border border-outline-variant/60 shadow-[0_8px_24px_rgba(31,41,51,0.06)]">
                      <div className="flex justify-between items-start mb-4">
                         <div>
                            <div className="text-lg font-headline font-bold text-on-surface">{trip.villeDepart} &rarr; {trip.villeArrivee}</div>

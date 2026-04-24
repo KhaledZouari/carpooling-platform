@@ -1,245 +1,339 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { PageShell } from "../components/layout/PageShell";
-import { MaterialIcon } from "../components/MaterialIcon";
+import { TripCard } from "../components/rides/TripCard";
+import { TripSearchBar } from "../components/rides/TripSearchBar";
 import { demoTrajets } from "../data/demo";
 import { trajetApi } from "../api/covoiturage";
 import type { TrajetResponse } from "../types/covoiturage";
 
-export function HomePage() {
-  const navigate = useNavigate();
-  const [recentTrips, setRecentTrips] = useState<TrajetResponse[]>([]);
-  const heroRef = useRef<HTMLDivElement>(null);
-  const cardsRef = useRef<HTMLDivElement>(null);
+gsap.registerPlugin(ScrollTrigger);
 
-  // Search state
-  const [depart, setDepart] = useState("");
-  const [arrivee, setArrivee] = useState("");
-  const [date, setDate] = useState("");
-  const [places, setPlaces] = useState("1");
+const metrics = [
+  { value: "08:30", label: "Premier départ affiché" },
+  { value: "4.8+", label: "Conducteurs suivis" },
+  { value: "44px", label: "Cibles tactiles min." },
+];
+
+function HeroCarpoolSignal() {
+  const figureRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const root = figureRef.current;
+    if (!root) return;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) return;
+
+    const ctx = gsap.context(() => {
+      gsap.set(".hero-route-line", {
+        strokeDasharray: 620,
+        strokeDashoffset: 620,
+      });
+
+      gsap
+        .timeline({
+          defaults: { ease: "power2.out" },
+          scrollTrigger: {
+            trigger: root,
+            start: "top 78%",
+            once: true,
+          },
+        })
+        .fromTo(root, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.42 })
+        .to(".hero-route-line", { strokeDashoffset: 0, duration: 0.9 }, "-=0.1")
+        .fromTo(
+          ".hero-carpool-scroll",
+          { opacity: 0, x: -20 },
+          { opacity: 1, x: 0, duration: 0.42 },
+          "-=0.58",
+        )
+        .fromTo(
+          ".hero-seat",
+          { opacity: 0, scale: 0.72, transformOrigin: "center" },
+          { opacity: 1, scale: 1, duration: 0.18, stagger: 0.05 },
+          "-=0.2",
+        )
+        .fromTo(
+          ".hero-badge",
+          { opacity: 0, y: -8 },
+          { opacity: 1, y: 0, duration: 0.2, stagger: 0.05 },
+          "-=0.1",
+        );
+
+      gsap.to(".hero-carpool-motion", {
+        x: 7,
+        y: -2,
+        duration: 0.9,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+      });
+
+      gsap.to(".hero-wheel-mark", {
+        rotate: 360,
+        transformOrigin: "center",
+        duration: 0.7,
+        repeat: -1,
+        ease: "none",
+      });
+
+      gsap.to(".hero-carpool-scroll", {
+        x: 18,
+        ease: "none",
+        scrollTrigger: {
+          trigger: root,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 0.45,
+        },
+      });
+
+      gsap.to(".hero-route-line", {
+        strokeWidth: 11,
+        ease: "none",
+        scrollTrigger: {
+          trigger: root,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 0.45,
+        },
+      });
+    }, root);
+
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <figure ref={figureRef} className="transport-panel bg-surface p-3">
+      <svg
+        viewBox="0 0 420 260"
+        role="img"
+        aria-labelledby="hero-carpool-title hero-carpool-desc"
+        className="h-auto w-full"
+      >
+        <title id="hero-carpool-title">Illustration de covoiturage</title>
+        <desc id="hero-carpool-desc">
+          Diagramme noir et blanc d'une voiture avec quatre places partagées
+          reliées par une ligne de trajet orange.
+        </desc>
+        <rect x="1" y="1" width="418" height="258" fill="#fff" stroke="#050505" strokeWidth="2" />
+        <path d="M26 52H394M26 104H394M26 156H394M26 208H394" stroke="#d6d6ce" strokeWidth="2" />
+        <path d="M76 24V236M154 24V236M232 24V236M310 24V236" stroke="#d6d6ce" strokeWidth="2" />
+        <path
+          className="hero-route-line"
+          d="M58 178C102 120 142 118 188 154S280 202 360 82"
+          fill="none"
+          stroke="#ff5a00"
+          strokeWidth="8"
+          strokeLinecap="square"
+        />
+        <g className="hero-carpool-scroll">
+          <g className="hero-carpool-motion">
+            <g className="hero-carpool-car">
+              <path
+                d="M98 122h202l34 42v40H64v-40l34-42Z"
+                fill="#fff"
+                stroke="#050505"
+                strokeWidth="6"
+                strokeLinejoin="miter"
+              />
+              <path d="M128 96h142l30 26H98l30-26Z" fill="#050505" />
+              <path d="M134 108h44M204 108h44" stroke="#fff" strokeWidth="12" />
+              <g className="hero-wheel-mark">
+                <circle cx="116" cy="204" r="24" fill="#fff" stroke="#050505" strokeWidth="6" />
+                <path d="M116 180v48M92 204h48" stroke="#050505" strokeWidth="4" />
+                <circle cx="116" cy="204" r="7" fill="#050505" />
+              </g>
+              <g className="hero-wheel-mark">
+                <circle cx="282" cy="204" r="24" fill="#fff" stroke="#050505" strokeWidth="6" />
+                <path d="M282 180v48M258 204h48" stroke="#050505" strokeWidth="4" />
+                <circle cx="282" cy="204" r="7" fill="#050505" />
+              </g>
+            </g>
+            {[122, 174, 226, 278].map((x, index) => (
+              <g key={x} className="hero-seat">
+                <circle
+                  cx={x}
+                  cy="152"
+                  r="15"
+                  fill={index === 0 ? "#ff5a00" : "#fff"}
+                  stroke="#050505"
+                  strokeWidth="5"
+                />
+                <path d={`M${x - 22} 184c5-18 39-18 44 0`} fill="none" stroke="#050505" strokeWidth="5" />
+              </g>
+            ))}
+          </g>
+        </g>
+        <rect className="hero-badge" x="282" y="36" width="86" height="42" fill="#050505" />
+        <text
+          className="hero-badge"
+          x="325"
+          y="63"
+          textAnchor="middle"
+          fill="#fff"
+          fontFamily="IBM Plex Mono, monospace"
+          fontSize="18"
+          fontWeight="700"
+        >
+          4 PLACES
+        </text>
+        <rect className="hero-badge" x="40" y="36" width="88" height="42" fill="#ff5a00" stroke="#050505" strokeWidth="4" />
+        <text
+          className="hero-badge"
+          x="84"
+          y="64"
+          textAnchor="middle"
+          fill="#000"
+          fontFamily="IBM Plex Mono, monospace"
+          fontSize="20"
+          fontWeight="700"
+        >
+          08:30
+        </text>
+      </svg>
+      <figcaption className="border-x-2 border-b-2 border-outline bg-on-surface px-3 py-2 font-mono text-[11px] font-bold uppercase text-surface">
+        Ligne partagée / sièges disponibles / départ lisible
+      </figcaption>
+    </figure>
+  );
+}
+
+export function HomePage() {
+  const [recentTrips, setRecentTrips] = useState<TrajetResponse[]>([]);
+  const homeRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     trajetApi
       .search()
-      .then((data) => setRecentTrips(data.slice(0, 3)))
+      .then((data) =>
+        setRecentTrips(
+          [...data].sort(
+            (a, b) =>
+              new Date(a.dateDepart).getTime() - new Date(b.dateDepart).getTime(),
+          ).slice(0, 3),
+        ),
+      )
       .catch(() => setRecentTrips(demoTrajets.slice(0, 3)));
   }, []);
 
   useEffect(() => {
-    const tweens: gsap.core.Tween[] = [];
+    const root = homeRef.current;
+    if (!root) return;
 
-    if (heroRef.current) {
-      const heroItems = Array.from(heroRef.current.children);
-      if (heroItems.length > 0) {
-        tweens.push(
-          gsap.fromTo(
-            heroItems,
-            { opacity: 0, y: 30 },
-            {
-              opacity: 1,
-              y: 0,
-              stagger: 0.1,
-              duration: 0.8,
-              ease: "power3.out",
-            },
-          ),
-        );
-      }
-    }
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) return;
 
-    if (cardsRef.current) {
-      const cardItems = Array.from(cardsRef.current.children);
-      if (cardItems.length > 0) {
-        tweens.push(
-          gsap.fromTo(
-            cardItems,
-            { opacity: 0, y: 30 },
-            {
-              opacity: 1,
-              y: 0,
-              stagger: 0.1,
-              duration: 0.6,
-              ease: "power2.out",
-              delay: 0.4,
-            },
-          ),
-        );
-      }
-    }
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        ".hero-scroll-reveal",
+        { opacity: 0, y: 18 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.38,
+          stagger: 0.06,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: ".hero-scroll-reveal",
+            start: "top 86%",
+            once: true,
+          },
+        },
+      );
 
-    return () => {
-      tweens.forEach((tween) => tween.kill());
-    };
+      gsap.fromTo(
+        ".departures-scroll-reveal",
+        { opacity: 0, y: 24 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.42,
+          stagger: 0.08,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: ".departures-scroll-reveal",
+            start: "top 82%",
+            once: true,
+          },
+        },
+      );
+    }, root);
+
+    return () => ctx.revert();
   }, []);
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    const params = new URLSearchParams();
-    if (depart) params.set("depart", depart);
-    if (arrivee) params.set("arrivee", arrivee);
-    if (date) params.set("date", date);
-    if (places) params.set("places", places);
-    navigate(`/rides?${params.toString()}`);
-  };
 
   return (
     <PageShell>
-      <main className="flex-1 w-full overflow-hidden">
-        {/* Hero Section */}
-        <section className="relative min-h-[90vh] flex flex-col justify-center px-6 pt-32 pb-24">
-          <div className="absolute top-0 right-0 w-[60vw] h-[60vw] bg-primary/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/4 -z-10" />
-          <div className="absolute bottom-0 left-0 w-[40vw] h-[40vw] bg-secondary/10 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/4 -z-10" />
-
-          <div
-            ref={heroRef}
-            className="mx-auto w-full max-w-7xl text-center flex flex-col items-center"
-          >
-            <span className="inline-block rounded-full bg-surface-container-low border border-white/5 px-4 py-2 text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-6 shadow-xl">
-              <MaterialIcon
-                name="electric_car"
-                className="text-[14px] text-primary align-text-bottom mr-1"
-              />{" "}
-              The Future of Carpooling
-            </span>
-
-            <h1 className="max-w-4xl text-6xl md:text-8xl font-headline font-extrabold tracking-tighter text-on-surface leading-[0.9] mb-8">
-              Share the journey. <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
-                Split the cost.
-              </span>
-            </h1>
-
-            <p className="max-w-2xl text-xl text-on-surface-variant font-medium mb-16">
-              Connect with drivers heading your way. Experience a premium,
-              eco-friendly ride-sharing platform designed for the modern
-              traveler.
-            </p>
-
-            {/* Search Box inside Hero */}
-            <form
-              onSubmit={handleSearch}
-              className="w-full max-w-5xl rounded-[2.5rem] bg-surface-container-lowest/80 backdrop-blur-2xl p-6 shadow-2xl border border-white/10 flex flex-col md:flex-row gap-4 items-center"
-            >
-              <div className="flex-1 w-full relative group">
-                <MaterialIcon
-                  name="my_location"
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors"
-                />
-                <input
-                  required
-                  className="w-full rounded-2xl bg-surface-container-low border-none py-4 pl-12 pr-4 text-sm font-medium focus:ring-2 focus:ring-primary placeholder:text-on-surface-variant/50"
-                  placeholder="Leaving from..."
-                  value={depart}
-                  onChange={(e) => setDepart(e.target.value)}
-                />
-              </div>
-              <div className="flex-1 w-full relative group">
-                <MaterialIcon
-                  name="location_on"
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors"
-                />
-                <input
-                  required
-                  className="w-full rounded-2xl bg-surface-container-low border-none py-4 pl-12 pr-4 text-sm font-medium focus:ring-2 focus:ring-primary placeholder:text-on-surface-variant/50"
-                  placeholder="Going to..."
-                  value={arrivee}
-                  onChange={(e) => setArrivee(e.target.value)}
-                />
-              </div>
-              <div className="w-full md:w-48 relative group">
-                <input
-                  type="date"
-                  required
-                  className="w-full rounded-2xl bg-surface-container-low border-none px-4 py-4 text-sm font-medium focus:ring-2 focus:ring-primary text-on-surface-variant"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                />
-              </div>
-              <div className="w-full md:w-32 relative group">
-                <input
-                  type="number"
-                  min="1"
-                  required
-                  className="w-full rounded-2xl bg-surface-container-low border-none px-4 py-4 text-sm font-medium focus:ring-2 focus:ring-primary text-center"
-                  placeholder="Seats"
-                  value={places}
-                  onChange={(e) => setPlaces(e.target.value)}
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full md:w-auto h-full rounded-2xl bg-primary px-8 py-4 font-headline font-bold text-lg text-black shadow-lg shadow-primary/20 hover:bg-primary-dim hover:scale-105 transition-all active:scale-95 shrink-0"
-              >
-                Search
-              </button>
-            </form>
-          </div>
-        </section>
-
-        {/* Recent Trips Section */}
-        <section className="mx-auto w-full max-w-7xl px-6 pb-32">
-          <div className="flex items-end justify-between mb-12">
-            <h2 className="text-4xl font-headline font-extrabold text-on-surface">
-              Upcoming Rides
-            </h2>
-            <Link
-              to="/rides"
-              className="text-primary font-bold hover:underline flex items-center gap-1"
-            >
-              View all <MaterialIcon name="arrow_forward" className="text-sm" />
-            </Link>
+      <section ref={homeRef} className="route-map transport-rule relative min-h-[calc(100vh-76px)] border-b-2 border-outline pt-28">
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 pb-16 pt-10 sm:px-6 lg:pt-16">
+          <div className="grid items-end gap-6 lg:grid-cols-[1fr_360px]">
+            <div className="max-w-5xl">
+              <p className="font-mono text-xs font-bold uppercase text-primary">
+                Human in motion / timetable-first carpooling
+              </p>
+              <h1 className="mt-4 max-w-4xl font-headline text-[clamp(3.25rem,11vw,8.5rem)] font-extrabold uppercase leading-[0.86] tracking-normal text-on-surface">
+                La place libre la plus lisible.
+              </h1>
+            </div>
+            <div className="max-w-md justify-self-start lg:justify-self-end">
+              <HeroCarpoolSignal />
+            </div>
           </div>
 
-          <div ref={cardsRef} className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {recentTrips.map((trip) => (
-              <Link
-                key={trip.id}
-                to={`/ride-details/${trip.id}`}
-                className="group block rounded-[2.5rem] bg-surface-container-lowest border border-white/5 hover:border-primary/50 transition-all hover:-translate-y-2 shadow-2xl overflow-hidden relative"
+          <div className="mx-auto w-full max-w-6xl">
+            <TripSearchBar />
+          </div>
+
+          <div className="hero-scroll-reveal grid gap-0 border-2 border-outline bg-surface md:grid-cols-3">
+            {metrics.map((item, index) => (
+              <div
+                key={item.label}
+                className={`p-4 ${index > 0 ? "border-t-2 border-outline md:border-l-2 md:border-t-0" : ""}`}
               >
-                <div className="absolute top-6 right-6 z-10">
-                  <span className="bg-black/50 backdrop-blur-md text-primary font-bold px-4 py-1.5 rounded-full text-xs border border-white/10">
-                    €{trip.prix.toFixed(0)}
-                  </span>
-                </div>
-                <div className="h-48 bg-surface-container-high relative overflow-hidden flex items-center justify-center">
-                  <MaterialIcon
-                    name="route"
-                    className="text-[120px] text-on-surface/5 transform group-hover:scale-110 group-hover:rotate-6 transition-transform duration-700"
-                  />
-                </div>
-                <div className="p-8">
-                  <h3 className="font-headline font-bold text-2xl mb-2 text-on-surface group-hover:text-primary transition-colors">
-                    {trip.villeDepart} &rarr; {trip.villeArrivee}
-                  </h3>
-                  <p className="text-on-surface-variant font-medium flex items-center gap-2">
-                    <MaterialIcon name="schedule" className="text-[16px]" />
-                    {new Date(trip.dateDepart).toLocaleDateString()} at{" "}
-                    {new Date(trip.dateDepart).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </p>
-                  <div className="mt-8 flex items-center justify-between pt-6 border-t border-white/5">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-full bg-surface-container-high flex items-center justify-center font-headline font-bold text-on-surface">
-                        {trip.conducteurNom?.slice(0, 1) ?? "D"}
-                      </div>
-                      <div className="text-sm font-bold text-on-surface">
-                        {trip.conducteurNom ?? "Driver"}
-                      </div>
-                    </div>
-                    <span className="text-sm font-semibold text-on-surface-variant bg-surface-container px-3 py-1 rounded-lg">
-                      {trip.nbPlacesDisponibles} seats left
-                    </span>
-                  </div>
-                </div>
-              </Link>
+                <p className="font-mono text-4xl font-bold text-on-surface">
+                  {item.value}
+                </p>
+                <p className="mt-2 font-mono text-xs font-bold uppercase text-on-surface-variant">
+                  {item.label}
+                </p>
+              </div>
             ))}
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
+
+      <section className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6">
+        <div className="departures-scroll-reveal mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="font-mono text-xs font-bold uppercase text-primary">
+              Départs récents
+            </p>
+            <h2 className="mt-2 font-headline text-5xl font-extrabold uppercase leading-none text-on-surface">
+              Prochains créneaux
+            </h2>
+          </div>
+          <Link
+            to="/rides"
+            className="app-button-secondary w-fit"
+          >
+            Voir tous les trajets
+          </Link>
+        </div>
+
+        <div className="grid gap-4" aria-live="polite">
+          {recentTrips.length === 0
+            ? [0, 1, 2].map((item) => (
+                <div key={item} className="skeleton h-44 border-2 border-outline" />
+              ))
+            : recentTrips.map((trip, index) => (
+                <TripCard key={trip.id} trip={trip} revealDelayMs={index * 50} />
+              ))}
+        </div>
+      </section>
     </PageShell>
   );
 }

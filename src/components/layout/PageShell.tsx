@@ -8,7 +8,7 @@ export function PageShell({
   children: ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-surface text-on-surface selection:bg-primary selection:text-black flex flex-col">
+    <div className="min-h-screen bg-surface text-on-surface selection:bg-primary selection:text-on-primary flex flex-col">
       <TopNav />
       <main className="flex-1 flex flex-col">{children}</main>
       <Footer />
