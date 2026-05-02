@@ -12,7 +12,6 @@ export function AuthPage() {
   const [password, setPassword] = useState("");
   const [nom, setNom] = useState("");
   const [prenom, setPrenom] = useState("");
-  const [role, setRole] = useState<"VOYAGEUR" | "CONDUCTEUR">("VOYAGEUR");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -39,15 +38,15 @@ export function AuthPage() {
       if (isLogin) {
         const authData = await authApi.login({ email, password });
         setSession(authData);
-        navigate(authData.user.role === "CONDUCTEUR" ? "/conducteur" : authData.user.role === "ADMIN" ? "/admin" : "/voyageur");
+        navigate(authData.user.role === "ADMIN" ? "/admin" : "/voyageur");
       } else {
-        await authApi.register({ nom, prenom, email, password, role });
+        await authApi.register({ nom, prenom, email, password });
         const authData = await authApi.login({ email, password });
         setSession(authData);
-        navigate(authData.user.role === "CONDUCTEUR" ? "/conducteur" : "/voyageur");
+        navigate("/voyageur");
       }
     } catch {
-      setError("Authentication failed. Please check your credentials.");
+      setError("Connexion impossible. Vérifiez vos identifiants.");
     } finally {
       setIsLoading(false);
     }
@@ -56,8 +55,6 @@ export function AuthPage() {
   return (
     <PageShell>
       <main className="mx-auto flex min-h-[80vh] w-full max-w-7xl items-center justify-center px-6 py-32 relative">
-         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[50vw] h-[50vw] bg-primary/10 rounded-full blur-[100px] -z-10" />
-         
         <div className="w-full max-w-md">
           <form
             ref={formRef}
@@ -67,10 +64,10 @@ export function AuthPage() {
             <div className="text-center mb-10">
                <MaterialIcon name="api" className="text-primary text-5xl mb-4" />
                <h1 className="text-4xl font-headline font-extrabold tracking-tight text-on-surface">
-                 {isLogin ? "Welcome back" : "Join platform"}
+                 {isLogin ? "Connexion" : "Créer un compte"}
                </h1>
                <p className="mt-2 text-on-surface-variant font-medium">
-                 {isLogin ? "Sign in to access your dashboard" : "Create an account to start sharing rides"}
+                 {isLogin ? "Accédez à votre espace." : "Réservez ou publiez des trajets."}
                </p>
             </div>
 
@@ -84,11 +81,11 @@ export function AuthPage() {
               {!isLogin && (
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">First Name</label>
+                    <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">Prénom</label>
                     <input required className="w-full rounded-xl border-none bg-surface-container py-3 px-4 font-medium focus:ring-2 focus:ring-primary placeholder:text-outline-variant" placeholder="Jane" value={prenom} onChange={(e) => setPrenom(e.target.value)} />
                   </div>
                   <div>
-                    <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">Last Name</label>
+                    <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">Nom</label>
                     <input required className="w-full rounded-xl border-none bg-surface-container py-3 px-4 font-medium focus:ring-2 focus:ring-primary placeholder:text-outline-variant" placeholder="Doe" value={nom} onChange={(e) => setNom(e.target.value)} />
                   </div>
                 </div>
@@ -103,7 +100,7 @@ export function AuthPage() {
               </div>
 
               <div>
-                <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">Password</label>
+                <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">Mot de passe</label>
                 <div className="relative">
                    <MaterialIcon name="lock" className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant" />
                    <input required type="password" className="w-full rounded-xl border-none bg-surface-container py-3 pl-12 pr-4 font-medium focus:ring-2 focus:ring-primary placeholder:text-outline-variant" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} />
@@ -111,35 +108,26 @@ export function AuthPage() {
               </div>
 
               {!isLogin && (
-                <div>
-                  <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">I want to</label>
-                  <div className="flex gap-2">
-                     <button type="button" onClick={() => setRole("VOYAGEUR")} className={`flex-1 py-3 rounded-xl font-bold transition-all border ${role === "VOYAGEUR" ? "bg-primary/10 border-primary text-primary" : "bg-surface-container border-transparent text-on-surface-variant"}`}>
-                        Ride
-                     </button>
-                     <button type="button" onClick={() => setRole("CONDUCTEUR")} className={`flex-1 py-3 rounded-xl font-bold transition-all border ${role === "CONDUCTEUR" ? "bg-primary/10 border-primary text-primary" : "bg-surface-container border-transparent text-on-surface-variant"}`}>
-                        Drive
-                     </button>
-                  </div>
+                <div className="rounded-xl border border-outline-variant/60 bg-surface-container-low p-4 text-sm font-semibold text-on-surface-variant">
+                  Un seul compte permet de réserver des trajets et d'en publier.
                 </div>
               )}
 
               <button type="submit" disabled={isLoading} className="mt-8 w-full rounded-xl bg-primary py-4 font-headline font-extrabold text-lg text-on-primary shadow-lg shadow-primary/20 transition-all hover:bg-primary-dim active:scale-95 disabled:opacity-70 flex items-center justify-center gap-2">
-                {isLoading ? <MaterialIcon name="refresh" className="animate-spin" /> : isLogin ? "Sign In" : "Create Account"}
+                {isLoading ? <MaterialIcon name="refresh" className="animate-spin" /> : isLogin ? "Se connecter" : "Créer le compte"}
               </button>
             </div>
             
             <div className="mt-8 text-center">
               <button type="button" onClick={() => { setIsLogin(!isLogin); setError(""); }} className="text-sm font-bold text-on-surface-variant hover:text-primary transition-colors">
-                {isLogin ? "Need an account? Sign up" : "Already have an account? Sign in"}
+                {isLogin ? "Pas encore de compte ? Inscription" : "Déjà un compte ? Connexion"}
               </button>
             </div>
             
             <div className="mt-6 pt-6 border-t border-outline-variant/60 text-center">
-               <div className="text-xs font-medium text-on-surface-variant">Demo Accounts:</div>
+               <div className="text-xs font-medium text-on-surface-variant">Comptes de démonstration :</div>
                <div className="flex justify-center gap-4 mt-2 text-xs font-bold">
-                  <button type="button" onClick={() => { setEmail("voyageur@test.com"); setPassword("password"); }} className="text-primary hover:underline">Voyageur</button>
-                  <button type="button" onClick={() => { setEmail("conducteur@test.com"); setPassword("password"); }} className="text-primary hover:underline">Conducteur</button>
+                  <button type="button" onClick={() => { setEmail("conducteur@test.com"); setPassword("password"); }} className="text-primary hover:underline">Utilisateur</button>
                   <button type="button" onClick={() => { setEmail("admin@test.com"); setPassword("password"); }} className="text-primary hover:underline">Admin</button>
                </div>
             </div>

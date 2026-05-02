@@ -48,16 +48,16 @@ export function VoyageurPage() {
   const confirmCancelReservation = (id: number) => {
     setConfirmState({
       isOpen: true,
-      title: "Cancel Booking",
-      message: "Are you sure you want to cancel this booking? The driver will be notified.",
+      title: "Annuler la réservation",
+      message: "Confirmez-vous l'annulation ? Le conducteur sera informé.",
       danger: true,
       action: async () => {
         try {
           await reservationApi.annuler(id);
-          setToast({ message: "Booking cancelled successfully.", type: "success" });
+          setToast({ message: "Réservation annulée.", type: "success" });
           fetchData();
         } catch {
-          setToast({ message: "Failed to cancel booking.", type: "error" });
+          setToast({ message: "Annulation impossible.", type: "error" });
         } finally {
           setConfirmState(prev => ({ ...prev, isOpen: false }));
         }
@@ -69,11 +69,11 @@ export function VoyageurPage() {
     if (!reviewModal.trajetId) return;
     try {
       await avisApi.create({ trajetId: reviewModal.trajetId, note: reviewForm.note, commentaire: reviewForm.commentaire });
-      setToast({ message: "Review submitted successfully! Thank you.", type: "success" });
+      setToast({ message: "Avis envoyé.", type: "success" });
       setReviewModal({ isOpen: false, trajetId: null });
       setReviewForm({ note: 5, commentaire: "" });
     } catch {
-      setToast({ message: "Failed to submit review.", type: "error" });
+      setToast({ message: "Envoi de l'avis impossible.", type: "error" });
     }
   };
 
@@ -84,34 +84,42 @@ export function VoyageurPage() {
         <div className="mb-12 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
           <div>
             <h1 className="text-5xl font-headline font-extrabold tracking-tighter text-on-surface">
-              Passenger Space
+              Espace voyageur
             </h1>
             <p className="mt-2 text-lg text-on-surface-variant font-medium">
-              Manage your bookings and discover new rides.
+              Suivez vos réservations et trouvez de nouveaux trajets.
             </p>
           </div>
           
-          <div className="flex bg-surface-container-low p-1.5 rounded-2xl border border-outline-variant/60 shadow-inner self-start md:self-auto">
-            {[
-              { id: "bookings", label: "My Bookings", icon: "book_online" },
-              { id: "discover", label: "Discover", icon: "explore" },
-              { id: "profile", label: "Profile", icon: "person" }
-            ].map(tab => (
-              <button
-                key={tab.id}
-                onClick={() =>
-                  setActiveTab(tab.id as "bookings" | "discover" | "profile")
-                }
-                className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all duration-300 ${
-                  activeTab === tab.id 
-                    ? "bg-primary text-on-primary shadow-lg shadow-primary/20 scale-105" 
-                    : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container"
-                }`}
-              >
-                <MaterialIcon name={tab.icon} className="text-xl" />
-                {tab.label}
-              </button>
-            ))}
+          <div className="flex flex-col gap-3 md:items-end">
+            <div className="flex bg-surface-container-low p-1.5 rounded-2xl border border-outline-variant/60 shadow-inner self-start md:self-auto">
+              {[
+                { id: "bookings", label: "Réservations", icon: "book_online" },
+                { id: "discover", label: "Découvrir", icon: "explore" },
+                { id: "profile", label: "Profil", icon: "person" }
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() =>
+                    setActiveTab(tab.id as "bookings" | "discover" | "profile")
+                  }
+                  className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all duration-300 ${
+                    activeTab === tab.id 
+                      ? "bg-primary text-on-primary shadow-lg shadow-primary/20 scale-105" 
+                      : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container"
+                  }`}
+                >
+                  <MaterialIcon name={tab.icon} className="text-xl" />
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+            <Link
+              to="/conducteur"
+              className="inline-flex min-h-11 items-center justify-center rounded-xl bg-primary px-5 py-2.5 font-bold text-on-primary shadow-lg shadow-primary/20 transition-colors hover:bg-primary-dim"
+            >
+              Publier un trajet
+            </Link>
           </div>
         </div>
 
@@ -122,10 +130,10 @@ export function VoyageurPage() {
               {reservations.length === 0 ? (
                 <div className="col-span-full rounded-3xl border border-dashed border-outline-variant/30 bg-surface-container-lowest p-16 text-center">
                    <MaterialIcon name="directions_car" className="text-6xl text-on-surface-variant/30 mb-4" />
-                   <h3 className="text-2xl font-headline font-bold mb-2">No active bookings</h3>
-                   <p className="text-on-surface-variant">You haven't booked any rides yet.</p>
+                   <h3 className="text-2xl font-headline font-bold mb-2">Aucune réservation active</h3>
+                   <p className="text-on-surface-variant">Vous n'avez pas encore réservé de trajet.</p>
                    <button onClick={() => setActiveTab("discover")} className="mt-6 px-6 py-3 bg-surface-container-high hover:bg-surface-variant rounded-xl font-bold transition-colors">
-                      Discover Rides
+                      Découvrir des trajets
                    </button>
                 </div>
               ) : (
@@ -148,22 +156,22 @@ export function VoyageurPage() {
                       
                       <div className="mt-8 mb-6">
                         <h3 className="text-xl font-headline font-bold text-on-surface line-clamp-2">
-                          {res.trajetDescription ?? `Ride #${res.trajetId}`}
+                          {res.trajetDescription ?? `Trajet #${res.trajetId}`}
                         </h3>
                         <p className="mt-2 text-on-surface-variant text-sm font-medium">
-                          {res.nbPlacesReservees} seat(s) reserved
+                          {res.nbPlacesReservees} place(s) réservée(s)
                         </p>
                       </div>
 
                       <div className="flex gap-2 mt-auto pt-4 border-t border-outline-variant/10">
                         {isActive && (
                           <button onClick={() => confirmCancelReservation(res.id)} className="flex-1 py-2.5 rounded-xl bg-surface-container hover:bg-red-500/20 hover:text-red-400 font-semibold text-sm transition-colors text-on-surface">
-                            Cancel
+                            Annuler
                           </button>
                         )}
                         {isDone && (
                           <button onClick={() => setReviewModal({ isOpen: true, trajetId: res.trajetId ?? null })} className="flex-1 py-2.5 rounded-xl bg-primary text-on-primary font-bold text-sm hover:bg-primary-dim transition-colors shadow-lg shadow-primary/20">
-                            Leave Review
+                            Laisser un avis
                           </button>
                         )}
                       </div>
@@ -177,9 +185,9 @@ export function VoyageurPage() {
           {activeTab === "discover" && (
             <div className="space-y-8">
               <div className="flex items-center justify-between">
-                 <h2 className="text-3xl font-headline font-bold">Recommended for you</h2>
+                 <h2 className="text-3xl font-headline font-bold">Recommandés pour vous</h2>
                  <Link to="/rides" className="text-primary font-bold hover:underline flex items-center gap-1">
-                    See all <MaterialIcon name="arrow_forward" className="text-sm" />
+                    Tout voir <MaterialIcon name="arrow_forward" className="text-sm" />
                  </Link>
               </div>
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -202,8 +210,8 @@ export function VoyageurPage() {
                         {new Date(trip.dateDepart).toLocaleDateString()}
                       </p>
                       <div className="mt-4 flex items-center justify-between text-sm text-on-surface-variant font-semibold">
-                        <span className="flex items-center gap-1"><MaterialIcon name="airline_seat_recline_normal" className="text-lg" /> {trip.nbPlacesDisponibles} left</span>
-                        <span className="text-primary group-hover:translate-x-1 transition-transform">Book now &rarr;</span>
+                        <span className="flex items-center gap-1"><MaterialIcon name="airline_seat_recline_normal" className="text-lg" /> {trip.nbPlacesDisponibles} restantes</span>
+                        <span className="text-primary group-hover:translate-x-1 transition-transform">Réserver &rarr;</span>
                       </div>
                     </div>
                   </Link>
@@ -218,21 +226,21 @@ export function VoyageurPage() {
                   {profile?.prenom?.[0] ?? "U"}{profile?.nom?.[0] ?? ""}
                </div>
                <div className="flex-1 text-center md:text-left">
-                  <div className="inline-block px-3 py-1 bg-surface-container text-xs font-bold uppercase tracking-widest rounded-full mb-4 text-on-surface-variant">Passenger Account</div>
+                  <div className="inline-block px-3 py-1 bg-surface-container text-xs font-bold uppercase tracking-widest rounded-full mb-4 text-on-surface-variant">Compte voyageur</div>
                   <h2 className="text-4xl font-headline font-bold text-on-surface mb-2">
                     {profile ? `${profile.prenom} ${profile.nom}` : "Voyageur"}
                   </h2>
                   <p className="text-lg text-on-surface-variant font-medium mb-6">
-                    {profile?.email ?? "No email provided"}
+                    {profile?.email ?? "Email non renseigné"}
                   </p>
                   
                   <div className="grid grid-cols-2 gap-4">
                      <div className="bg-surface-container-low p-4 rounded-2xl">
-                        <div className="text-on-surface-variant text-xs uppercase font-bold tracking-widest mb-1">Rides Taken</div>
+                        <div className="text-on-surface-variant text-xs uppercase font-bold tracking-widest mb-1">Trajets</div>
                         <div className="text-2xl font-bold text-primary">{reservations.length}</div>
                      </div>
                      <div className="bg-surface-container-low p-4 rounded-2xl">
-                        <div className="text-on-surface-variant text-xs uppercase font-bold tracking-widest mb-1">Saved Approx</div>
+                        <div className="text-on-surface-variant text-xs uppercase font-bold tracking-widest mb-1">Économie estimée</div>
                         <div className="text-2xl font-bold text-primary">€{reservations.length * 15}</div>
                      </div>
                   </div>
@@ -246,12 +254,12 @@ export function VoyageurPage() {
       {reviewModal.isOpen && (
          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-300">
             <div className="w-full max-w-md rounded-2xl bg-surface-container-lowest p-8 shadow-[0_12px_32px_rgba(31,41,51,0.08)] border border-outline-variant/30 animate-in zoom-in-95 duration-300">
-               <h3 className="text-2xl font-headline font-bold text-on-surface mb-2">Leave a Review</h3>
-               <p className="text-sm text-on-surface-variant mb-8 font-medium">How was your trip? Leave a rating and a comment for the driver.</p>
+               <h3 className="text-2xl font-headline font-bold text-on-surface mb-2">Laisser un avis</h3>
+               <p className="text-sm text-on-surface-variant mb-8 font-medium">Notez le trajet et ajoutez un commentaire pour le conducteur.</p>
                
                <div className="space-y-6">
                   <div>
-                     <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">Rating</label>
+                     <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">Note</label>
                      <div className="flex gap-2">
                         {[1,2,3,4,5].map(star => (
                            <button 
@@ -265,11 +273,11 @@ export function VoyageurPage() {
                      </div>
                   </div>
                   <div>
-                     <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">Comment</label>
+                     <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">Commentaire</label>
                      <textarea 
                         className="w-full rounded-xl border border-outline-variant/20 bg-surface-container-low p-4 text-sm focus:border-primary focus:ring-1 focus:ring-primary font-medium resize-none placeholder:text-on-surface-variant/50"
                         rows={4}
-                        placeholder="Great driver, very punctual!"
+                        placeholder="Conducteur ponctuel et trajet agréable."
                         value={reviewForm.commentaire}
                         onChange={e => setReviewForm({...reviewForm, commentaire: e.target.value})}
                      />
@@ -281,14 +289,14 @@ export function VoyageurPage() {
                      onClick={() => setReviewModal({ isOpen: false, trajetId: null })}
                      className="rounded-xl px-5 py-3 font-semibold text-on-surface hover:bg-surface-container transition-colors"
                   >
-                     Cancel
+                     Annuler
                   </button>
                   <button
                      onClick={submitReview}
                      disabled={!reviewForm.commentaire}
                      className="rounded-xl bg-primary px-6 py-3 font-bold text-on-primary hover:bg-primary-dim transition-colors shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                     Submit Review
+                     Envoyer l'avis
                   </button>
                </div>
             </div>

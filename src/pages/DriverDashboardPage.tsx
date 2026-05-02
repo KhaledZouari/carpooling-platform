@@ -4,7 +4,7 @@ import gsap from "gsap";
 import { PageShell } from "../components/layout/PageShell";
 import { MaterialIcon } from "../components/MaterialIcon";
 import { demoTrajets, demoUser, demoVehicules } from "../data/demo";
-import { trajetApi, vehiculeApi, reservationApi } from "../api/covoiturage";
+import { authApi, trajetApi, vehiculeApi, reservationApi } from "../api/covoiturage";
 import { useAuth } from "../context/AuthContext";
 import type {
   TrajetResponse,
@@ -14,7 +14,7 @@ import type {
 import { Toast, ConfirmModal } from "../components/IHM";
 
 export function DriverDashboardPage() {
-  const { user } = useAuth();
+  const { user, setSession } = useAuth();
   const isDriver = user?.role === "CONDUCTEUR";
   const [trajets, setTrajets] = useState<TrajetResponse[]>(demoTrajets);
   const [vehicules, setVehicules] = useState<VehiculeResponse[]>(demoVehicules);
@@ -44,6 +44,7 @@ export function DriverDashboardPage() {
     imageFile: null as File | null,
   });
   const [showVehicleForm, setShowVehicleForm] = useState(false);
+  const [isUpgrading, setIsUpgrading] = useState(false);
 
   // IHM States
   const [toast, setToast] = useState<{
@@ -104,10 +105,30 @@ export function DriverDashboardPage() {
     [trajets],
   );
   const rating = user?.note ?? demoUser.note ?? 4.9;
+  const minDepartureDateTime = useMemo(() => {
+    const date = new Date();
+    date.setMinutes(date.getMinutes() - date.getTimezoneOffset() + 15);
+    return date.toISOString().slice(0, 16);
+  }, []);
+  const selectedVehicle = vehicules.find((item) => item.id === form.vehiculeId);
+  const publishSameRoute =
+    form.villeDepart.trim().length > 0 &&
+    form.villeArrivee.trim().length > 0 &&
+    form.villeDepart.trim().toLowerCase() === form.villeArrivee.trim().toLowerCase();
+  const seatsExceedVehicle =
+    Boolean(selectedVehicle) && form.nbPlacesTotal > (selectedVehicle?.nbPlaces ?? 0);
+  const hasPublishBlocker = !selectedVehicle || publishSameRoute || seatsExceedVehicle;
+  const canPublishRide =
+    Boolean(selectedVehicle) &&
+    !publishSameRoute &&
+    !seatsExceedVehicle &&
+    Boolean(form.villeDepart.trim()) &&
+    Boolean(form.villeArrivee.trim()) &&
+    Boolean(form.dateDepart);
 
   const getApiErrorMessage = (error: unknown) => {
     if (typeof error !== "object" || error === null || !("response" in error)) {
-      return "Failed to publish ride.";
+      return "Publication impossible.";
     }
 
     const response = (
@@ -124,11 +145,15 @@ export function DriverDashboardPage() {
     if (data?.message) {
       return data.message;
     }
-    return "Failed to publish ride.";
+    return "Publication impossible.";
   };
 
   const submitRide = async () => {
     if (!isDriver) return;
+    if (!canPublishRide) {
+      setToast({ message: "Corrigez les champs du trajet avant publication.", type: "error" });
+      return;
+    }
     try {
       await trajetApi.create({
         villeDepart: form.villeDepart,
@@ -138,7 +163,7 @@ export function DriverDashboardPage() {
         prix: form.prix,
         vehiculeId: form.vehiculeId || undefined,
       });
-      setToast({ message: "Ride published successfully!", type: "success" });
+      setToast({ message: "Trajet publié.", type: "success" });
       setForm({ ...form, villeDepart: "", villeArrivee: "" });
       fetchData();
       setActiveTab("requests");
@@ -161,7 +186,7 @@ export function DriverDashboardPage() {
         await vehiculeApi.uploadImage(created.id, newVehicle.imageFile);
       }
 
-      setToast({ message: "Vehicle added successfully!", type: "success" });
+      setToast({ message: "Véhicule ajouté.", type: "success" });
       setShowVehicleForm(false);
       setNewVehicle({
         marque: "",
@@ -173,24 +198,24 @@ export function DriverDashboardPage() {
       });
       fetchData();
     } catch {
-      setToast({ message: "Failed to add vehicle.", type: "error" });
+      setToast({ message: "Ajout du véhicule impossible.", type: "error" });
     }
   };
 
   const confirmDeleteVehicle = (id: number) => {
     setConfirmState({
       isOpen: true,
-      title: "Delete Vehicle",
+      title: "Supprimer le véhicule",
       message:
-        "Are you sure you want to delete this vehicle? This cannot be undone.",
+        "Confirmez-vous la suppression de ce véhicule ? Cette action est définitive.",
       danger: true,
       action: async () => {
         try {
           await vehiculeApi.remove(id);
-          setToast({ message: "Vehicle deleted.", type: "success" });
+          setToast({ message: "Véhicule supprimé.", type: "success" });
           fetchData();
         } catch {
-          setToast({ message: "Failed to delete vehicle.", type: "error" });
+          setToast({ message: "Suppression du véhicule impossible.", type: "error" });
         } finally {
           setConfirmState((prev) => ({ ...prev, isOpen: false }));
         }
@@ -201,20 +226,20 @@ export function DriverDashboardPage() {
   const confirmCancelRide = (id: number) => {
     setConfirmState({
       isOpen: true,
-      title: "Cancel Ride",
+      title: "Annuler le trajet",
       message:
-        "Are you sure you want to cancel this ride? All passenger reservations will be cancelled automatically.",
+        "Confirmez-vous l'annulation ? Les réservations des voyageurs seront annulées.",
       danger: true,
       action: async () => {
         try {
           await trajetApi.cancel(id);
           setToast({
-            message: "Ride cancelled successfully.",
+            message: "Trajet annulé.",
             type: "success",
           });
           fetchData();
         } catch {
-          setToast({ message: "Failed to cancel ride.", type: "error" });
+          setToast({ message: "Annulation du trajet impossible.", type: "error" });
         } finally {
           setConfirmState((prev) => ({ ...prev, isOpen: false }));
         }
@@ -229,14 +254,28 @@ export function DriverDashboardPage() {
     try {
       if (action === "confirmer") {
         await reservationApi.confirmer(id);
-        setToast({ message: "Reservation confirmed.", type: "success" });
+        setToast({ message: "Réservation confirmée.", type: "success" });
       } else {
         await reservationApi.refuser(id);
-        setToast({ message: "Reservation refused.", type: "info" });
+        setToast({ message: "Réservation refusée.", type: "info" });
       }
       fetchData();
     } catch {
-      setToast({ message: "Failed to process reservation.", type: "error" });
+      setToast({ message: "Traitement de la réservation impossible.", type: "error" });
+    }
+  };
+
+  const activateDriverSpace = async () => {
+    if (!user || isUpgrading) return;
+    setIsUpgrading(true);
+    try {
+      const session = await authApi.becomeConducteur({});
+      setSession(session);
+      setToast({ message: "Espace publication activé.", type: "success" });
+    } catch {
+      setToast({ message: "Activation impossible.", type: "error" });
+    } finally {
+      setIsUpgrading(false);
     }
   };
 
@@ -245,21 +284,41 @@ export function DriverDashboardPage() {
       <PageShell>
         <main className="mx-auto flex w-full max-w-7xl items-center justify-center flex-1 px-6 pb-24 pt-32">
           <div className="text-center bg-surface-container-lowest p-12 rounded-3xl border border-outline-variant/60 shadow-[0_12px_32px_rgba(31,41,51,0.08)] max-w-md">
-            <MaterialIcon name="block" className="text-error text-6xl mb-4" />
+            <MaterialIcon name={user ? "commute" : "block"} className="text-primary text-6xl mb-4" />
             <h2 className="text-3xl font-headline font-bold mb-2">
-              Driver Access Required
+              {user ? "Activer la publication" : "Connexion requise"}
             </h2>
             <p className="text-on-surface-variant font-medium mb-8">
-              Sign in with a conductor account to publish and manage rides.
+              {user
+                ? "Votre compte permet déjà de voyager. Activez l'espace publication pour proposer vos trajets et prendre des voyageurs."
+                : "Connectez-vous pour réserver ou publier un trajet."}
             </p>
-            <Link
-              to="/auth"
-              className="inline-flex rounded-xl bg-primary px-6 py-3 font-bold text-on-primary shadow-lg shadow-primary/20 hover:scale-105 transition-transform"
-            >
-              Go to login
-            </Link>
+            {user ? (
+              <button
+                type="button"
+                onClick={activateDriverSpace}
+                disabled={isUpgrading}
+                className="inline-flex rounded-xl bg-primary px-6 py-3 font-bold text-on-primary shadow-lg shadow-primary/20 transition-transform hover:scale-105 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {isUpgrading ? "Activation..." : "Activer et publier"}
+              </button>
+            ) : (
+              <Link
+                to="/auth"
+                className="inline-flex rounded-xl bg-primary px-6 py-3 font-bold text-on-primary shadow-lg shadow-primary/20 hover:scale-105 transition-transform"
+              >
+                Se connecter
+              </Link>
+            )}
           </div>
         </main>
+        {toast && (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={() => setToast(null)}
+          />
+        )}
       </PageShell>
     );
   }
@@ -271,18 +330,18 @@ export function DriverDashboardPage() {
         <div className="mb-12 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
           <div>
             <h1 className="text-5xl font-headline font-extrabold tracking-tighter text-on-surface">
-              Driver Dashboard
+              Espace conducteur
             </h1>
             <p className="mt-2 text-lg text-on-surface-variant font-medium">
-              Manage your fleet, upcoming rides, and passenger requests.
+              Gérez vos véhicules, trajets et demandes de réservation.
             </p>
           </div>
 
           <div className="flex bg-surface-container-low p-1.5 rounded-2xl border border-outline-variant/60 shadow-inner self-start md:self-auto overflow-x-auto no-scrollbar">
             {[
-              { id: "requests", label: "Trips & Requests", icon: "forum" },
-              { id: "fleet", label: "Fleet & Stats", icon: "directions_car" },
-              { id: "publish", label: "Publish", icon: "add_circle" },
+              { id: "requests", label: "Trajets & demandes", icon: "forum" },
+              { id: "fleet", label: "Flotte & stats", icon: "directions_car" },
+              { id: "publish", label: "Publier", icon: "add_circle" },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -312,7 +371,7 @@ export function DriverDashboardPage() {
                     name="mark_email_unread"
                     className="text-primary"
                   />{" "}
-                  Incoming Requests
+                  Demandes entrantes
                 </h2>
                 {reservations.filter((r) => r.statut === "EN_ATTENTE")
                   .length === 0 ? (
@@ -322,7 +381,7 @@ export function DriverDashboardPage() {
                       className="text-4xl text-on-surface-variant/30 mb-2"
                     />
                     <p className="text-on-surface-variant font-medium">
-                      No pending requests right now.
+                      Aucune demande en attente.
                     </p>
                   </div>
                 ) : (
@@ -340,7 +399,7 @@ export function DriverDashboardPage() {
                                 {res.voyageurNom ?? `User #${res.voyageurId}`}
                               </div>
                               <div className="text-sm font-medium text-on-surface-variant mt-1">
-                                Requested {res.nbPlacesReservees} seat(s)
+                                {res.nbPlacesReservees} place(s) demandée(s)
                               </div>
                             </div>
                             <span className="bg-primary/20 text-primary px-2 py-1 rounded text-xs font-bold uppercase">
@@ -361,7 +420,7 @@ export function DriverDashboardPage() {
                               }
                               className="flex-1 py-2 rounded-xl border border-error/50 text-error font-bold hover:bg-error/10 transition-colors"
                             >
-                              Decline
+                              Refuser
                             </button>
                             <button
                               onClick={() =>
@@ -369,7 +428,7 @@ export function DriverDashboardPage() {
                               }
                               className="flex-1 py-2 rounded-xl bg-primary text-on-primary font-bold hover:bg-primary-dim transition-colors shadow-md shadow-primary/20"
                             >
-                              Approve
+                              Confirmer
                             </button>
                           </div>
                         </article>
@@ -380,18 +439,18 @@ export function DriverDashboardPage() {
               <div className="lg:col-span-7 space-y-6">
                 <h2 className="text-2xl font-headline font-bold flex items-center gap-2">
                   <MaterialIcon name="commute" className="text-primary" /> My
-                  Published Rides
+                  Trajets publiés
                 </h2>
                 {trajets.length === 0 ? (
                   <div className="rounded-3xl border border-dashed border-outline-variant/30 bg-surface-container-lowest p-16 text-center">
                     <p className="text-on-surface-variant font-medium">
-                      You haven't published any rides yet.
+                      Vous n'avez pas encore publié de trajet.
                     </p>
                     <button
                       onClick={() => setActiveTab("publish")}
                       className="mt-4 px-6 py-2 bg-surface-container hover:bg-surface-variant rounded-xl font-bold transition-colors"
                     >
-                      Create a ride
+                      Créer un trajet
                     </button>
                   </div>
                 ) : (
@@ -465,7 +524,7 @@ export function DriverDashboardPage() {
                                   />{" "}
                                   {trip.nbPlacesTotal -
                                     trip.nbPlacesDisponibles}
-                                  /{trip.nbPlacesTotal} Booked
+                                  /{trip.nbPlacesTotal} réservées
                                 </span>
                               </div>
                             </div>
@@ -474,14 +533,14 @@ export function DriverDashboardPage() {
                                 to={`/ride-details/${trip.id}`}
                                 className="text-sm font-bold text-on-surface bg-surface-container px-4 py-2 rounded-lg hover:bg-surface-variant transition-colors"
                               >
-                                View Details
+                                  Détails
                               </Link>
                               {trip.statut === "OUVERT" && (
                                 <button
                                   onClick={() => confirmCancelRide(trip.id)}
                                   className="text-sm font-bold text-error hover:bg-error/10 px-4 py-2 rounded-lg transition-colors ml-auto"
                                 >
-                                  Cancel Ride
+                                  Annuler
                                 </button>
                               )}
                             </div>
@@ -513,7 +572,7 @@ export function DriverDashboardPage() {
                   </div>
                   <div className="rounded-3xl border border-outline-variant/60 bg-surface-container-lowest p-6 shadow-[0_8px_24px_rgba(31,41,51,0.06)]">
                     <div className="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">
-                      Driver Rating
+                      Note conducteur
                     </div>
                     <div className="text-4xl font-headline font-extrabold text-primary flex items-center gap-1">
                       {rating.toFixed(1)}{" "}
@@ -534,19 +593,19 @@ export function DriverDashboardPage() {
                     className="flex items-center gap-2 bg-surface-container-high hover:bg-surface-variant px-4 py-2 rounded-full text-sm font-bold transition-colors"
                   >
                     <MaterialIcon name={showVehicleForm ? "close" : "add"} />{" "}
-                    {showVehicleForm ? "Cancel" : "Add Vehicle"}
+                    {showVehicleForm ? "Annuler" : "Ajouter un véhicule"}
                   </button>
                 </div>
 
                 {showVehicleForm && (
                   <div className="rounded-3xl border border-primary/30 bg-primary/5 p-6 shadow-[0_8px_24px_rgba(31,41,51,0.06)] animate-in slide-in-from-top-4 duration-300">
                     <h3 className="font-headline font-bold mb-4">
-                      Register New Vehicle
+                      Ajouter un véhicule
                     </h3>
                     <div className="grid grid-cols-2 gap-4 mb-4">
                       <input
                         className="rounded-xl border border-outline-variant/20 bg-surface-container px-4 py-3 text-sm font-medium focus:border-primary focus:ring-1 focus:ring-primary"
-                        placeholder="Make (e.g. Toyota)"
+                        placeholder="Marque (ex. Toyota)"
                         value={newVehicle.marque}
                         onChange={(e) =>
                           setNewVehicle({
@@ -557,7 +616,7 @@ export function DriverDashboardPage() {
                       />
                       <input
                         className="rounded-xl border border-outline-variant/20 bg-surface-container px-4 py-3 text-sm font-medium focus:border-primary focus:ring-1 focus:ring-primary"
-                        placeholder="Model (e.g. Corolla)"
+                        placeholder="Modèle (ex. Corolla)"
                         value={newVehicle.modele}
                         onChange={(e) =>
                           setNewVehicle({
@@ -568,7 +627,7 @@ export function DriverDashboardPage() {
                       />
                       <input
                         className="col-span-2 rounded-xl border border-outline-variant/20 bg-surface-container px-4 py-3 text-sm font-medium focus:border-primary focus:ring-1 focus:ring-primary"
-                        placeholder="License Plate (e.g. AB-123-CD)"
+                        placeholder="Immatriculation (ex. AB-123-CD)"
                         value={newVehicle.immatriculation}
                         onChange={(e) =>
                           setNewVehicle({
@@ -592,7 +651,7 @@ export function DriverDashboardPage() {
                       <input
                         type="number"
                         className="rounded-xl border border-outline-variant/20 bg-surface-container px-4 py-3 text-sm font-medium focus:border-primary focus:ring-1 focus:ring-primary"
-                        placeholder="Seats"
+                        placeholder="Places"
                         value={newVehicle.nbPlaces}
                         onChange={(e) =>
                           setNewVehicle({
@@ -608,7 +667,7 @@ export function DriverDashboardPage() {
                         />
                         {newVehicle.imageFile
                           ? newVehicle.imageFile.name
-                          : "Optional: Upload Vehicle Photo"}
+                          : "Optionnel : photo du véhicule"}
                         <input
                           type="file"
                           accept="image/*"
@@ -628,7 +687,7 @@ export function DriverDashboardPage() {
                       onClick={handleAddVehicle}
                       className="w-full rounded-xl bg-primary py-3 font-bold text-on-primary hover:bg-primary-dim transition-colors shadow-lg shadow-primary/20"
                     >
-                      Save Vehicle
+                      Enregistrer le véhicule
                     </button>
                   </div>
                 )}
@@ -637,8 +696,7 @@ export function DriverDashboardPage() {
                   {vehicules.length === 0 ? (
                     <div className="col-span-full rounded-3xl border border-dashed border-outline-variant/30 bg-surface-container-lowest p-10 text-center">
                       <p className="text-on-surface-variant font-medium">
-                        No vehicles registered. You need a vehicle to publish a
-                        ride.
+                        Aucun véhicule enregistré. Ajoutez un véhicule pour publier un trajet.
                       </p>
                     </div>
                   ) : (
@@ -713,13 +771,13 @@ export function DriverDashboardPage() {
                                   try {
                                     await vehiculeApi.uploadImage(v.id, file);
                                     setToast({
-                                      message: "Image uploaded successfully!",
+                                      message: "Image ajoutée.",
                                       type: "success",
                                     });
                                     fetchData();
                                   } catch {
                                     setToast({
-                                      message: "Failed to upload image.",
+                                      message: "Ajout de l'image impossible.",
                                       type: "error",
                                     });
                                   }
@@ -739,7 +797,7 @@ export function DriverDashboardPage() {
           {activeTab === "publish" && (
             <div className="max-w-3xl mx-auto rounded-3xl border border-outline-variant/60 bg-surface-container-lowest p-8 shadow-[0_12px_32px_rgba(31,41,51,0.08)]">
               <h2 className="text-3xl font-headline font-bold mb-8 text-center text-primary">
-                Publish a new ride
+                Publier un trajet
               </h2>
               <form
                 onSubmit={(e) => {
@@ -751,7 +809,7 @@ export function DriverDashboardPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">
-                      Departure City
+                      Ville de départ
                     </label>
                     <div className="relative">
                       <MaterialIcon
@@ -760,8 +818,9 @@ export function DriverDashboardPage() {
                       />
                       <input
                         required
+                        aria-invalid={publishSameRoute}
                         className="w-full rounded-2xl border border-outline-variant/20 bg-surface-container py-4 pl-12 pr-4 font-medium focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-outline-variant"
-                        placeholder="Where from?"
+                        placeholder="Ex. Paris"
                         value={form.villeDepart}
                         onChange={(e) =>
                           setForm({ ...form, villeDepart: e.target.value })
@@ -771,7 +830,7 @@ export function DriverDashboardPage() {
                   </div>
                   <div className="space-y-2">
                     <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">
-                      Arrival City
+                      Ville d'arrivée
                     </label>
                     <div className="relative">
                       <MaterialIcon
@@ -780,8 +839,9 @@ export function DriverDashboardPage() {
                       />
                       <input
                         required
+                        aria-invalid={publishSameRoute}
                         className="w-full rounded-2xl border border-outline-variant/20 bg-surface-container py-4 pl-12 pr-4 font-medium focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-outline-variant"
-                        placeholder="Where to?"
+                        placeholder="Ex. Lyon"
                         value={form.villeArrivee}
                         onChange={(e) =>
                           setForm({ ...form, villeArrivee: e.target.value })
@@ -790,11 +850,16 @@ export function DriverDashboardPage() {
                     </div>
                   </div>
                 </div>
+                {publishSameRoute ? (
+                  <p className="font-mono text-[11px] font-bold uppercase text-error">
+                    La ville de départ et la destination doivent être différentes.
+                  </p>
+                ) : null}
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="space-y-2 md:col-span-2">
                     <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">
-                      Date & Time
+                      Date et heure
                     </label>
                     <div className="relative">
                       <MaterialIcon
@@ -804,6 +869,7 @@ export function DriverDashboardPage() {
                       <input
                         required
                         type="datetime-local"
+                        min={minDepartureDateTime}
                         className="w-full rounded-2xl border border-outline-variant/20 bg-surface-container py-4 pl-12 pr-4 font-medium focus:border-primary focus:ring-1 focus:ring-primary"
                         value={form.dateDepart}
                         onChange={(e) =>
@@ -814,7 +880,7 @@ export function DriverDashboardPage() {
                   </div>
                   <div className="space-y-2">
                     <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">
-                      Seats offered
+                      Places proposées
                     </label>
                     <div className="relative">
                       <MaterialIcon
@@ -825,6 +891,8 @@ export function DriverDashboardPage() {
                         required
                         type="number"
                         min="1"
+                        max={selectedVehicle?.nbPlaces ?? 8}
+                        aria-invalid={seatsExceedVehicle}
                         className="w-full rounded-2xl border border-outline-variant/20 bg-surface-container py-4 pl-12 pr-4 font-medium focus:border-primary focus:ring-1 focus:ring-primary"
                         value={form.nbPlacesTotal}
                         onChange={(e) =>
@@ -837,11 +905,16 @@ export function DriverDashboardPage() {
                     </div>
                   </div>
                 </div>
+                {seatsExceedVehicle ? (
+                  <p className="font-mono text-[11px] font-bold uppercase text-error">
+                    Le nombre de places dépasse la capacité du véhicule sélectionné.
+                  </p>
+                ) : null}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">
-                      Vehicle
+                      Véhicule
                     </label>
                     <div className="relative">
                       <MaterialIcon
@@ -860,7 +933,7 @@ export function DriverDashboardPage() {
                         }
                       >
                         {vehicules.length === 0 ? (
-                          <option value="0">Register a vehicle first</option>
+                          <option value="0">Ajoutez d'abord un véhicule</option>
                         ) : null}
                         {vehicules.map((v) => (
                           <option key={v.id} value={v.id}>
@@ -876,7 +949,7 @@ export function DriverDashboardPage() {
                   </div>
                   <div className="space-y-2">
                     <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">
-                      Price per seat (€)
+                      Prix par place (€)
                     </label>
                     <div className="relative">
                       <MaterialIcon
@@ -900,14 +973,14 @@ export function DriverDashboardPage() {
                 <div className="pt-6 border-t border-outline-variant/60 mt-8">
                   <button
                     type="submit"
-                    disabled={vehicules.length === 0}
+                    disabled={hasPublishBlocker}
                     className="w-full rounded-2xl bg-primary py-5 text-lg font-headline font-extrabold text-on-primary shadow-[0_12px_32px_rgba(31,41,51,0.08)] shadow-primary/30 transition-all hover:bg-primary-dim hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Publish Ride
+                    Publier le trajet
                   </button>
                   {vehicules.length === 0 && (
                     <p className="text-error text-sm text-center mt-3 font-semibold">
-                      You must add a vehicle in the Fleet tab first.
+                      Ajoutez un véhicule dans l'onglet flotte avant de publier.
                     </p>
                   )}
                 </div>

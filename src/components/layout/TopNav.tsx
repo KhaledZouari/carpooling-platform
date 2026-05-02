@@ -3,16 +3,22 @@ import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { MaterialIcon } from "../MaterialIcon";
 
-const globalNav = [
-  { label: "Rechercher", href: "/rides" },
-  { label: "Voyageur", href: "/voyageur" },
-  { label: "Conducteur", href: "/conducteur" },
-];
-
 export function TopNav() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, clearSession } = useAuth();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const dashboardHref = user?.role === "ADMIN" ? "/admin" : "/voyageur";
+  const globalNav =
+    user?.role === "ADMIN"
+      ? [
+          { label: "Admin", href: "/admin" },
+          { label: "Trajets", href: "/rides" },
+        ]
+      : [
+          { label: "Rechercher", href: "/rides" },
+          { label: "Mon espace", href: "/voyageur" },
+          { label: "Publier", href: "/conducteur" },
+        ];
 
   return (
     <header className="fixed top-0 z-50 w-full border-b-2 border-outline bg-surface/95 backdrop-blur">
@@ -47,21 +53,24 @@ export function TopNav() {
         </div>
 
         <div className="flex items-center gap-2">
-          {user?.role === "ADMIN" && (
-            <Link
-              to="/admin"
-              className="hidden min-h-11 items-center border-2 border-outline px-4 font-mono text-xs font-bold uppercase text-on-surface transition-colors hover:bg-surface-container md:flex"
-            >
-              Admin
-            </Link>
-          )}
           <Link
-            to={isAuthenticated ? "/auth" : "/auth"}
+            to={isAuthenticated ? dashboardHref : "/auth"}
             className="flex h-11 min-h-11 w-11 items-center justify-center border-2 border-outline bg-surface font-mono text-xs font-bold uppercase text-on-surface transition-colors hover:bg-primary-container"
-            aria-label={user ? `${user.prenom} ${user.nom}` : "Connexion"}
+            aria-label={user ? `Ouvrir l'espace de ${user.prenom} ${user.nom}` : "Connexion"}
           >
             {user ? `${user.prenom?.[0] ?? "U"}${user.nom?.[0] ?? ""}` : "IN"}
           </Link>
+          {isAuthenticated ? (
+            <button
+              type="button"
+              onClick={clearSession}
+              className="hidden h-11 min-h-11 items-center justify-center border-2 border-outline bg-surface px-3 font-mono text-xs font-bold uppercase text-on-surface transition-colors hover:bg-surface-container sm:flex"
+              aria-label="Se déconnecter"
+              title="Se déconnecter"
+            >
+              <MaterialIcon name="logout" className="text-lg" />
+            </button>
+          ) : null}
           <button
             type="button"
             className="flex h-11 w-11 items-center justify-center border-2 border-outline bg-surface text-on-surface transition-colors hover:bg-surface-container md:hidden"
@@ -94,6 +103,18 @@ export function TopNav() {
                 </NavLink>
               );
             })}
+            {isAuthenticated ? (
+              <button
+                type="button"
+                onClick={() => {
+                  clearSession();
+                  setIsMenuOpen(false);
+                }}
+                className="border-2 border-outline bg-surface px-4 py-3 text-left font-mono text-sm font-bold uppercase hover:bg-surface-container"
+              >
+                Déconnexion
+              </button>
+            ) : null}
           </div>
         </div>
       )}

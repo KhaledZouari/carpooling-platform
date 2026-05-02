@@ -91,7 +91,7 @@ export function TripCard({
             className={`seat-tick px-3 py-2 font-mono text-xs font-bold uppercase ${seatTone(visualSeats)}`}
             aria-live="polite"
           >
-            {visualSeats} seat(s) left
+            {visualSeats} place(s) restante(s)
           </span>
         </div>
       </div>
@@ -118,7 +118,7 @@ export function TripCard({
               <span className="skeleton h-5 w-28 bg-on-primary/30" />
             ) : (
               <>
-                <span className="book-label">Book Ride</span>
+                <span className="book-label">Réserver</span>
                 <span className="book-hover-label">Réserver</span>
               </>
             )}

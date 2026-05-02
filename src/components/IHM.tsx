@@ -8,8 +8,8 @@ export function ConfirmModal({
   message,
   onConfirm,
   onCancel,
-  confirmText = "Confirm",
-  cancelText = "Cancel",
+  confirmText = "Confirmer",
+  cancelText = "Annuler",
   danger = false,
 }: {
   isOpen: boolean;
@@ -39,6 +39,17 @@ export function ConfirmModal({
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onCancel();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onCancel]);
+
   if (!isOpen) return null;
 
   return (
@@ -48,9 +59,12 @@ export function ConfirmModal({
     >
       <div
         ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="confirm-modal-title"
         className="w-full max-w-md rounded-3xl bg-surface-container-lowest p-8 shadow-[0_12px_32px_rgba(31,41,51,0.08)] border border-outline-variant/30"
       >
-        <h3 className="text-2xl font-headline font-bold text-on-surface mb-2">{title}</h3>
+        <h3 id="confirm-modal-title" className="text-2xl font-headline font-bold text-on-surface mb-2">{title}</h3>
         <p className="text-on-surface-variant text-sm leading-relaxed">{message}</p>
         <div className="mt-8 flex justify-end gap-3">
           <button
@@ -123,6 +137,8 @@ export function Toast({
   return (
     <div
       ref={toastRef}
+      role={type === "error" ? "alert" : "status"}
+      aria-live={type === "error" ? "assertive" : "polite"}
       className={`fixed bottom-8 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-full px-6 py-3 shadow-[0_12px_32px_rgba(31,41,51,0.08)] border border-outline-variant/70 ${bgClass}`}
     >
       <MaterialIcon name={iconName} className="text-xl" />

@@ -6,7 +6,7 @@ import { demoTrajets } from "../data/demo";
 import { trajetApi } from "../api/covoiturage";
 import type { TrajetResponse } from "../types/covoiturage";
 
-type SortOption = "Earliest departure" | "Lowest price" | "Most seats";
+type SortOption = "Départ le plus tôt" | "Prix le plus bas" | "Plus de places";
 
 const timeFilters = [
   { id: "morning", label: "06:00-12:00" },
@@ -24,7 +24,7 @@ export function RideListPage() {
   const [arrivee, setArrivee] = useState(searchParams.get("arrivee") ?? "");
   const [date, setDate] = useState(searchParams.get("date") ?? "");
   const [places, setPlaces] = useState(searchParams.get("places") ?? "1");
-  const [sortBy, setSortBy] = useState<SortOption>("Earliest departure");
+  const [sortBy, setSortBy] = useState<SortOption>("Départ le plus tôt");
   const [maxPrice, setMaxPrice] = useState(150);
   const [activeTimes, setActiveTimes] = useState<string[]>([
     "morning",
@@ -66,8 +66,8 @@ export function RideListPage() {
       });
 
     result.sort((a, b) => {
-      if (sortBy === "Lowest price") return a.prix - b.prix;
-      if (sortBy === "Most seats") {
+      if (sortBy === "Prix le plus bas") return a.prix - b.prix;
+      if (sortBy === "Plus de places") {
         return b.nbPlacesDisponibles - a.nbPlacesDisponibles;
       }
       return new Date(a.dateDepart).getTime() - new Date(b.dateDepart).getTime();
@@ -91,7 +91,7 @@ export function RideListPage() {
     setMaxPrice(150);
     setActiveTimes(["morning", "afternoon", "evening"]);
     setPlaces("1");
-    setSortBy("Earliest departure");
+    setSortBy("Départ le plus tôt");
   };
 
   return (
@@ -186,9 +186,9 @@ export function RideListPage() {
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as SortOption)}
                 >
-                  <option>Earliest departure</option>
-                  <option>Lowest price</option>
-                  <option>Most seats</option>
+                  <option>Départ le plus tôt</option>
+                  <option>Prix le plus bas</option>
+                  <option>Plus de places</option>
                 </select>
               </label>
 

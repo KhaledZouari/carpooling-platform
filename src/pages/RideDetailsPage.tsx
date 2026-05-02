@@ -242,7 +242,7 @@ export function RideDetailsPage() {
                   className={`seat-tick px-3 py-2 font-mono text-xs font-bold uppercase ${seatTone(visualSeats)}`}
                   aria-live="polite"
                 >
-                  {visualSeats} seat(s) left
+                  {visualSeats} place(s) restante(s)
                 </span>
               </div>
 
@@ -307,7 +307,7 @@ export function RideDetailsPage() {
                   <span className="skeleton h-5 w-36 bg-on-primary/30" />
                 ) : (
                   <>
-                    <span className="book-label">Confirm Booking</span>
+                    <span className="book-label">Confirmer la réservation</span>
                     <span className="book-hover-label">Réserver</span>
                   </>
                 )}

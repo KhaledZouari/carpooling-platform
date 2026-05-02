@@ -93,7 +93,11 @@ export type RegisterRequest = {
   password: string;
   telephone?: string;
   permisConduire?: string;
-  role: Exclude<Role, "ADMIN">;
+  role?: Exclude<Role, "ADMIN">;
+};
+
+export type BecomeConducteurRequest = {
+  permisConduire?: string;
 };
 
 export type TrajetRequest = {

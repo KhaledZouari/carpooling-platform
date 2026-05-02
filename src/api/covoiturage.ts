@@ -4,6 +4,7 @@ import type {
   AuthResponse,
   AvisRequest,
   AvisResponse,
+  BecomeConducteurRequest,
   LoginRequest,
   RegisterRequest,
   ReservationRequest,
@@ -55,6 +56,8 @@ export const authApi = {
     (await api.post<AuthResponse>("/auth/login", payload)).data,
   register: async (payload: RegisterRequest) =>
     (await api.post<AuthResponse>("/auth/register", payload)).data,
+  becomeConducteur: async (payload: BecomeConducteurRequest = {}) =>
+    (await api.post<AuthResponse>("/auth/become-conducteur", payload)).data,
   me: async () => (await api.get<UserResponse>("/auth/me")).data,
 };
 
