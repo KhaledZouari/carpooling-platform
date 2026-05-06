@@ -36,12 +36,17 @@ export function RideDetailsPage() {
         setTrip(data);
         setVisualSeats(data.nbPlacesDisponibles);
         if (data.conducteurId) {
-          avisApi.byConducteur(data.conducteurId).then(setReviews).catch(() => setReviews([]));
+          avisApi
+            .byConducteur(data.conducteurId)
+            .then(setReviews)
+            .catch(() => setReviews([]));
         }
       })
       .catch(() => {
         const fallback =
-          demoTrajets.find((item) => item.id === selectedId) ?? demoTrajets[0] ?? null;
+          demoTrajets.find((item) => item.id === selectedId) ??
+          demoTrajets[0] ??
+          null;
         setTrip(fallback);
         setVisualSeats(fallback?.nbPlacesDisponibles ?? 0);
       })
@@ -50,24 +55,33 @@ export function RideDetailsPage() {
 
   const totalPrice = useMemo(() => {
     if (!trip) return 0;
-    const requestedSeats = Math.min(seats, Math.max(1, trip.nbPlacesDisponibles));
+    const requestedSeats = Math.min(
+      seats,
+      Math.max(1, trip.nbPlacesDisponibles),
+    );
     return trip.prix * requestedSeats + 4.5;
   }, [seats, trip]);
 
   const averageRating = useMemo(() => {
-    if (reviews.length === 0) return "4.8";
+    if (reviews.length === 0) return (trip?.conducteurNote ?? 4.8).toFixed(1);
     const sum = reviews.reduce((acc, review) => acc + review.note, 0);
     return (sum / reviews.length).toFixed(1);
-  }, [reviews]);
+  }, [reviews, trip?.conducteurNote]);
 
   const handleReserve = async () => {
     if (!trip || isReserving || trip.nbPlacesDisponibles === 0) return;
-    const requestedSeats = Math.min(seats, Math.max(1, trip.nbPlacesDisponibles));
+    const requestedSeats = Math.min(
+      seats,
+      Math.max(1, trip.nbPlacesDisponibles),
+    );
     setIsReserving(true);
     setVisualSeats((current) => Math.max(0, current - requestedSeats));
 
     try {
-      await reservationApi.create({ trajetId: trip.id, nbPlacesReservees: requestedSeats });
+      await reservationApi.create({
+        trajetId: trip.id,
+        nbPlacesReservees: requestedSeats,
+      });
       setToast({ message: "Réservation envoyée.", type: "success" });
       window.setTimeout(() => navigate("/voyageur"), 900);
     } catch {
@@ -163,10 +177,14 @@ export function RideDetailsPage() {
                       index > 0 ? "border-t-2 border-outline" : ""
                     }`}
                   >
-                    <p className="font-mono text-xl font-bold uppercase">{stop.time}</p>
+                    <p className="font-mono text-xl font-bold uppercase">
+                      {stop.time}
+                    </p>
                     <div className="flex flex-col items-center">
                       <span className="h-5 w-5 border-2 border-outline bg-primary" />
-                      {index < 2 ? <span className="w-0.5 flex-1 bg-outline" /> : null}
+                      {index < 2 ? (
+                        <span className="w-0.5 flex-1 bg-outline" />
+                      ) : null}
                     </div>
                     <div>
                       <p className="font-headline text-3xl font-extrabold uppercase leading-none">
@@ -197,13 +215,17 @@ export function RideDetailsPage() {
             <div className="grid gap-4 p-5">
               <div className="grid gap-3 sm:grid-cols-3">
                 <div className="border-2 border-outline p-4">
-                  <p className="font-mono text-3xl font-bold">{averageRating}</p>
+                  <p className="font-mono text-3xl font-bold">
+                    {averageRating}
+                  </p>
                   <p className="font-mono text-xs font-bold uppercase text-on-surface-variant">
                     Note
                   </p>
                 </div>
                 <div className="border-2 border-outline p-4">
-                  <p className="font-mono text-3xl font-bold">{reviews.length}</p>
+                  <p className="font-mono text-3xl font-bold">
+                    {reviews.length}
+                  </p>
                   <p className="font-mono text-xs font-bold uppercase text-on-surface-variant">
                     Avis
                   </p>
@@ -217,7 +239,10 @@ export function RideDetailsPage() {
                   </p>
                 </div>
               </div>
-              <div className="route-map h-36 border-2 border-outline bg-surface" aria-label="Illustration abstraite du véhicule et de la ligne" />
+              <div
+                className="route-map h-36 border-2 border-outline bg-surface"
+                aria-label="Illustration abstraite du véhicule et de la ligne"
+              />
             </div>
           </article>
         </section>
@@ -264,7 +289,9 @@ export function RideDetailsPage() {
                   <button
                     type="button"
                     disabled={requestedSeats >= maxSeats || isReserving}
-                    onClick={() => setSeats((value) => Math.min(maxSeats, value + 1))}
+                    onClick={() =>
+                      setSeats((value) => Math.min(maxSeats, value + 1))
+                    }
                     className="border-l-2 border-outline font-mono text-2xl font-bold hover:bg-surface-container disabled:cursor-not-allowed disabled:text-on-surface-variant"
                     aria-label="Ajouter une place"
                   >
@@ -288,7 +315,9 @@ export function RideDetailsPage() {
                   <span>4.50€</span>
                 </div>
                 <div className="mt-5 flex items-end justify-between border-t-2 border-outline pt-5">
-                  <span className="font-mono text-sm font-bold uppercase">Total</span>
+                  <span className="font-mono text-sm font-bold uppercase">
+                    Total
+                  </span>
                   <span className="font-mono text-4xl font-bold text-primary">
                     {totalPrice.toFixed(2)}€
                   </span>
@@ -322,7 +351,11 @@ export function RideDetailsPage() {
       </main>
 
       {toast && (
-        <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
       )}
     </PageShell>
   );

@@ -25,13 +25,31 @@ export function RideListPage() {
   const [date, setDate] = useState(searchParams.get("date") ?? "");
   const [places, setPlaces] = useState(searchParams.get("places") ?? "1");
   const [sortBy, setSortBy] = useState<SortOption>("Départ le plus tôt");
-  const [maxPrice, setMaxPrice] = useState(150);
+  const [maxPrice, setMaxPrice] = useState(
+    Number(searchParams.get("prixMax") ?? 150),
+  );
   const [activeTimes, setActiveTimes] = useState<string[]>([
     "morning",
     "afternoon",
     "evening",
   ]);
   const [showMoreFilters, setShowMoreFilters] = useState(false);
+  const [typeTrajet, setTypeTrajet] = useState(
+    searchParams.get("typeTrajet") ?? "",
+  );
+  const [typeVehicule, setTypeVehicule] = useState(
+    searchParams.get("typeVehicule") ?? "",
+  );
+  const [fumeur, setFumeur] = useState(searchParams.get("fumeur") ?? "");
+  const [animaux, setAnimaux] = useState(searchParams.get("animaux") ?? "");
+  const [noteMin, setNoteMin] = useState(searchParams.get("noteMin") ?? "");
+  const [statut, setStatut] = useState(searchParams.get("statut") ?? "");
+  const [distanceKmMin, setDistanceKmMin] = useState(
+    searchParams.get("distanceKmMin") ?? "",
+  );
+  const [distanceKmMax, setDistanceKmMax] = useState(
+    searchParams.get("distanceKmMax") ?? "",
+  );
 
   const sameRoute =
     depart.trim().length > 0 &&
@@ -46,6 +64,35 @@ export function RideListPage() {
         date: searchParams.get("date") ?? undefined,
         places: searchParams.get("places")
           ? Number(searchParams.get("places"))
+          : undefined,
+        typeTrajet:
+          (searchParams.get("typeTrajet") as "LEGER" | "LONG" | null) ??
+          undefined,
+        fumeur: searchParams.get("fumeur")
+          ? searchParams.get("fumeur") === "true"
+          : undefined,
+        animaux: searchParams.get("animaux")
+          ? searchParams.get("animaux") === "true"
+          : undefined,
+        typeVehicule: searchParams.get("typeVehicule") ?? undefined,
+        statut:
+          (searchParams.get("statut") as
+            | "OUVERT"
+            | "COMPLET"
+            | "ANNULE"
+            | "TERMINE"
+            | null) ?? undefined,
+        prixMax: searchParams.get("prixMax")
+          ? Number(searchParams.get("prixMax"))
+          : undefined,
+        noteMin: searchParams.get("noteMin")
+          ? Number(searchParams.get("noteMin"))
+          : undefined,
+        distanceKmMin: searchParams.get("distanceKmMin")
+          ? Number(searchParams.get("distanceKmMin"))
+          : undefined,
+        distanceKmMax: searchParams.get("distanceKmMax")
+          ? Number(searchParams.get("distanceKmMax"))
           : undefined,
       })
       .then(setRides)
@@ -70,7 +117,9 @@ export function RideListPage() {
       if (sortBy === "Plus de places") {
         return b.nbPlacesDisponibles - a.nbPlacesDisponibles;
       }
-      return new Date(a.dateDepart).getTime() - new Date(b.dateDepart).getTime();
+      return (
+        new Date(a.dateDepart).getTime() - new Date(b.dateDepart).getTime()
+      );
     });
 
     return result;
@@ -84,6 +133,16 @@ export function RideListPage() {
     if (arrivee.trim()) nextParams.set("arrivee", arrivee.trim());
     if (date) nextParams.set("date", date);
     if (places) nextParams.set("places", places);
+    if (typeTrajet) nextParams.set("typeTrajet", typeTrajet);
+    if (typeVehicule.trim())
+      nextParams.set("typeVehicule", typeVehicule.trim());
+    if (fumeur) nextParams.set("fumeur", fumeur);
+    if (animaux) nextParams.set("animaux", animaux);
+    if (noteMin) nextParams.set("noteMin", noteMin);
+    if (statut) nextParams.set("statut", statut);
+    if (distanceKmMin) nextParams.set("distanceKmMin", distanceKmMin);
+    if (distanceKmMax) nextParams.set("distanceKmMax", distanceKmMax);
+    if (maxPrice) nextParams.set("prixMax", String(maxPrice));
     setSearchParams(nextParams);
   };
 
@@ -92,6 +151,14 @@ export function RideListPage() {
     setActiveTimes(["morning", "afternoon", "evening"]);
     setPlaces("1");
     setSortBy("Départ le plus tôt");
+    setTypeTrajet("");
+    setTypeVehicule("");
+    setFumeur("");
+    setAnimaux("");
+    setNoteMin("");
+    setStatut("");
+    setDistanceKmMin("");
+    setDistanceKmMax("");
   };
 
   return (
@@ -231,7 +298,100 @@ export function RideListPage() {
               </fieldset>
 
               {showMoreFilters ? (
-                <button type="button" onClick={resetFilters} className="app-button-secondary">
+                <>
+                  <label className="grid gap-2">
+                    <span className="field-label">Type de trajet</span>
+                    <select
+                      value={typeTrajet}
+                      onChange={(e) => setTypeTrajet(e.target.value)}
+                    >
+                      <option value="">Tous</option>
+                      <option value="LEGER">Léger</option>
+                      <option value="LONG">Long</option>
+                    </select>
+                  </label>
+                  <label className="grid gap-2">
+                    <span className="field-label">Type véhicule</span>
+                    <input
+                      placeholder="SUV, BERLINE..."
+                      value={typeVehicule}
+                      onChange={(e) => setTypeVehicule(e.target.value)}
+                    />
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <label className="grid gap-2">
+                      <span className="field-label">Fumeur</span>
+                      <select
+                        value={fumeur}
+                        onChange={(e) => setFumeur(e.target.value)}
+                      >
+                        <option value="">Tous</option>
+                        <option value="true">Autorisé</option>
+                        <option value="false">Non-fumeur</option>
+                      </select>
+                    </label>
+                    <label className="grid gap-2">
+                      <span className="field-label">Animaux</span>
+                      <select
+                        value={animaux}
+                        onChange={(e) => setAnimaux(e.target.value)}
+                      >
+                        <option value="">Tous</option>
+                        <option value="true">Autorisés</option>
+                        <option value="false">Interdits</option>
+                      </select>
+                    </label>
+                  </div>
+                  <label className="grid gap-2">
+                    <span className="field-label">Statut</span>
+                    <select value={statut} onChange={(e) => setStatut(e.target.value)}>
+                      <option value="">Tous</option>
+                      <option value="OUVERT">OUVERT</option>
+                      <option value="COMPLET">COMPLET</option>
+                      <option value="ANNULE">ANNULE</option>
+                      <option value="TERMINE">TERMINE</option>
+                    </select>
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <label className="grid gap-2">
+                      <span className="field-label">Distance min (km)</span>
+                      <input
+                        type="number"
+                        min="1"
+                        value={distanceKmMin}
+                        onChange={(e) => setDistanceKmMin(e.target.value)}
+                      />
+                    </label>
+                    <label className="grid gap-2">
+                      <span className="field-label">Distance max (km)</span>
+                      <input
+                        type="number"
+                        min="1"
+                        value={distanceKmMax}
+                        onChange={(e) => setDistanceKmMax(e.target.value)}
+                      />
+                    </label>
+                  </div>
+                  <label className="grid gap-2">
+                    <span className="field-label">Note conducteur min</span>
+                    <input
+                      type="number"
+                      min="1"
+                      max="5"
+                      step="0.1"
+                      value={noteMin}
+                      onChange={(e) => setNoteMin(e.target.value)}
+                    />
+                  </label>
+                </>
+              ) : null}
+
+              {showMoreFilters ? (
+                <button
+                  type="button"
+                  onClick={resetFilters}
+                  className="app-button-secondary"
+                >
                   Réinitialiser
                 </button>
               ) : null}
@@ -250,7 +410,10 @@ export function RideListPage() {
             {isLoading ? (
               <div className="grid gap-4">
                 {[0, 1, 2, 3].map((item) => (
-                  <div key={item} className="skeleton h-48 border-2 border-outline" />
+                  <div
+                    key={item}
+                    className="skeleton h-48 border-2 border-outline"
+                  />
                 ))}
               </div>
             ) : filteredRides.length === 0 ? (
@@ -263,7 +426,8 @@ export function RideListPage() {
                     Aucun départ sur cette ligne
                   </h2>
                   <p className="mt-4 font-mono text-sm font-bold uppercase text-on-surface-variant">
-                    Élargissez l’heure de départ ou remettez le prix maximum à 150€.
+                    Élargissez l’heure de départ ou remettez le prix maximum à
+                    150€.
                   </p>
                   <button
                     type="button"
@@ -277,7 +441,11 @@ export function RideListPage() {
             ) : (
               <div className="grid gap-4">
                 {filteredRides.map((trip, index) => (
-                  <TripCard key={trip.id} trip={trip} revealDelayMs={index * 50} />
+                  <TripCard
+                    key={trip.id}
+                    trip={trip}
+                    revealDelayMs={index * 50}
+                  />
                 ))}
               </div>
             )}

@@ -6,22 +6,27 @@ import type {
   AvisResponse,
   BecomeConducteurRequest,
   LoginRequest,
+  ReclamationRequest,
+  ReclamationResponse,
   RegisterRequest,
   ReservationRequest,
   ReservationResponse,
+  StatutReclamation,
   TrajetRequest,
   TrajetResponse,
   TripSearchParams,
+  UpdateProfileRequest,
   UserResponse,
   VehiculeResponse,
 } from "../types/covoiturage";
 
 const toSearchParams = (params: TripSearchParams) => {
   const searchParams = new URLSearchParams();
-  if (params.depart) searchParams.set("depart", params.depart);
-  if (params.arrivee) searchParams.set("arrivee", params.arrivee);
-  if (params.date) searchParams.set("date", params.date);
-  if (params.places) searchParams.set("places", String(params.places));
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === undefined || value === null) return;
+    if (typeof value === "string" && value.trim() === "") return;
+    searchParams.set(key, String(value));
+  });
   return searchParams.toString();
 };
 
@@ -59,6 +64,8 @@ export const authApi = {
   becomeConducteur: async (payload: BecomeConducteurRequest = {}) =>
     (await api.post<AuthResponse>("/auth/become-conducteur", payload)).data,
   me: async () => (await api.get<UserResponse>("/auth/me")).data,
+  updateMe: async (payload: UpdateProfileRequest) =>
+    (await api.put<UserResponse>("/auth/me", payload)).data,
 };
 
 export const trajetApi = {
@@ -107,8 +114,9 @@ export const reservationApi = {
 };
 
 export const vehiculeApi = {
-  create: async (payload: Omit<VehiculeResponse, "id" | "conducteurId">) =>
-    (await api.post<VehiculeResponse>("/vehicules", payload)).data,
+  create: async (
+    payload: Omit<VehiculeResponse, "id" | "conducteurId" | "imageUrl">,
+  ) => (await api.post<VehiculeResponse>("/vehicules", payload)).data,
   myVehicules: async () =>
     (await api.get<VehiculeResponse[]>("/vehicules/mes-vehicules")).data,
   remove: async (id: number) => {
@@ -134,6 +142,12 @@ export const avisApi = {
 
 export const adminApi = {
   users: async () => (await api.get<UserResponse[]>("/admin/users")).data,
+  searchUsers: async (q: string) =>
+    (
+      await api.get<UserResponse[]>(
+        `/admin/users/search?q=${encodeURIComponent(q)}`,
+      )
+    ).data,
   block: async (id: number) =>
     (await api.put<UserResponse>(`/admin/users/${id}/bloquer`)).data,
   unblock: async (id: number) =>
@@ -143,4 +157,27 @@ export const adminApi = {
     await api.delete(`/admin/trajets/${id}`);
   },
   stats: async () => (await api.get<AdminStatsResponse>("/admin/stats")).data,
+  reclamations: async (params?: { q?: string; statut?: StatutReclamation }) => {
+    const query = new URLSearchParams();
+    if (params?.q?.trim()) query.set("q", params.q.trim());
+    if (params?.statut) query.set("statut", params.statut);
+    const suffix = query.toString() ? `?${query.toString()}` : "";
+    return (
+      await api.get<ReclamationResponse[]>(`/admin/reclamations${suffix}`)
+    ).data;
+  },
+  updateReclamationStatus: async (id: number, statut: StatutReclamation) =>
+    (
+      await api.put<ReclamationResponse>(`/admin/reclamations/${id}/statut`, {
+        statut,
+      })
+    ).data,
+};
+
+export const reclamationApi = {
+  create: async (payload: ReclamationRequest) =>
+    (await api.post<ReclamationResponse>("/reclamations", payload)).data,
+  myReclamations: async () =>
+    (await api.get<ReclamationResponse[]>("/reclamations/mes-reclamations"))
+      .data,
 };

@@ -1,10 +1,12 @@
 export type Role = "ADMIN" | "VOYAGEUR" | "CONDUCTEUR";
 export type StatutTrajet = "OUVERT" | "COMPLET" | "ANNULE" | "TERMINE";
+export type TypeTrajet = "LONG" | "LEGER";
 export type StatutReservation =
   | "EN_ATTENTE"
   | "CONFIRMEE"
   | "ANNULEE"
   | "REFUSEE";
+export type StatutReclamation = "OUVERTE" | "EN_COURS" | "RESOLUE" | "REJETEE";
 
 export type UserResponse = {
   id: number;
@@ -32,11 +34,19 @@ export type TrajetResponse = {
   nbPlacesTotal: number;
   nbPlacesDisponibles: number;
   prix: number;
+  distanceKm?: number | null;
+  typeTrajet?: TypeTrajet | null;
+  fumeurAutorise?: boolean | null;
+  animauxAutorises?: boolean | null;
+  nbBagagesMax?: number | null;
+  typeBagage?: string | null;
   statut: StatutTrajet;
   conducteurId?: number | null;
   conducteurNom?: string | null;
+  conducteurNote?: number | null;
   vehiculeId?: number | null;
   vehiculeDescription?: string | null;
+  vehiculeType?: string | null;
   vehiculeImageUrl?: string | null;
   createdAt?: string | null;
 };
@@ -49,13 +59,17 @@ export type ReservationResponse = {
   voyageurNom?: string | null;
   nbPlacesReservees: number;
   statut: StatutReservation;
+  penaliteMontant?: number | null;
+  penalitePourcentage?: number | null;
   dateReservation?: string | null;
+  dateAnnulation?: string | null;
 };
 
 export type VehiculeResponse = {
   id: number;
   marque: string;
   modele: string;
+  typeVehicule?: string | null;
   immatriculation: string;
   nbPlaces: number;
   couleur?: string | null;
@@ -106,6 +120,12 @@ export type TrajetRequest = {
   dateDepart: string;
   nbPlacesTotal: number;
   prix: number;
+  distanceKm?: number | null;
+  typeTrajet?: TypeTrajet | null;
+  fumeurAutorise?: boolean | null;
+  animauxAutorises?: boolean | null;
+  nbBagagesMax?: number | null;
+  typeBagage?: string | null;
   vehiculeId?: number | null;
 };
 
@@ -125,4 +145,40 @@ export type TripSearchParams = {
   arrivee?: string;
   date?: string;
   places?: number;
+  typeTrajet?: TypeTrajet;
+  fumeur?: boolean;
+  animaux?: boolean;
+  typeVehicule?: string;
+  statut?: StatutTrajet;
+  prixMin?: number;
+  prixMax?: number;
+  noteMin?: number;
+  distanceKmMin?: number;
+  distanceKmMax?: number;
+  heureDepartMin?: string;
+  heureDepartMax?: string;
+};
+
+export type UpdateProfileRequest = {
+  nom?: string;
+  prenom?: string;
+  telephone?: string;
+};
+
+export type ReclamationRequest = {
+  objet: string;
+  message: string;
+  reservationId?: number;
+};
+
+export type ReclamationResponse = {
+  id: number;
+  objet: string;
+  message: string;
+  statut: StatutReclamation;
+  auteurId?: number | null;
+  auteurNom?: string | null;
+  reservationId?: number | null;
+  dateCreation?: string | null;
+  dateMiseAJour?: string | null;
 };

@@ -4,7 +4,12 @@ import gsap from "gsap";
 import { PageShell } from "../components/layout/PageShell";
 import { MaterialIcon } from "../components/MaterialIcon";
 import { demoTrajets, demoUser, demoVehicules } from "../data/demo";
-import { authApi, trajetApi, vehiculeApi, reservationApi } from "../api/covoiturage";
+import {
+  authApi,
+  trajetApi,
+  vehiculeApi,
+  reservationApi,
+} from "../api/covoiturage";
 import { useAuth } from "../context/AuthContext";
 import type {
   TrajetResponse,
@@ -32,12 +37,19 @@ export function DriverDashboardPage() {
     dateDepart: "",
     nbPlacesTotal: 3,
     prix: 12,
+    distanceKm: 100,
+    typeTrajet: "LEGER" as "LEGER" | "LONG",
+    fumeurAutorise: false,
+    animauxAutorises: false,
+    nbBagagesMax: 0,
+    typeBagage: "",
     vehiculeId: 0,
   });
 
   const [newVehicle, setNewVehicle] = useState({
     marque: "",
     modele: "",
+    typeVehicule: "",
     immatriculation: "",
     nbPlaces: 4,
     annee: 2020,
@@ -114,10 +126,13 @@ export function DriverDashboardPage() {
   const publishSameRoute =
     form.villeDepart.trim().length > 0 &&
     form.villeArrivee.trim().length > 0 &&
-    form.villeDepart.trim().toLowerCase() === form.villeArrivee.trim().toLowerCase();
+    form.villeDepart.trim().toLowerCase() ===
+      form.villeArrivee.trim().toLowerCase();
   const seatsExceedVehicle =
-    Boolean(selectedVehicle) && form.nbPlacesTotal > (selectedVehicle?.nbPlaces ?? 0);
-  const hasPublishBlocker = !selectedVehicle || publishSameRoute || seatsExceedVehicle;
+    Boolean(selectedVehicle) &&
+    form.nbPlacesTotal > (selectedVehicle?.nbPlaces ?? 0);
+  const hasPublishBlocker =
+    !selectedVehicle || publishSameRoute || seatsExceedVehicle;
   const canPublishRide =
     Boolean(selectedVehicle) &&
     !publishSameRoute &&
@@ -151,7 +166,10 @@ export function DriverDashboardPage() {
   const submitRide = async () => {
     if (!isDriver) return;
     if (!canPublishRide) {
-      setToast({ message: "Corrigez les champs du trajet avant publication.", type: "error" });
+      setToast({
+        message: "Corrigez les champs du trajet avant publication.",
+        type: "error",
+      });
       return;
     }
     try {
@@ -161,6 +179,12 @@ export function DriverDashboardPage() {
         dateDepart: form.dateDepart,
         nbPlacesTotal: form.nbPlacesTotal,
         prix: form.prix,
+        distanceKm: form.distanceKm,
+        typeTrajet: form.typeTrajet,
+        fumeurAutorise: form.fumeurAutorise,
+        animauxAutorises: form.animauxAutorises,
+        nbBagagesMax: form.nbBagagesMax,
+        typeBagage: form.typeBagage.trim() || undefined,
         vehiculeId: form.vehiculeId || undefined,
       });
       setToast({ message: "Trajet publié.", type: "success" });
@@ -177,6 +201,7 @@ export function DriverDashboardPage() {
       const created = await vehiculeApi.create({
         marque: newVehicle.marque,
         modele: newVehicle.modele,
+        typeVehicule: newVehicle.typeVehicule || undefined,
         immatriculation: newVehicle.immatriculation,
         nbPlaces: newVehicle.nbPlaces,
         annee: newVehicle.annee,
@@ -191,6 +216,7 @@ export function DriverDashboardPage() {
       setNewVehicle({
         marque: "",
         modele: "",
+        typeVehicule: "",
         immatriculation: "",
         nbPlaces: 4,
         annee: 2020,
@@ -215,7 +241,10 @@ export function DriverDashboardPage() {
           setToast({ message: "Véhicule supprimé.", type: "success" });
           fetchData();
         } catch {
-          setToast({ message: "Suppression du véhicule impossible.", type: "error" });
+          setToast({
+            message: "Suppression du véhicule impossible.",
+            type: "error",
+          });
         } finally {
           setConfirmState((prev) => ({ ...prev, isOpen: false }));
         }
@@ -239,7 +268,10 @@ export function DriverDashboardPage() {
           });
           fetchData();
         } catch {
-          setToast({ message: "Annulation du trajet impossible.", type: "error" });
+          setToast({
+            message: "Annulation du trajet impossible.",
+            type: "error",
+          });
         } finally {
           setConfirmState((prev) => ({ ...prev, isOpen: false }));
         }
@@ -261,7 +293,10 @@ export function DriverDashboardPage() {
       }
       fetchData();
     } catch {
-      setToast({ message: "Traitement de la réservation impossible.", type: "error" });
+      setToast({
+        message: "Traitement de la réservation impossible.",
+        type: "error",
+      });
     }
   };
 
@@ -284,7 +319,10 @@ export function DriverDashboardPage() {
       <PageShell>
         <main className="mx-auto flex w-full max-w-7xl items-center justify-center flex-1 px-6 pb-24 pt-32">
           <div className="text-center bg-surface-container-lowest p-12 rounded-3xl border border-outline-variant/60 shadow-[0_12px_32px_rgba(31,41,51,0.08)] max-w-md">
-            <MaterialIcon name={user ? "commute" : "block"} className="text-primary text-6xl mb-4" />
+            <MaterialIcon
+              name={user ? "commute" : "block"}
+              className="text-primary text-6xl mb-4"
+            />
             <h2 className="text-3xl font-headline font-bold mb-2">
               {user ? "Activer la publication" : "Connexion requise"}
             </h2>
@@ -533,7 +571,7 @@ export function DriverDashboardPage() {
                                 to={`/ride-details/${trip.id}`}
                                 className="text-sm font-bold text-on-surface bg-surface-container px-4 py-2 rounded-lg hover:bg-surface-variant transition-colors"
                               >
-                                  Détails
+                                Détails
                               </Link>
                               {trip.statut === "OUVERT" && (
                                 <button
@@ -627,6 +665,17 @@ export function DriverDashboardPage() {
                       />
                       <input
                         className="col-span-2 rounded-xl border border-outline-variant/20 bg-surface-container px-4 py-3 text-sm font-medium focus:border-primary focus:ring-1 focus:ring-primary"
+                        placeholder="Type de véhicule (ex. BERLINE, SUV)"
+                        value={newVehicle.typeVehicule}
+                        onChange={(e) =>
+                          setNewVehicle({
+                            ...newVehicle,
+                            typeVehicule: e.target.value,
+                          })
+                        }
+                      />
+                      <input
+                        className="col-span-2 rounded-xl border border-outline-variant/20 bg-surface-container px-4 py-3 text-sm font-medium focus:border-primary focus:ring-1 focus:ring-primary"
                         placeholder="Immatriculation (ex. AB-123-CD)"
                         value={newVehicle.immatriculation}
                         onChange={(e) =>
@@ -696,7 +745,8 @@ export function DriverDashboardPage() {
                   {vehicules.length === 0 ? (
                     <div className="col-span-full rounded-3xl border border-dashed border-outline-variant/30 bg-surface-container-lowest p-10 text-center">
                       <p className="text-on-surface-variant font-medium">
-                        Aucun véhicule enregistré. Ajoutez un véhicule pour publier un trajet.
+                        Aucun véhicule enregistré. Ajoutez un véhicule pour
+                        publier un trajet.
                       </p>
                     </div>
                   ) : (
@@ -735,6 +785,11 @@ export function DriverDashboardPage() {
                           <h3 className="text-xl font-headline font-bold">
                             {v.marque} {v.modele}
                           </h3>
+                          {v.typeVehicule ? (
+                            <p className="text-xs text-on-surface-variant mt-1 font-semibold uppercase tracking-wider">
+                              {v.typeVehicule}
+                            </p>
+                          ) : null}
                           <p className="text-sm text-on-surface-variant mt-1 font-medium bg-surface-container inline-block px-2 py-1 rounded mt-2">
                             {v.immatriculation}
                           </p>
@@ -852,7 +907,8 @@ export function DriverDashboardPage() {
                 </div>
                 {publishSameRoute ? (
                   <p className="font-mono text-[11px] font-bold uppercase text-error">
-                    La ville de départ et la destination doivent être différentes.
+                    La ville de départ et la destination doivent être
+                    différentes.
                   </p>
                 ) : null}
 
@@ -907,7 +963,8 @@ export function DriverDashboardPage() {
                 </div>
                 {seatsExceedVehicle ? (
                   <p className="font-mono text-[11px] font-bold uppercase text-error">
-                    Le nombre de places dépasse la capacité du véhicule sélectionné.
+                    Le nombre de places dépasse la capacité du véhicule
+                    sélectionné.
                   </p>
                 ) : null}
 
@@ -966,6 +1023,96 @@ export function DriverDashboardPage() {
                           setForm({ ...form, prix: Number(e.target.value) })
                         }
                       />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">
+                      Distance (km)
+                    </label>
+                    <input
+                      required
+                      type="number"
+                      min="1"
+                      className="w-full rounded-2xl border border-outline-variant/20 bg-surface-container py-4 px-4 font-medium focus:border-primary focus:ring-1 focus:ring-primary"
+                      value={form.distanceKm}
+                      onChange={(e) =>
+                        setForm({ ...form, distanceKm: Math.max(1, Number(e.target.value || 1)) })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">
+                      Type de trajet
+                    </label>
+                    <select
+                      className="w-full rounded-2xl border border-outline-variant/20 bg-surface-container py-4 px-4 font-medium focus:border-primary focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
+                      value={form.typeTrajet}
+                      onChange={(e) =>
+                        setForm({ ...form, typeTrajet: e.target.value as "LEGER" | "LONG" })
+                      }
+                    >
+                      <option value="LEGER">Léger</option>
+                      <option value="LONG">Long</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">
+                      Nb bagages max
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      className="w-full rounded-2xl border border-outline-variant/20 bg-surface-container py-4 px-4 font-medium focus:border-primary focus:ring-1 focus:ring-primary"
+                      value={form.nbBagagesMax}
+                      onChange={(e) =>
+                        setForm({ ...form, nbBagagesMax: Math.max(0, Number(e.target.value || 0)) })
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">
+                      Type de bagage
+                    </label>
+                    <input
+                      className="w-full rounded-2xl border border-outline-variant/20 bg-surface-container py-4 px-4 font-medium focus:border-primary focus:ring-1 focus:ring-primary"
+                      placeholder="Ex. Valise cabine"
+                      value={form.typeBagage}
+                      onChange={(e) => setForm({ ...form, typeBagage: e.target.value })}
+                    />
+                  </div>
+                  <div className="rounded-2xl border border-outline-variant/20 bg-surface-container p-4">
+                    <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">
+                      Tolérances
+                    </p>
+                    <div className="grid gap-3">
+                      <label className="flex items-center justify-between text-sm font-semibold">
+                        Fumeur autorisé
+                        <input
+                          type="checkbox"
+                          checked={form.fumeurAutorise}
+                          onChange={(e) =>
+                            setForm({ ...form, fumeurAutorise: e.target.checked })
+                          }
+                          className="h-5 w-5 accent-primary"
+                        />
+                      </label>
+                      <label className="flex items-center justify-between text-sm font-semibold">
+                        Animaux autorisés
+                        <input
+                          type="checkbox"
+                          checked={form.animauxAutorises}
+                          onChange={(e) =>
+                            setForm({ ...form, animauxAutorises: e.target.checked })
+                          }
+                          className="h-5 w-5 accent-primary"
+                        />
+                      </label>
                     </div>
                   </div>
                 </div>

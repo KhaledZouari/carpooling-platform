@@ -12,6 +12,7 @@ type AuthState = {
   token: string | null;
   isAuthenticated: boolean;
   setSession: (payload: AuthResponse) => void;
+  updateUser: (user: UserResponse) => void;
   clearSession: () => void;
 };
 
@@ -39,6 +40,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("token", payload.token);
   };
 
+  const updateUser = (nextUser: UserResponse) => {
+    setUser(nextUser);
+    localStorage.setItem("user", JSON.stringify(nextUser));
+  };
+
   const clearSession = () => {
     setUser(null);
     setToken(null);
@@ -52,6 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       token,
       isAuthenticated: Boolean(token && user),
       setSession,
+      updateUser,
       clearSession,
     }),
     [token, user],

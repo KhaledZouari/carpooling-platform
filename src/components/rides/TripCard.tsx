@@ -32,7 +32,8 @@ export function TripCard({
   const [isLoading, setIsLoading] = useState(false);
   const [visualSeats, setVisualSeats] = useState(trip.nbPlacesDisponibles);
   const departure = new Date(trip.dateDepart);
-  const rating = trip.nbPlacesDisponibles <= 1 ? 4.6 : 4.9;
+  const rating =
+    trip.conducteurNote ?? (trip.nbPlacesDisponibles <= 1 ? 4.6 : 4.9);
   const isDisabled = trip.nbPlacesDisponibles <= 0 || isLoading;
 
   const handleBook = () => {
@@ -49,7 +50,10 @@ export function TripCard({
     >
       <div className="border-b-2 border-outline p-4 md:border-b-0 md:border-r-2">
         <p className="font-mono text-[2.4rem] font-bold leading-none text-on-surface">
-          {departure.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+          {departure.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
         </p>
         <p className="mt-2 font-mono text-xs font-bold uppercase text-on-surface-variant">
           Durée {durationLabel(trip)}
@@ -82,7 +86,8 @@ export function TripCard({
                 {trip.conducteurNom ?? "Conducteur"}
               </p>
               <p className="truncate font-mono text-[11px] font-bold uppercase text-on-surface-variant">
-                {rating.toFixed(1)} / {trip.vehiculeDescription ?? "Véhicule standard"}
+                {rating.toFixed(1)} /{" "}
+                {trip.vehiculeDescription ?? "Véhicule standard"}
               </p>
             </div>
           </div>
