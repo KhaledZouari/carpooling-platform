@@ -416,9 +416,11 @@ export function RideListPage() {
             {isLoading ? (
               <div className="grid gap-4">
                 {[0, 1, 2, 3].map((item) => (
-                  <div
+                  <TripCard
                     key={item}
-                    className="skeleton h-48 border-2 border-outline"
+                    trip={demoTrajets[0]}
+                    loading
+                    revealDelayMs={item * 20}
                   />
                 ))}
               </div>

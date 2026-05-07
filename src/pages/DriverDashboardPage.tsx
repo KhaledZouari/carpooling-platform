@@ -25,6 +25,8 @@ export function DriverDashboardPage() {
   const [trajets, setTrajets] = useState<TrajetResponse[]>(demoTrajets);
   const [vehicules, setVehicules] = useState<VehiculeResponse[]>(demoVehicules);
   const [reservations, setReservations] = useState<ReservationResponse[]>([]);
+  const [isLoadingTrajets, setIsLoadingTrajets] = useState(true);
+  const [isLoadingReservations, setIsLoadingReservations] = useState(true);
 
   // Tabs
   const [activeTab, setActiveTab] = useState<"fleet" | "requests" | "publish">(
@@ -73,10 +75,12 @@ export function DriverDashboardPage() {
   }>({ isOpen: false, title: "", message: "", action: () => {} });
 
   const fetchData = () => {
+    setIsLoadingTrajets(true);
     trajetApi
       .myTrajets()
       .then(setTrajets)
-      .catch(() => setTrajets(demoTrajets));
+      .catch(() => setTrajets(demoTrajets))
+      .finally(() => setIsLoadingTrajets(false));
     vehiculeApi
       .myVehicules()
       .then((v) => {
@@ -85,10 +89,12 @@ export function DriverDashboardPage() {
           setForm((prev) => ({ ...prev, vehiculeId: v[0].id }));
       })
       .catch(() => setVehicules(demoVehicules));
+    setIsLoadingReservations(true);
     reservationApi
       .pourMesTrajets()
       .then(setReservations)
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setIsLoadingReservations(false));
   };
 
   useEffect(() => {
@@ -412,7 +418,20 @@ export function DriverDashboardPage() {
                   />{" "}
                   Demandes entrantes
                 </h2>
-                {reservations.filter((r) => r.statut === "EN_ATTENTE")
+                {isLoadingReservations ? (
+                  <div className="space-y-4">
+                    {[0, 1].map((i) => (
+                      <div
+                        key={i}
+                        className="rounded-2xl border border-primary/20 bg-primary/5 p-5 shadow-lg shadow-primary/5 animate-pulse"
+                      >
+                        <div className="h-6 w-48 bg-gray-200 mb-3" />
+                        <div className="h-4 w-32 bg-gray-200 mb-3" />
+                        <div className="h-10 w-full bg-gray-200 rounded-lg" />
+                      </div>
+                    ))}
+                  </div>
+                ) : reservations.filter((r) => r.statut === "EN_ATTENTE")
                   .length === 0 ? (
                   <div className="rounded-3xl border border-dashed border-outline-variant/30 bg-surface-container-lowest p-10 text-center">
                     <MaterialIcon
@@ -480,7 +499,22 @@ export function DriverDashboardPage() {
                   <MaterialIcon name="commute" className="text-primary" /> My
                   Trajets publiés
                 </h2>
-                {trajets.length === 0 ? (
+                {isLoadingTrajets ? (
+                  <div className="space-y-4">
+                    {[0, 1].map((i) => (
+                      <div
+                        key={i}
+                        className="flex flex-col gap-6 rounded-3xl p-6 md:flex-row shadow-[0_8px_24px_rgba(31,41,51,0.06)] border border-outline-variant/60 animate-pulse"
+                      >
+                        <div className="h-24 w-full md:w-32 bg-gray-200 rounded-2xl" />
+                        <div className="flex-1 space-y-4">
+                          <div className="h-6 w-64 bg-gray-200" />
+                          <div className="h-4 w-40 bg-gray-200" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : trajets.length === 0 ? (
                   <div className="rounded-3xl border border-dashed border-outline-variant/30 bg-surface-container-lowest p-16 text-center">
                     <p className="text-on-surface-variant font-medium">
                       Vous n'avez pas encore publié de trajet.

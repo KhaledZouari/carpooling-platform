@@ -316,9 +316,11 @@ function HeroCarpoolSignal() {
 export function HomePage() {
   const { user } = useAuth();
   const [recentTrips, setRecentTrips] = useState<TrajetResponse[]>([]);
+  const [isLoadingRecent, setIsLoadingRecent] = useState(true);
   const homeRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
+    setIsLoadingRecent(true);
     trajetApi
       .search()
       .then((data) =>
@@ -332,7 +334,8 @@ export function HomePage() {
             .slice(0, 3),
         ),
       )
-      .catch(() => setRecentTrips(demoTrajets.slice(0, 3)));
+      .catch(() => setRecentTrips(demoTrajets.slice(0, 3)))
+      .finally(() => setIsLoadingRecent(false));
   }, []);
 
   useEffect(() => {
@@ -536,11 +539,13 @@ export function HomePage() {
         </div>
 
         <div className="grid gap-4" aria-live="polite">
-          {recentTrips.length === 0
+          {isLoadingRecent
             ? [0, 1, 2].map((item) => (
-                <div
+                <TripCard
                   key={item}
-                  className="skeleton h-44 border-2 border-outline"
+                  trip={demoTrajets[0]}
+                  loading
+                  revealDelayMs={item * 50}
                 />
               ))
             : recentTrips.map((trip, index) => (

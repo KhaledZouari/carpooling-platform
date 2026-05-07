@@ -25,6 +25,7 @@ export function VoyageurPage() {
   const [profile, setProfile] = useState<UserResponse | null>(user);
   const [trips, setTrips] = useState<TrajetResponse[]>(demoTrajets);
   const [reservations, setReservations] = useState<ReservationResponse[]>([]);
+  const [isLoadingReservations, setIsLoadingReservations] = useState(true);
   const [reclamations, setReclamations] = useState<ReclamationResponse[]>([]);
   const [reservationTrips, setReservationTrips] = useState<
     Map<number, TrajetResponse>
@@ -75,10 +76,12 @@ export function VoyageurPage() {
       .search()
       .then(setTrips)
       .catch(() => setTrips(demoTrajets));
+    setIsLoadingReservations(true);
     reservationApi
       .myReservations()
       .then(setReservations)
-      .catch(() => setReservations([]));
+      .catch(() => setReservations([]))
+      .finally(() => setIsLoadingReservations(false));
     reclamationApi
       .myReclamations()
       .then(setReclamations)
@@ -262,7 +265,18 @@ export function VoyageurPage() {
         <div ref={contentRef} className="flex-1">
           {activeTab === "bookings" && (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {reservations.length === 0 ? (
+              {isLoadingReservations ? (
+                [0, 1, 2].map((i) => (
+                  <div
+                    key={i}
+                    className="col-span-full rounded-2xl border-2 border-outline bg-surface p-6 animate-pulse"
+                  >
+                    <div className="h-6 w-40 bg-gray-200 mb-4" />
+                    <div className="h-4 w-28 bg-gray-200 mb-2" />
+                    <div className="mt-6 h-8 w-full bg-gray-200" />
+                  </div>
+                ))
+              ) : reservations.length === 0 ? (
                 <div className="col-span-full rounded-3xl border border-dashed border-outline-variant/30 bg-surface-container-lowest p-16 text-center">
                   <MaterialIcon
                     name="directions_car"
