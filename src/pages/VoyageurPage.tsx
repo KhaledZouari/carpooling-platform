@@ -26,6 +26,9 @@ export function VoyageurPage() {
   const [trips, setTrips] = useState<TrajetResponse[]>(demoTrajets);
   const [reservations, setReservations] = useState<ReservationResponse[]>([]);
   const [reclamations, setReclamations] = useState<ReclamationResponse[]>([]);
+  const [reservationTrips, setReservationTrips] = useState<
+    Map<number, TrajetResponse>
+  >(new Map());
   const [profileForm, setProfileForm] = useState({
     nom: "",
     prenom: "",
@@ -95,6 +98,27 @@ export function VoyageurPage() {
   }, [profile]);
 
   useEffect(() => {
+    // Fetch trip details for each reservation to check completion status
+    const tripMap = new Map<number, TrajetResponse>();
+    const fetchTripDetails = async () => {
+      for (const res of reservations) {
+        if (res.trajetId && !tripMap.has(res.trajetId)) {
+          try {
+            const tripData = await trajetApi.getById(res.trajetId);
+            tripMap.set(res.trajetId, tripData);
+          } catch {
+            // Ignore errors, trip data may not be available
+          }
+        }
+      }
+      setReservationTrips(tripMap);
+    };
+    if (reservations.length > 0) {
+      fetchTripDetails();
+    }
+  }, [reservations]);
+
+  useEffect(() => {
     if (contentRef.current) {
       gsap.fromTo(
         contentRef.current.children,
@@ -160,7 +184,10 @@ export function VoyageurPage() {
 
   const submitReclamation = async () => {
     if (!reclamationForm.objet.trim() || !reclamationForm.message.trim()) {
-      setToast({ message: "Objet et message sont obligatoires.", type: "error" });
+      setToast({
+        message: "Objet et message sont obligatoires.",
+        type: "error",
+      });
       return;
     }
     setIsSubmittingReclamation(true);
@@ -176,7 +203,10 @@ export function VoyageurPage() {
       setReclamationForm({ reservationId: "", objet: "", message: "" });
       fetchData();
     } catch {
-      setToast({ message: "Envoi de la réclamation impossible.", type: "error" });
+      setToast({
+        message: "Envoi de la réclamation impossible.",
+        type: "error",
+      });
     } finally {
       setIsSubmittingReclamation(false);
     }
@@ -255,7 +285,10 @@ export function VoyageurPage() {
                 reservations.map((res) => {
                   const isActive =
                     res.statut === "EN_ATTENTE" || res.statut === "CONFIRMEE";
-                  const isDone = res.statut === "CONFIRMEE"; // Mocking completion
+                  const tripData = reservationTrips.get(res.trajetId ?? 0);
+                  const isDone =
+                    res.statut === "CONFIRMEE" &&
+                    tripData?.statut === "TERMINE";
 
                   return (
                     <article
@@ -298,7 +331,7 @@ export function VoyageurPage() {
                         {isActive && (
                           <button
                             onClick={() => confirmCancelReservation(res.id)}
-                            className="flex-1 py-2.5 rounded-xl bg-surface-container hover:bg-red-500/20 hover:text-red-400 font-semibold text-sm transition-colors text-on-surface"
+                            className="flex-1 py-2.5 border-2 border-outline bg-surface hover:bg-error/10 hover:border-error font-mono font-bold uppercase text-xs text-on-surface transition-colors"
                           >
                             Annuler
                           </button>
@@ -311,7 +344,7 @@ export function VoyageurPage() {
                                 trajetId: res.trajetId ?? null,
                               })
                             }
-                            className="flex-1 py-2.5 rounded-xl bg-primary text-on-primary font-bold text-sm hover:bg-primary-dim transition-colors shadow-lg shadow-primary/20"
+                            className="flex-1 py-2.5 border-2 border-primary bg-primary text-on-primary font-mono font-bold uppercase text-xs hover:bg-primary-dim transition-colors"
                           >
                             Laisser un avis
                           </button>
@@ -401,7 +434,9 @@ export function VoyageurPage() {
                       Compte voyageur
                     </div>
                     <h2 className="text-3xl font-headline font-bold text-on-surface">
-                      {profile ? `${profile.prenom} ${profile.nom}` : "Voyageur"}
+                      {profile
+                        ? `${profile.prenom} ${profile.nom}`
+                        : "Voyageur"}
                     </h2>
                     <p className="text-on-surface-variant font-medium">
                       {profile?.email ?? "Email non renseigné"}
@@ -429,7 +464,9 @@ export function VoyageurPage() {
                 </div>
 
                 <div className="mt-6 grid gap-4">
-                  <h3 className="font-headline text-2xl font-bold">Modifier mes données</h3>
+                  <h3 className="font-headline text-2xl font-bold">
+                    Modifier mes données
+                  </h3>
                   <div className="grid grid-cols-2 gap-3">
                     <input
                       className="rounded-xl border border-outline-variant/20 bg-surface-container px-4 py-3 font-medium"
@@ -447,7 +484,10 @@ export function VoyageurPage() {
                       placeholder="Nom"
                       value={profileForm.nom}
                       onChange={(e) =>
-                        setProfileForm((current) => ({ ...current, nom: e.target.value }))
+                        setProfileForm((current) => ({
+                          ...current,
+                          nom: e.target.value,
+                        }))
                       }
                     />
                   </div>
@@ -474,7 +514,9 @@ export function VoyageurPage() {
               </div>
 
               <div className="rounded-2xl bg-surface-container-lowest p-8 border border-outline-variant/60 shadow-[0_12px_32px_rgba(31,41,51,0.08)]">
-                <h3 className="font-headline text-2xl font-bold mb-4">Réclamations</h3>
+                <h3 className="font-headline text-2xl font-bold mb-4">
+                  Réclamations
+                </h3>
                 <div className="grid gap-3">
                   <select
                     className="rounded-xl border border-outline-variant/20 bg-surface-container px-4 py-3 font-medium"
@@ -490,7 +532,8 @@ export function VoyageurPage() {
                     {reservations.map((reservation) => (
                       <option key={reservation.id} value={reservation.id}>
                         #{reservation.id} -{" "}
-                        {reservation.trajetDescription ?? `Trajet #${reservation.trajetId}`}
+                        {reservation.trajetDescription ??
+                          `Trajet #${reservation.trajetId}`}
                       </option>
                     ))}
                   </select>
@@ -523,7 +566,9 @@ export function VoyageurPage() {
                     disabled={isSubmittingReclamation}
                     className="rounded-xl bg-primary px-4 py-3 font-bold text-on-primary hover:bg-primary-dim disabled:opacity-70"
                   >
-                    {isSubmittingReclamation ? "Envoi..." : "Envoyer la réclamation"}
+                    {isSubmittingReclamation
+                      ? "Envoi..."
+                      : "Envoyer la réclamation"}
                   </button>
                 </div>
                 <div className="mt-6 grid gap-3 max-h-56 overflow-auto pr-1">
@@ -559,45 +604,50 @@ export function VoyageurPage() {
       {/* Review Modal powered by GSAP in IHM components isn't built for full custom forms, so we inline a GSAP modal here or just use CSS. We will use a simple CSS one for now, or build a custom one if needed. */}
       {reviewModal.isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-300">
-          <div className="w-full max-w-md rounded-2xl bg-surface-container-lowest p-8 shadow-[0_12px_32px_rgba(31,41,51,0.08)] border border-outline-variant/30 animate-in zoom-in-95 duration-300">
-            <h3 className="text-2xl font-headline font-bold text-on-surface mb-2">
+          <div className="w-full max-w-md rounded-none bg-surface border-2 border-on-surface p-8 shadow-[0_12px_32px_rgba(31,41,51,0.08)] animate-in zoom-in-95 duration-300">
+            <h3 className="text-3xl font-headline font-extrabold uppercase text-on-surface mb-1">
               Laisser un avis
             </h3>
-            <p className="text-sm text-on-surface-variant mb-8 font-medium">
-              Notez le trajet et ajoutez un commentaire pour le conducteur.
+            <p className="text-sm text-on-surface-variant mb-8 font-mono font-bold uppercase">
+              Notez votre expérience du trajet
             </p>
 
-            <div className="space-y-6">
+            <div className="space-y-8">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">
-                  Note
+                <label className="block text-xs font-mono font-bold uppercase tracking-widest text-on-surface-variant mb-4">
+                  Note (1-5 étoiles)
                 </label>
-                <div className="flex gap-2">
+                <div className="flex gap-2 justify-center">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
                       key={star}
                       onClick={() =>
                         setReviewForm({ ...reviewForm, note: star })
                       }
-                      className={`p-2 rounded-full ${reviewForm.note >= star ? "text-primary bg-primary/10" : "text-outline-variant bg-surface-container"} hover:scale-110 transition-transform`}
+                      className={`p-3 border-2 transition-all ${
+                        reviewForm.note >= star
+                          ? "border-primary bg-primary text-on-primary scale-110"
+                          : "border-outline bg-surface text-on-surface-variant hover:border-primary"
+                      }`}
                     >
                       <MaterialIcon
                         name="star"
                         filled={reviewForm.note >= star}
-                        className="text-3xl"
+                        className="text-2xl"
                       />
                     </button>
                   ))}
                 </div>
               </div>
+
               <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">
+                <label className="block text-xs font-mono font-bold uppercase tracking-widest text-on-surface-variant mb-4">
                   Commentaire
                 </label>
                 <textarea
-                  className="w-full rounded-xl border border-outline-variant/20 bg-surface-container-low p-4 text-sm focus:border-primary focus:ring-1 focus:ring-primary font-medium resize-none placeholder:text-on-surface-variant/50"
+                  className="w-full border-2 border-outline bg-surface-container p-4 text-sm font-mono focus:border-primary focus:outline-none resize-none placeholder:text-on-surface-variant/50"
                   rows={4}
-                  placeholder="Conducteur ponctuel et trajet agréable."
+                  placeholder="Partagez votre expérience..."
                   value={reviewForm.commentaire}
                   onChange={(e) =>
                     setReviewForm({
@@ -614,16 +664,16 @@ export function VoyageurPage() {
                 onClick={() =>
                   setReviewModal({ isOpen: false, trajetId: null })
                 }
-                className="rounded-xl px-5 py-3 font-semibold text-on-surface hover:bg-surface-container transition-colors"
+                className="border-2 border-outline px-6 py-3 font-mono font-bold uppercase text-on-surface hover:bg-surface-container transition-colors"
               >
                 Annuler
               </button>
               <button
                 onClick={submitReview}
                 disabled={!reviewForm.commentaire}
-                className="rounded-xl bg-primary px-6 py-3 font-bold text-on-primary hover:bg-primary-dim transition-colors shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="border-2 border-primary bg-primary px-6 py-3 font-mono font-bold uppercase text-on-primary hover:bg-primary-dim transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:border-on-surface-variant"
               >
-                Envoyer l'avis
+                Envoyer
               </button>
             </div>
           </div>

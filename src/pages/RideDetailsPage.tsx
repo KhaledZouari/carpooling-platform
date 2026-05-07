@@ -1,11 +1,33 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import {
+  MapPin,
+  Cigarette,
+  PawPrint,
+  Ban,
+  Car,
+  Zap,
+  Luggage,
+} from "lucide-react";
 import { PageShell } from "../components/layout/PageShell";
 import { demoTrajets } from "../data/demo";
 import { avisApi, reservationApi, trajetApi } from "../api/covoiturage";
-import type { AvisResponse, TrajetResponse } from "../types/covoiturage";
+import type {
+  AvisResponse,
+  ReservationResponse,
+  TrajetResponse,
+} from "../types/covoiturage";
 import { Toast } from "../components/IHM";
 import { useAuth } from "../context/AuthContext";
+
+type ApiError = {
+  response?: {
+    data?: {
+      message?: string;
+    };
+    status?: number;
+  };
+};
 
 function seatTone(seats: number) {
   if (seats <= 1) return "bg-error text-white scarcity-flicker";
@@ -23,7 +45,9 @@ export function RideDetailsPage() {
   const [visualSeats, setVisualSeats] = useState(0);
   const [isLoadingTrip, setIsLoadingTrip] = useState(true);
   const [isReserving, setIsReserving] = useState(false);
-  const [userReservation, setUserReservation] = useState<any | null>(null);
+  const [userReservation, setUserReservation] =
+    useState<ReservationResponse | null>(null);
+  const [isMarkingDone, setIsMarkingDone] = useState(false);
   const [toast, setToast] = useState<{
     message: string;
     type: "success" | "error" | "info";
@@ -84,7 +108,39 @@ export function RideDetailsPage() {
 
   const isOwner = Boolean(trip && user && trip.conducteurId === user.id);
 
+  const handleMarkAsDone = async () => {
+    if (!trip || !isOwner || isMarkingDone) return;
+    setIsMarkingDone(true);
+    try {
+      const updatedTrip = await trajetApi.update(trip.id, {
+        villeDepart: trip.villeDepart,
+        villeArrivee: trip.villeArrivee,
+        dateDepart: trip.dateDepart,
+        nbPlacesTotal: trip.nbPlacesTotal,
+        prix: trip.prix,
+        statut: "TERMINE",
+      });
+      setTrip(updatedTrip);
+      setToast({
+        message:
+          "Trajet marqué comme terminé. Les avis peuvent maintenant être laissés.",
+        type: "success",
+      });
+    } catch {
+      setToast({
+        message: "Impossible de marquer le trajet comme terminé.",
+        type: "error",
+      });
+    } finally {
+      setIsMarkingDone(false);
+    }
+  };
+
   const handleReserve = async () => {
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
     if (!trip || isReserving || trip.nbPlacesDisponibles === 0) return;
     const requestedSeats = Math.min(
       seats,
@@ -107,7 +163,7 @@ export function RideDetailsPage() {
       let errorMessage = "Réservation impossible. Veuillez réessayer.";
       if (error instanceof Error && error.message) {
         console.error("Reservation error:", error);
-        const axiosError = error as any;
+        const axiosError = error as ApiError;
         if (axiosError?.response?.data?.message) {
           errorMessage = axiosError.response.data.message;
         } else if (axiosError?.response?.status === 400) {
@@ -280,6 +336,157 @@ export function RideDetailsPage() {
               />
             </div>
           </article>
+
+          <article className="transport-panel overflow-hidden">
+            <div className="border-b-2 border-outline bg-on-surface px-5 py-4 font-mono text-xs font-bold uppercase text-surface">
+              Avis des voyageurs
+            </div>
+
+            <div className="grid gap-4 p-5">
+              {reviews.length > 0 ? (
+                reviews.map((review) => {
+                  const reviewedAt = review.dateAvis
+                    ? new Date(review.dateAvis)
+                    : null;
+
+                  return (
+                    <article
+                      key={review.id}
+                      className="border-2 border-outline bg-surface p-4"
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <p className="font-headline text-2xl font-extrabold uppercase leading-none">
+                            {review.auteurNom ?? "Voyageur"}
+                          </p>
+                          <p className="mt-2 font-mono text-[11px] font-bold uppercase text-on-surface-variant">
+                            {reviewedAt
+                              ? reviewedAt.toLocaleDateString(undefined, {
+                                  day: "2-digit",
+                                  month: "2-digit",
+                                  year: "numeric",
+                                })
+                              : "Date inconnue"}
+                          </p>
+                        </div>
+
+                        <div className="border-2 border-primary px-3 py-2 font-mono text-lg font-bold uppercase text-primary">
+                          {review.note}/5
+                        </div>
+                      </div>
+
+                      {review.commentaire ? (
+                        <p className="mt-4 border-t-2 border-outline pt-4 font-mono text-sm leading-6 text-on-surface">
+                          {review.commentaire}
+                        </p>
+                      ) : (
+                        <p className="mt-4 border-t-2 border-outline pt-4 font-mono text-sm italic text-on-surface-variant">
+                          Aucun commentaire laissé.
+                        </p>
+                      )}
+                    </article>
+                  );
+                })
+              ) : (
+                <div className="border-2 border-outline bg-surface p-4 font-mono text-sm font-bold uppercase text-on-surface-variant">
+                  Aucun avis pour le moment.
+                </div>
+              )}
+            </div>
+          </article>
+
+          <article className="transport-panel">
+            <div className="border-b-2 border-outline bg-on-surface px-5 py-4 font-mono text-xs font-bold uppercase text-surface">
+              Critères du trajet
+            </div>
+            <div className="grid grid-cols-2 gap-2 p-5 md:grid-cols-4">
+              {trip.distanceKm ? (
+                <div className="flex items-center gap-3 p-3 border-2 border-outline">
+                  <MapPin className="w-6 h-6 text-primary flex-shrink-0" />
+                  <div>
+                    <p className="text-[10px] font-bold uppercase text-on-surface-variant">
+                      Distance
+                    </p>
+                    <p className="font-mono font-bold">{trip.distanceKm} km</p>
+                  </div>
+                </div>
+              ) : null}
+
+              <div className="flex items-center gap-3 p-3 border-2 border-outline">
+                {trip.fumeurAutorise ? (
+                  <Cigarette className="w-6 h-6 text-primary flex-shrink-0" />
+                ) : (
+                  <Ban className="w-6 h-6 text-primary flex-shrink-0" />
+                )}
+                <div>
+                  <p className="text-[10px] font-bold uppercase text-on-surface-variant">
+                    Fumeur
+                  </p>
+                  <p className="font-mono font-bold text-sm">
+                    {trip.fumeurAutorise ? "Autorisé" : "Interdit"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 p-3 border-2 border-outline">
+                {trip.animauxAutorises ? (
+                  <PawPrint className="w-6 h-6 text-primary flex-shrink-0" />
+                ) : (
+                  <Ban className="w-6 h-6 text-primary flex-shrink-0" />
+                )}
+                <div>
+                  <p className="text-[10px] font-bold uppercase text-on-surface-variant">
+                    Animaux
+                  </p>
+                  <p className="font-mono font-bold text-sm">
+                    {trip.animauxAutorises ? "Autorisés" : "Interdits"}
+                  </p>
+                </div>
+              </div>
+
+              {trip.nbBagagesMax ? (
+                <div className="flex items-center gap-3 p-3 border-2 border-outline">
+                  <Luggage className="w-6 h-6 text-primary flex-shrink-0" />
+                  <div>
+                    <p className="text-[10px] font-bold uppercase text-on-surface-variant">
+                      Bagages
+                    </p>
+                    <p className="font-mono font-bold">
+                      {trip.nbBagagesMax} max
+                    </p>
+                  </div>
+                </div>
+              ) : null}
+
+              {trip.vehiculeType ? (
+                <div className="flex items-center gap-3 p-3 border-2 border-outline col-span-2 md:col-span-1">
+                  <Car className="w-6 h-6 text-primary flex-shrink-0" />
+                  <div>
+                    <p className="text-[10px] font-bold uppercase text-on-surface-variant">
+                      Véhicule
+                    </p>
+                    <p className="font-mono font-bold text-sm">
+                      {trip.vehiculeType}
+                    </p>
+                  </div>
+                </div>
+              ) : null}
+
+              {trip.typeTrajet ? (
+                <div className="flex items-center gap-3 p-3 border-2 border-outline col-span-2 md:col-span-1">
+                  <Zap className="w-6 h-6 text-primary flex-shrink-0" />
+                  <div>
+                    <p className="text-[10px] font-bold uppercase text-on-surface-variant">
+                      Type
+                    </p>
+                    <p className="font-mono font-bold text-sm">
+                      {trip.typeTrajet === "LONG" ? "Long trajet" : "Léger"}
+                    </p>
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          </article>
         </section>
 
         <aside className="h-fit lg:sticky lg:top-24">
@@ -360,58 +567,84 @@ export function RideDetailsPage() {
               </div>
 
               {isOwner ? (
-                <div className="rounded-2xl border-2 border-outline bg-primary-container p-4 font-mono text-[11px] font-bold uppercase text-on-surface">
-                  Vous avez publié ce trajet. Il est visible dans votre espace
-                  conducteur, mais la réservation est désactivée pour votre
-                  propre trajet.
-                </div>
-              ) : userReservation ? (
-                <div className="rounded-2xl border-2 border-outline bg-secondary p-4 font-mono text-[11px] font-bold uppercase text-on-surface">
-                  <p className="mb-2">Votre réservation</p>
-                  <p className="text-sm">
-                    {userReservation.nbPlacesReservees} place(s) -{" "}
-                    <span className="text-base font-bold">
-                      {userReservation.statut === "EN_ATTENTE" &&
-                        "En attente de confirmation"}
-                      {userReservation.statut === "CONFIRMEE" && "Confirmée"}
-                      {userReservation.statut === "ANNULEE" && "Annulée"}
-                      {userReservation.statut === "REFUSEE" && "Refusée"}
-                    </span>
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => navigate("/voyageur")}
-                    className="app-button-secondary mt-4 w-full"
-                  >
-                    Voir mes réservations
-                  </button>
+                <div className="space-y-3">
+                  {trip.statut === "TERMINE" ? (
+                    <div className="border-2 border-primary bg-primary/10 p-4 font-mono text-[11px] font-bold uppercase text-primary">
+                      Ce trajet est marqué comme TERMINÉ - Les avis peuvent être
+                      laissés
+                    </div>
+                  ) : (
+                    <>
+                      <div className="border-2 border-outline bg-surface-container p-4 font-mono text-[11px] font-bold uppercase text-on-surface">
+                        Vous avez publié ce trajet. Il est visible dans votre
+                        espace conducteur, mais la réservation est désactivée
+                        pour votre propre trajet.
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleMarkAsDone}
+                        disabled={isMarkingDone}
+                        className="w-full border-2 border-primary bg-primary px-4 py-3 font-mono font-bold uppercase text-on-primary hover:bg-primary-dim transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {isMarkingDone
+                          ? "Marquage en cours..."
+                          : "Marquer comme terminé"}
+                      </button>
+                    </>
+                  )}
                 </div>
               ) : (
-                <>
-                  <button
-                    type="button"
-                    onClick={handleReserve}
-                    disabled={isReserving || trip.nbPlacesDisponibles === 0}
-                    data-loading={isReserving ? "true" : "false"}
-                    className="book-ride-button"
-                    aria-live="polite"
-                  >
-                    {isReserving ? (
-                      <span className="skeleton h-5 w-36 bg-on-primary/30" />
-                    ) : (
-                      <>
-                        <span className="book-label">
-                          Confirmer la réservation
+                <div className="space-y-3">
+                  {userReservation ? (
+                    <div className="rounded-2xl border-2 border-outline bg-secondary p-4 font-mono text-[11px] font-bold uppercase text-on-surface">
+                      <p className="mb-2">Votre réservation</p>
+                      <p className="text-sm">
+                        {userReservation.nbPlacesReservees} place(s) -{" "}
+                        <span className="text-base font-bold">
+                          {userReservation.statut === "EN_ATTENTE" &&
+                            "En attente de confirmation"}
+                          {userReservation.statut === "CONFIRMEE" &&
+                            "Confirmée"}
+                          {userReservation.statut === "ANNULEA" && "Annulée"}
+                          {userReservation.statut === "REFUSEE" && "Refusée"}
                         </span>
-                        <span className="book-hover-label">Réserver</span>
-                      </>
-                    )}
-                  </button>
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => navigate("/voyageur")}
+                        className="app-button-secondary mt-4 w-full"
+                      >
+                        Voir mes réservations
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        onClick={handleReserve}
+                        disabled={isReserving || trip.nbPlacesDisponibles === 0}
+                        data-loading={isReserving ? "true" : "false"}
+                        className="book-ride-button"
+                        aria-live="polite"
+                      >
+                        {isReserving ? (
+                          <span className="skeleton h-5 w-36 bg-on-primary/30" />
+                        ) : (
+                          <>
+                            <span className="book-label">
+                              Confirmer la réservation
+                            </span>
+                            <span className="book-hover-label">Réserver</span>
+                          </>
+                        )}
+                      </button>
 
-                  <p className="font-mono text-[11px] font-bold uppercase text-on-surface-variant">
-                    Le conducteur confirme avant paiement final.
-                  </p>
-                </>
+                      <p className="font-mono text-[11px] font-bold uppercase text-on-surface-variant">
+                        Le conducteur confirme avant paiement final.
+                      </p>
+                    </>
+                  )}
+                </div>
               )}
             </div>
           </div>
