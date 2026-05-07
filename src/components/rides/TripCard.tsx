@@ -55,6 +55,13 @@ export function TripCard({
             minute: "2-digit",
           })}
         </p>
+        <p className="mt-1 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-on-surface-variant">
+          {departure.toLocaleDateString([], {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          })}
+        </p>
         <p className="mt-2 font-mono text-xs font-bold uppercase text-on-surface-variant">
           Durée {durationLabel(trip)}
         </p>

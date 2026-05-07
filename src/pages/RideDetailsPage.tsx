@@ -23,6 +23,7 @@ export function RideDetailsPage() {
   const [visualSeats, setVisualSeats] = useState(0);
   const [isLoadingTrip, setIsLoadingTrip] = useState(true);
   const [isReserving, setIsReserving] = useState(false);
+  const [userReservation, setUserReservation] = useState<any | null>(null);
   const [toast, setToast] = useState<{
     message: string;
     type: "success" | "error" | "info";
@@ -53,7 +54,18 @@ export function RideDetailsPage() {
         setVisualSeats(fallback?.nbPlacesDisponibles ?? 0);
       })
       .finally(() => setIsLoadingTrip(false));
-  }, [id]);
+
+    // Check if user has an existing reservation for this trip
+    if (user) {
+      reservationApi
+        .myReservations()
+        .then((reservations) => {
+          const existing = reservations.find((r) => r.trajetId === selectedId);
+          setUserReservation(existing ?? null);
+        })
+        .catch(() => setUserReservation(null));
+    }
+  }, [id, user]);
 
   const totalPrice = useMemo(() => {
     if (!trip) return 0;
@@ -88,10 +100,29 @@ export function RideDetailsPage() {
       });
       setToast({ message: "Réservation envoyée.", type: "success" });
       window.setTimeout(() => navigate("/voyageur"), 900);
-    } catch {
+    } catch (error: unknown) {
       setVisualSeats(trip.nbPlacesDisponibles);
+
+      // Extract backend error message
+      let errorMessage = "Réservation impossible. Veuillez réessayer.";
+      if (error instanceof Error && error.message) {
+        console.error("Reservation error:", error);
+        const axiosError = error as any;
+        if (axiosError?.response?.data?.message) {
+          errorMessage = axiosError.response.data.message;
+        } else if (axiosError?.response?.status === 400) {
+          errorMessage =
+            "Cette réservation n'est pas disponible. Vous avez peut-être déjà réservé ce trajet.";
+        } else if (
+          axiosError?.response?.status === 401 ||
+          axiosError?.response?.status === 403
+        ) {
+          errorMessage = "Connectez-vous comme voyageur pour réserver.";
+        }
+      }
+
       setToast({
-        message: "Réservation impossible. Connectez-vous comme voyageur.",
+        message: errorMessage,
         type: "error",
       });
       setIsReserving(false);
@@ -333,6 +364,27 @@ export function RideDetailsPage() {
                   Vous avez publié ce trajet. Il est visible dans votre espace
                   conducteur, mais la réservation est désactivée pour votre
                   propre trajet.
+                </div>
+              ) : userReservation ? (
+                <div className="rounded-2xl border-2 border-outline bg-secondary p-4 font-mono text-[11px] font-bold uppercase text-on-surface">
+                  <p className="mb-2">Votre réservation</p>
+                  <p className="text-sm">
+                    {userReservation.nbPlacesReservees} place(s) -{" "}
+                    <span className="text-base font-bold">
+                      {userReservation.statut === "EN_ATTENTE" &&
+                        "En attente de confirmation"}
+                      {userReservation.statut === "CONFIRMEE" && "Confirmée"}
+                      {userReservation.statut === "ANNULEE" && "Annulée"}
+                      {userReservation.statut === "REFUSEE" && "Refusée"}
+                    </span>
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => navigate("/voyageur")}
+                    className="app-button-secondary mt-4 w-full"
+                  >
+                    Voir mes réservations
+                  </button>
                 </div>
               ) : (
                 <>
