@@ -3,8 +3,10 @@ import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { PageShell } from "../components/layout/PageShell";
+import { MaterialIcon } from "../components/MaterialIcon";
 import { TripCard } from "../components/rides/TripCard";
 import { TripSearchBar } from "../components/rides/TripSearchBar";
+import { useAuth } from "../context/AuthContext";
 import { demoTrajets } from "../data/demo";
 import { trajetApi } from "../api/covoiturage";
 import type { TrajetResponse } from "../types/covoiturage";
@@ -17,6 +19,50 @@ const metrics = [
   { value: "44px", label: "Cibles tactiles min." },
 ];
 
+const statsBar = [
+  { value: "270", label: "TRAJETS DISPONIBLES" },
+  { value: "1 240", label: "VOYAGEURS" },
+  { value: "48", label: "VILLES" },
+];
+
+const howItWorks = [
+  {
+    step: "01",
+    title: "RECHERCHEZ",
+    description: "Entrez votre trajet et trouvez une place libre",
+  },
+  {
+    step: "02",
+    title: "RÉSERVEZ",
+    description: "Confirmez en un clic, le conducteur accepte",
+  },
+  {
+    step: "03",
+    title: "VOYAGEZ",
+    description: "Montez à bord, partagez le trajet",
+  },
+];
+
+const popularRoutes = [
+  { depart: "Tunis", arrivee: "Sfax" },
+  { depart: "Sfax", arrivee: "Sousse" },
+  { depart: "Tunis", arrivee: "Bizerte" },
+  { depart: "Sousse", arrivee: "Monastir" },
+  { depart: "Tunis", arrivee: "Nabeul" },
+  { depart: "Sfax", arrivee: "Gabès" },
+];
+
+const trustSignals = [
+  "PROFILS VÉRIFIÉS",
+  "TRAJETS CONTRÔLÉS",
+  "AVIS AUTHENTIQUES",
+];
+
+function buildRideSearchUrl(depart: string, arrivee: string) {
+  const params = new URLSearchParams({ depart, arrivee });
+  return `/rides?${params.toString()}`;
+}
+
 function HeroCarpoolSignal() {
   const figureRef = useRef<HTMLElement>(null);
 
@@ -24,7 +70,9 @@ function HeroCarpoolSignal() {
     const root = figureRef.current;
     if (!root) return;
 
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
     if (reduceMotion) return;
 
     const ctx = gsap.context(() => {
@@ -42,7 +90,11 @@ function HeroCarpoolSignal() {
             once: true,
           },
         })
-        .fromTo(root, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.42 })
+        .fromTo(
+          root,
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 0.42 },
+        )
         .to(".hero-route-line", { strokeDashoffset: 0, duration: 0.9 }, "-=0.1")
         .fromTo(
           ".hero-carpool-scroll",
@@ -119,9 +171,25 @@ function HeroCarpoolSignal() {
           Diagramme noir et blanc d'une voiture avec quatre places partagées
           reliées par une ligne de trajet orange.
         </desc>
-        <rect x="1" y="1" width="418" height="258" fill="#fff" stroke="#050505" strokeWidth="2" />
-        <path d="M26 52H394M26 104H394M26 156H394M26 208H394" stroke="#d6d6ce" strokeWidth="2" />
-        <path d="M76 24V236M154 24V236M232 24V236M310 24V236" stroke="#d6d6ce" strokeWidth="2" />
+        <rect
+          x="1"
+          y="1"
+          width="418"
+          height="258"
+          fill="#fff"
+          stroke="#050505"
+          strokeWidth="2"
+        />
+        <path
+          d="M26 52H394M26 104H394M26 156H394M26 208H394"
+          stroke="#d6d6ce"
+          strokeWidth="2"
+        />
+        <path
+          d="M76 24V236M154 24V236M232 24V236M310 24V236"
+          stroke="#d6d6ce"
+          strokeWidth="2"
+        />
         <path
           className="hero-route-line"
           d="M58 178C102 120 142 118 188 154S280 202 360 82"
@@ -143,13 +211,35 @@ function HeroCarpoolSignal() {
               <path d="M128 96h142l30 26H98l30-26Z" fill="#050505" />
               <path d="M134 108h44M204 108h44" stroke="#fff" strokeWidth="12" />
               <g className="hero-wheel-mark">
-                <circle cx="116" cy="204" r="24" fill="#fff" stroke="#050505" strokeWidth="6" />
-                <path d="M116 180v48M92 204h48" stroke="#050505" strokeWidth="4" />
+                <circle
+                  cx="116"
+                  cy="204"
+                  r="24"
+                  fill="#fff"
+                  stroke="#050505"
+                  strokeWidth="6"
+                />
+                <path
+                  d="M116 180v48M92 204h48"
+                  stroke="#050505"
+                  strokeWidth="4"
+                />
                 <circle cx="116" cy="204" r="7" fill="#050505" />
               </g>
               <g className="hero-wheel-mark">
-                <circle cx="282" cy="204" r="24" fill="#fff" stroke="#050505" strokeWidth="6" />
-                <path d="M282 180v48M258 204h48" stroke="#050505" strokeWidth="4" />
+                <circle
+                  cx="282"
+                  cy="204"
+                  r="24"
+                  fill="#fff"
+                  stroke="#050505"
+                  strokeWidth="6"
+                />
+                <path
+                  d="M282 180v48M258 204h48"
+                  stroke="#050505"
+                  strokeWidth="4"
+                />
                 <circle cx="282" cy="204" r="7" fill="#050505" />
               </g>
             </g>
@@ -163,12 +253,24 @@ function HeroCarpoolSignal() {
                   stroke="#050505"
                   strokeWidth="5"
                 />
-                <path d={`M${x - 22} 184c5-18 39-18 44 0`} fill="none" stroke="#050505" strokeWidth="5" />
+                <path
+                  d={`M${x - 22} 184c5-18 39-18 44 0`}
+                  fill="none"
+                  stroke="#050505"
+                  strokeWidth="5"
+                />
               </g>
             ))}
           </g>
         </g>
-        <rect className="hero-badge" x="282" y="36" width="86" height="42" fill="#050505" />
+        <rect
+          className="hero-badge"
+          x="282"
+          y="36"
+          width="86"
+          height="42"
+          fill="#050505"
+        />
         <text
           className="hero-badge"
           x="325"
@@ -181,7 +283,16 @@ function HeroCarpoolSignal() {
         >
           4 PLACES
         </text>
-        <rect className="hero-badge" x="40" y="36" width="88" height="42" fill="#ff5a00" stroke="#050505" strokeWidth="4" />
+        <rect
+          className="hero-badge"
+          x="40"
+          y="36"
+          width="88"
+          height="42"
+          fill="#ff5a00"
+          stroke="#050505"
+          strokeWidth="4"
+        />
         <text
           className="hero-badge"
           x="84"
@@ -203,6 +314,7 @@ function HeroCarpoolSignal() {
 }
 
 export function HomePage() {
+  const { user } = useAuth();
   const [recentTrips, setRecentTrips] = useState<TrajetResponse[]>([]);
   const homeRef = useRef<HTMLElement>(null);
 
@@ -211,10 +323,13 @@ export function HomePage() {
       .search()
       .then((data) =>
         setRecentTrips(
-          [...data].sort(
-            (a, b) =>
-              new Date(a.dateDepart).getTime() - new Date(b.dateDepart).getTime(),
-          ).slice(0, 3),
+          [...data]
+            .sort(
+              (a, b) =>
+                new Date(a.dateDepart).getTime() -
+                new Date(b.dateDepart).getTime(),
+            )
+            .slice(0, 3),
         ),
       )
       .catch(() => setRecentTrips(demoTrajets.slice(0, 3)));
@@ -224,7 +339,9 @@ export function HomePage() {
     const root = homeRef.current;
     if (!root) return;
 
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
     if (reduceMotion) return;
 
     const ctx = gsap.context(() => {
@@ -268,7 +385,10 @@ export function HomePage() {
 
   return (
     <PageShell>
-      <section ref={homeRef} className="route-map transport-rule relative min-h-[calc(100vh-76px)] border-b-2 border-outline pt-28">
+      <section
+        ref={homeRef}
+        className="route-map transport-rule relative min-h-[calc(100vh-76px)] border-b-2 border-outline pt-28"
+      >
         <div className="mx-auto grid max-w-7xl gap-10 px-4 pb-16 pt-10 sm:px-6 lg:pt-16">
           <div className="grid items-end gap-6 lg:grid-cols-[1fr_360px]">
             <div className="max-w-5xl">
@@ -306,6 +426,100 @@ export function HomePage() {
         </div>
       </section>
 
+      <section className="mx-auto w-full max-w-7xl px-4 sm:px-6">
+        <div className="grid grid-cols-1 border-2 border-outline bg-on-surface text-surface md:grid-cols-3">
+          {statsBar.map((item, index) => (
+            <div
+              key={item.label}
+              className={`flex items-center justify-between gap-4 px-5 py-5 font-mono ${index > 0 ? "border-t-2 border-surface md:border-l-2 md:border-t-0" : ""}`}
+            >
+              <span className="text-4xl font-bold leading-none md:text-5xl">
+                {item.value}
+              </span>
+              <span className="text-right text-[11px] font-bold uppercase tracking-[0.22em] text-surface/90">
+                {item.label}
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6">
+        <div className="mb-8 border-b-2 border-outline pb-4">
+          <p className="font-mono text-xs font-bold uppercase tracking-[0.22em] text-primary">
+            SIMPLE. RAPIDE. PARTAGÉ.
+          </p>
+          <h2 className="mt-3 font-headline text-5xl font-extrabold uppercase leading-none text-on-surface md:text-6xl">
+            COMMENT ÇA MARCHE
+          </h2>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-3">
+          {howItWorks.map((item) => (
+            <article
+              key={item.step}
+              className="grid gap-5 border-2 border-outline bg-surface p-5 transition-colors hover:bg-primary-container/40"
+            >
+              <p className="font-mono text-6xl font-bold leading-none text-primary">
+                {item.step}
+              </p>
+              <div className="grid gap-2">
+                <h3 className="font-headline text-3xl font-extrabold uppercase leading-none text-on-surface">
+                  {item.title}
+                </h3>
+                <p className="font-mono text-xs font-medium uppercase tracking-[0.12em] text-on-surface-variant">
+                  {item.description}
+                </p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6">
+        <div className="mb-8 border-b-2 border-outline pb-4">
+          <p className="font-mono text-xs font-bold uppercase tracking-[0.22em] text-primary">
+            LIGNES FRÉQUENTES
+          </p>
+          <h2 className="mt-3 font-headline text-5xl font-extrabold uppercase leading-none text-on-surface md:text-6xl">
+            TRAJETS POPULAIRES
+          </h2>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {popularRoutes.map((route) => (
+            <Link
+              key={`${route.depart}-${route.arrivee}`}
+              to={buildRideSearchUrl(route.depart, route.arrivee)}
+              className="group flex items-center justify-between gap-4 border-2 border-outline bg-surface px-4 py-4 font-mono text-sm font-bold uppercase tracking-[0.16em] transition-colors hover:bg-on-surface hover:text-surface"
+            >
+              <span>{route.depart}</span>
+              <span className="text-primary transition-colors group-hover:text-surface">
+                →
+              </span>
+              <span>{route.arrivee}</span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="border-y-2 border-outline bg-surface">
+        <div className="mx-auto grid w-full max-w-7xl gap-4 px-4 py-5 sm:px-6 md:grid-cols-3">
+          {trustSignals.map((signal) => (
+            <div
+              key={signal}
+              className="flex items-center gap-3 font-mono text-xs font-bold uppercase tracking-[0.22em] text-on-surface"
+            >
+              <MaterialIcon
+                name="check_circle"
+                className="text-primary text-lg"
+              />
+              <span>{signal}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6">
         <div className="departures-scroll-reveal mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
@@ -316,10 +530,7 @@ export function HomePage() {
               Prochains créneaux
             </h2>
           </div>
-          <Link
-            to="/rides"
-            className="app-button-secondary w-fit"
-          >
+          <Link to="/rides" className="app-button-secondary w-fit">
             Voir tous les trajets
           </Link>
         </div>
@@ -327,10 +538,18 @@ export function HomePage() {
         <div className="grid gap-4" aria-live="polite">
           {recentTrips.length === 0
             ? [0, 1, 2].map((item) => (
-                <div key={item} className="skeleton h-44 border-2 border-outline" />
+                <div
+                  key={item}
+                  className="skeleton h-44 border-2 border-outline"
+                />
               ))
             : recentTrips.map((trip, index) => (
-                <TripCard key={trip.id} trip={trip} revealDelayMs={index * 50} />
+                <TripCard
+                  key={trip.id}
+                  trip={trip}
+                  showBookButton={trip.conducteurId !== user?.id}
+                  revealDelayMs={index * 50}
+                />
               ))}
         </div>
       </section>

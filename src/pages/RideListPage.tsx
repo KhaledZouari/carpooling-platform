@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { PageShell } from "../components/layout/PageShell";
 import { TripCard } from "../components/rides/TripCard";
+import { RequiredFieldLabel } from "../components/RequiredFieldLabel";
+import { useAuth } from "../context/AuthContext";
 import { demoTrajets } from "../data/demo";
 import { trajetApi } from "../api/covoiturage";
 import type { TrajetResponse } from "../types/covoiturage";
@@ -15,6 +17,7 @@ const timeFilters = [
 ];
 
 export function RideListPage() {
+  const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
   const [rides, setRides] = useState<TrajetResponse[]>(demoTrajets);
@@ -189,7 +192,7 @@ export function RideListPage() {
             </div>
             <div className="grid gap-4 p-4">
               <label className="grid gap-2">
-                <span className="field-label">Départ</span>
+                <RequiredFieldLabel required>Départ</RequiredFieldLabel>
                 <input
                   required
                   placeholder="Paris"
@@ -198,7 +201,7 @@ export function RideListPage() {
                 />
               </label>
               <label className="grid gap-2">
-                <span className="field-label">Destination</span>
+                <RequiredFieldLabel required>Destination</RequiredFieldLabel>
                 <input
                   required
                   placeholder="Lyon"
@@ -344,7 +347,10 @@ export function RideListPage() {
                   </div>
                   <label className="grid gap-2">
                     <span className="field-label">Statut</span>
-                    <select value={statut} onChange={(e) => setStatut(e.target.value)}>
+                    <select
+                      value={statut}
+                      onChange={(e) => setStatut(e.target.value)}
+                    >
                       <option value="">Tous</option>
                       <option value="OUVERT">OUVERT</option>
                       <option value="COMPLET">COMPLET</option>
@@ -444,6 +450,7 @@ export function RideListPage() {
                   <TripCard
                     key={trip.id}
                     trip={trip}
+                    showBookButton={trip.conducteurId !== user?.id}
                     revealDelayMs={index * 50}
                   />
                 ))}

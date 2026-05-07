@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { RequiredFieldLabel } from "../RequiredFieldLabel";
 
 type TripSearchBarProps = {
   initialDepart?: string;
@@ -42,10 +43,12 @@ export function TripSearchBar({
   };
 
   return (
-    <div className={`transport-panel mx-auto w-full ${compact ? "max-w-5xl" : "max-w-6xl"}`}>
+    <div
+      className={`transport-panel mx-auto w-full ${compact ? "max-w-5xl" : "max-w-6xl"}`}
+    >
       <div className="grid gap-3 p-3 md:grid-cols-[1fr_1fr_168px_116px_auto]">
         <label className="grid gap-2">
-          <span className="field-label">Départ</span>
+          <RequiredFieldLabel required>Départ</RequiredFieldLabel>
           <input
             required
             placeholder="Paris"
@@ -55,7 +58,7 @@ export function TripSearchBar({
           />
         </label>
         <label className="grid gap-2">
-          <span className="field-label">Destination</span>
+          <RequiredFieldLabel required>Destination</RequiredFieldLabel>
           <input
             required
             placeholder="Lyon"
@@ -70,7 +73,7 @@ export function TripSearchBar({
           ) : null}
         </label>
         <label className="grid gap-2">
-          <span className="field-label">Date</span>
+          <RequiredFieldLabel required>Date</RequiredFieldLabel>
           <input
             type="date"
             required
@@ -81,7 +84,7 @@ export function TripSearchBar({
           />
         </label>
         <label className="grid gap-2">
-          <span className="field-label">Places</span>
+          <RequiredFieldLabel required>Places</RequiredFieldLabel>
           <input
             type="number"
             min="1"

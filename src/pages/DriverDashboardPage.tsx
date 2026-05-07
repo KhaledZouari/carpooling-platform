@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { PageShell } from "../components/layout/PageShell";
 import { MaterialIcon } from "../components/MaterialIcon";
+import { RequiredFieldLabel } from "../components/RequiredFieldLabel";
 import { demoTrajets, demoUser, demoVehicules } from "../data/demo";
 import {
   authApi,
@@ -790,7 +791,7 @@ export function DriverDashboardPage() {
                               {v.typeVehicule}
                             </p>
                           ) : null}
-                          <p className="text-sm text-on-surface-variant mt-1 font-medium bg-surface-container inline-block px-2 py-1 rounded mt-2">
+                          <p className="text-sm text-on-surface-variant mt-2 font-medium bg-surface-container inline-block px-2 py-1 rounded">
                             {v.immatriculation}
                           </p>
                           <div className="mt-4 flex gap-4 text-sm font-semibold text-on-surface-variant">
@@ -864,7 +865,9 @@ export function DriverDashboardPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">
-                      Ville de départ
+                      <RequiredFieldLabel required>
+                        Ville de départ
+                      </RequiredFieldLabel>
                     </label>
                     <div className="relative">
                       <MaterialIcon
@@ -885,7 +888,9 @@ export function DriverDashboardPage() {
                   </div>
                   <div className="space-y-2">
                     <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">
-                      Ville d'arrivée
+                      <RequiredFieldLabel required>
+                        Ville d'arrivée
+                      </RequiredFieldLabel>
                     </label>
                     <div className="relative">
                       <MaterialIcon
@@ -915,7 +920,9 @@ export function DriverDashboardPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="space-y-2 md:col-span-2">
                     <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">
-                      Date et heure
+                      <RequiredFieldLabel required>
+                        Date et heure
+                      </RequiredFieldLabel>
                     </label>
                     <div className="relative">
                       <MaterialIcon
@@ -936,7 +943,9 @@ export function DriverDashboardPage() {
                   </div>
                   <div className="space-y-2">
                     <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">
-                      Places proposées
+                      <RequiredFieldLabel required>
+                        Places proposées
+                      </RequiredFieldLabel>
                     </label>
                     <div className="relative">
                       <MaterialIcon
@@ -971,7 +980,7 @@ export function DriverDashboardPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">
-                      Véhicule
+                      <RequiredFieldLabel required>Véhicule</RequiredFieldLabel>
                     </label>
                     <div className="relative">
                       <MaterialIcon
@@ -1006,7 +1015,9 @@ export function DriverDashboardPage() {
                   </div>
                   <div className="space-y-2">
                     <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">
-                      Prix par place (€)
+                      <RequiredFieldLabel required>
+                        Prix par place (€)
+                      </RequiredFieldLabel>
                     </label>
                     <div className="relative">
                       <MaterialIcon
@@ -1030,7 +1041,9 @@ export function DriverDashboardPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="space-y-2">
                     <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant ml-1">
-                      Distance (km)
+                      <RequiredFieldLabel required>
+                        Distance (km)
+                      </RequiredFieldLabel>
                     </label>
                     <input
                       required
@@ -1039,7 +1052,10 @@ export function DriverDashboardPage() {
                       className="w-full rounded-2xl border border-outline-variant/20 bg-surface-container py-4 px-4 font-medium focus:border-primary focus:ring-1 focus:ring-primary"
                       value={form.distanceKm}
                       onChange={(e) =>
-                        setForm({ ...form, distanceKm: Math.max(1, Number(e.target.value || 1)) })
+                        setForm({
+                          ...form,
+                          distanceKm: Math.max(1, Number(e.target.value || 1)),
+                        })
                       }
                     />
                   </div>
@@ -1051,7 +1067,10 @@ export function DriverDashboardPage() {
                       className="w-full rounded-2xl border border-outline-variant/20 bg-surface-container py-4 px-4 font-medium focus:border-primary focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
                       value={form.typeTrajet}
                       onChange={(e) =>
-                        setForm({ ...form, typeTrajet: e.target.value as "LEGER" | "LONG" })
+                        setForm({
+                          ...form,
+                          typeTrajet: e.target.value as "LEGER" | "LONG",
+                        })
                       }
                     >
                       <option value="LEGER">Léger</option>
@@ -1068,7 +1087,13 @@ export function DriverDashboardPage() {
                       className="w-full rounded-2xl border border-outline-variant/20 bg-surface-container py-4 px-4 font-medium focus:border-primary focus:ring-1 focus:ring-primary"
                       value={form.nbBagagesMax}
                       onChange={(e) =>
-                        setForm({ ...form, nbBagagesMax: Math.max(0, Number(e.target.value || 0)) })
+                        setForm({
+                          ...form,
+                          nbBagagesMax: Math.max(
+                            0,
+                            Number(e.target.value || 0),
+                          ),
+                        })
                       }
                     />
                   </div>
@@ -1083,7 +1108,9 @@ export function DriverDashboardPage() {
                       className="w-full rounded-2xl border border-outline-variant/20 bg-surface-container py-4 px-4 font-medium focus:border-primary focus:ring-1 focus:ring-primary"
                       placeholder="Ex. Valise cabine"
                       value={form.typeBagage}
-                      onChange={(e) => setForm({ ...form, typeBagage: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, typeBagage: e.target.value })
+                      }
                     />
                   </div>
                   <div className="rounded-2xl border border-outline-variant/20 bg-surface-container p-4">
@@ -1097,7 +1124,10 @@ export function DriverDashboardPage() {
                           type="checkbox"
                           checked={form.fumeurAutorise}
                           onChange={(e) =>
-                            setForm({ ...form, fumeurAutorise: e.target.checked })
+                            setForm({
+                              ...form,
+                              fumeurAutorise: e.target.checked,
+                            })
                           }
                           className="h-5 w-5 accent-primary"
                         />
@@ -1108,7 +1138,10 @@ export function DriverDashboardPage() {
                           type="checkbox"
                           checked={form.animauxAutorises}
                           onChange={(e) =>
-                            setForm({ ...form, animauxAutorises: e.target.checked })
+                            setForm({
+                              ...form,
+                              animauxAutorises: e.target.checked,
+                            })
                           }
                           className="h-5 w-5 accent-primary"
                         />

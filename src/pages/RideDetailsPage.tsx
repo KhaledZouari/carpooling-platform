@@ -5,6 +5,7 @@ import { demoTrajets } from "../data/demo";
 import { avisApi, reservationApi, trajetApi } from "../api/covoiturage";
 import type { AvisResponse, TrajetResponse } from "../types/covoiturage";
 import { Toast } from "../components/IHM";
+import { useAuth } from "../context/AuthContext";
 
 function seatTone(seats: number) {
   if (seats <= 1) return "bg-error text-white scarcity-flicker";
@@ -15,6 +16,7 @@ function seatTone(seats: number) {
 export function RideDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [trip, setTrip] = useState<TrajetResponse | null>(null);
   const [reviews, setReviews] = useState<AvisResponse[]>([]);
   const [seats, setSeats] = useState(1);
@@ -67,6 +69,8 @@ export function RideDetailsPage() {
     const sum = reviews.reduce((acc, review) => acc + review.note, 0);
     return (sum / reviews.length).toFixed(1);
   }, [reviews, trip?.conducteurNote]);
+
+  const isOwner = Boolean(trip && user && trip.conducteurId === user.id);
 
   const handleReserve = async () => {
     if (!trip || isReserving || trip.nbPlacesDisponibles === 0) return;
@@ -250,7 +254,7 @@ export function RideDetailsPage() {
         <aside className="h-fit lg:sticky lg:top-24">
           <div className="transport-panel">
             <div className="border-b-2 border-outline bg-on-surface px-5 py-4 font-mono text-xs font-bold uppercase text-surface">
-              Réservation
+              {isOwner ? "Votre trajet" : "Réservation"}
             </div>
             <div className="grid gap-5 p-5">
               <div className="flex items-start justify-between gap-4">
@@ -324,27 +328,39 @@ export function RideDetailsPage() {
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={handleReserve}
-                disabled={isReserving || trip.nbPlacesDisponibles === 0}
-                data-loading={isReserving ? "true" : "false"}
-                className="book-ride-button"
-                aria-live="polite"
-              >
-                {isReserving ? (
-                  <span className="skeleton h-5 w-36 bg-on-primary/30" />
-                ) : (
-                  <>
-                    <span className="book-label">Confirmer la réservation</span>
-                    <span className="book-hover-label">Réserver</span>
-                  </>
-                )}
-              </button>
+              {isOwner ? (
+                <div className="rounded-2xl border-2 border-outline bg-primary-container p-4 font-mono text-[11px] font-bold uppercase text-on-surface">
+                  Vous avez publié ce trajet. Il est visible dans votre espace
+                  conducteur, mais la réservation est désactivée pour votre
+                  propre trajet.
+                </div>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={handleReserve}
+                    disabled={isReserving || trip.nbPlacesDisponibles === 0}
+                    data-loading={isReserving ? "true" : "false"}
+                    className="book-ride-button"
+                    aria-live="polite"
+                  >
+                    {isReserving ? (
+                      <span className="skeleton h-5 w-36 bg-on-primary/30" />
+                    ) : (
+                      <>
+                        <span className="book-label">
+                          Confirmer la réservation
+                        </span>
+                        <span className="book-hover-label">Réserver</span>
+                      </>
+                    )}
+                  </button>
 
-              <p className="font-mono text-[11px] font-bold uppercase text-on-surface-variant">
-                Le conducteur confirme avant paiement final.
-              </p>
+                  <p className="font-mono text-[11px] font-bold uppercase text-on-surface-variant">
+                    Le conducteur confirme avant paiement final.
+                  </p>
+                </>
+              )}
             </div>
           </div>
         </aside>
