@@ -1,5 +1,5 @@
 ﻿import { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import gsap from "gsap";
 import { PageShell } from "../components/layout/PageShell";
 import { MaterialIcon } from "../components/MaterialIcon";
@@ -25,6 +25,7 @@ const adminTabs: { id: AdminTab; label: string; icon: string }[] = [
 
 export function AdminPage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const isAdmin = user?.role === "ADMIN";
   const [stats, setStats] = useState<AdminStatsResponse | null>(null);
   const [users, setUsers] = useState<UserResponse[]>([]);
@@ -203,6 +204,16 @@ export function AdminPage() {
     <PageShell>
       <main className="mx-auto flex w-full max-w-7xl flex-col flex-1 px-6 pb-24 pt-32">
         {/* Header & Tabs */}
+        {/* Back Button */}
+        <button
+          onClick={() => navigate(-1)}
+          className="mb-6 flex items-center gap-2 px-4 py-2 font-bold text-primary hover:text-primary-dim transition-colors"
+          aria-label="Retour"
+        >
+          <MaterialIcon name="arrow_back" className="text-2xl" />
+          Retour
+        </button>
+
         <div className="mb-12 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
           <div>
             <h1 className="text-5xl font-headline font-extrabold tracking-tighter text-on-surface">
@@ -306,7 +317,10 @@ export function AdminPage() {
                   type="button"
                   onClick={() => {
                     setUserQuery("");
-                    adminApi.users().then(setUsers).catch(() => setUsers([]));
+                    adminApi
+                      .users()
+                      .then(setUsers)
+                      .catch(() => setUsers([]));
                   }}
                   className="rounded-xl border border-outline-variant/30 bg-surface-container px-5 py-3 font-bold"
                 >
@@ -435,7 +449,9 @@ export function AdminPage() {
                   className="rounded-xl border border-outline-variant/20 bg-surface-container px-4 py-3 font-medium"
                   value={reclamationStatus}
                   onChange={(event) =>
-                    setReclamationStatus(event.target.value as "" | StatutReclamation)
+                    setReclamationStatus(
+                      event.target.value as "" | StatutReclamation,
+                    )
                   }
                 >
                   <option value="">Tous les statuts</option>
@@ -466,9 +482,12 @@ export function AdminPage() {
                     >
                       <div className="flex flex-wrap items-center justify-between gap-3">
                         <div>
-                          <p className="font-bold text-on-surface">{reclamation.objet}</p>
+                          <p className="font-bold text-on-surface">
+                            {reclamation.objet}
+                          </p>
                           <p className="text-sm text-on-surface-variant">
-                            {reclamation.auteurNom ?? `Auteur #${reclamation.auteurId}`}
+                            {reclamation.auteurNom ??
+                              `Auteur #${reclamation.auteurId}`}
                             {reclamation.reservationId
                               ? ` • Réservation #${reclamation.reservationId}`
                               : ""}
@@ -482,18 +501,24 @@ export function AdminPage() {
                         {reclamation.message}
                       </p>
                       <div className="mt-4 flex flex-wrap gap-2">
-                        {(["EN_COURS", "RESOLUE", "REJETEE"] as StatutReclamation[]).map(
-                          (statut) => (
-                            <button
-                              key={statut}
-                              type="button"
-                              onClick={() => changeReclamationStatus(reclamation.id, statut)}
-                              className="rounded-lg border border-outline-variant/40 bg-surface px-3 py-2 text-xs font-bold uppercase hover:bg-surface-container"
-                            >
-                              {statut}
-                            </button>
-                          ),
-                        )}
+                        {(
+                          [
+                            "EN_COURS",
+                            "RESOLUE",
+                            "REJETEE",
+                          ] as StatutReclamation[]
+                        ).map((statut) => (
+                          <button
+                            key={statut}
+                            type="button"
+                            onClick={() =>
+                              changeReclamationStatus(reclamation.id, statut)
+                            }
+                            className="rounded-lg border border-outline-variant/40 bg-surface px-3 py-2 text-xs font-bold uppercase hover:bg-surface-container"
+                          >
+                            {statut}
+                          </button>
+                        ))}
                       </div>
                     </article>
                   ))

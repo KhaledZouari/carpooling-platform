@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { MaterialIcon } from "../components/MaterialIcon";
 import { PageShell } from "../components/layout/PageShell";
 import { TripCard } from "../components/rides/TripCard";
 import { RequiredFieldLabel } from "../components/RequiredFieldLabel";
@@ -18,6 +19,7 @@ const timeFilters = [
 
 export function RideListPage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
   const [rides, setRides] = useState<TrajetResponse[]>(demoTrajets);
@@ -167,6 +169,16 @@ export function RideListPage() {
   return (
     <PageShell>
       <main className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 pb-20 pt-28 sm:px-6">
+        <div className="mb-6 flex items-center gap-4">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 px-4 py-2 font-bold text-primary hover:text-primary-dim transition-colors"
+            aria-label="Retour"
+          >
+            <MaterialIcon name="arrow_back" className="text-2xl" />
+            Retour
+          </button>
+        </div>
         <div className="grid gap-4 border-b-2 border-outline pb-6 md:grid-cols-[1fr_auto] md:items-end">
           <div>
             <p className="font-mono text-xs font-bold uppercase text-primary">

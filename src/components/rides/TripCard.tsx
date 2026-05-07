@@ -124,10 +124,24 @@ export function TripCard({
                   <p className="truncate font-mono text-xs font-bold uppercase text-on-surface">
                     {trip.conducteurNom ?? "Conducteur"}
                   </p>
-                  <p className="truncate font-mono text-[11px] font-bold uppercase text-on-surface-variant">
-                    {rating.toFixed(1)} /{" "}
-                    {trip.vehiculeDescription ?? "Véhicule standard"}
-                  </p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <p className="truncate font-mono text-[11px] font-bold uppercase text-on-surface-variant">
+                      {rating.toFixed(1)} /{" "}
+                      {trip.vehiculeDescription ?? "Véhicule standard"}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1 mt-2 flex-wrap">
+                    {trip.conducteurTrajets && trip.conducteurTrajets > 0 && (
+                      <span className="bg-primary text-on-primary px-2 py-0.5 text-[10px] font-bold uppercase rounded">
+                        {trip.conducteurTrajets} trajets
+                      </span>
+                    )}
+                    {rating >= 4.5 && (
+                      <span className="bg-green-100 text-green-800 px-2 py-0.5 text-[10px] font-bold uppercase rounded flex items-center gap-1">
+                        ✓ Fiable
+                      </span>
+                    )}
+                  </div>
                 </div>
               </>
             )}
@@ -137,7 +151,11 @@ export function TripCard({
             className={`seat-tick px-3 py-2 font-mono text-xs font-bold uppercase ${seatTone(visualSeats)}`}
             aria-live="polite"
           >
-            {loading ? <span className="h-3 w-12 inline-block bg-gray-200" /> : `${visualSeats} place(s) restante(s)`}
+            {loading ? (
+              <span className="h-3 w-12 inline-block bg-gray-200" />
+            ) : (
+              `${visualSeats} place(s) restante(s)`
+            )}
           </span>
         </div>
       </div>

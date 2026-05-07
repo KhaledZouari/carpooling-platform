@@ -1,8 +1,8 @@
 ﻿import { useEffect, useMemo, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { MaterialIcon } from "../components/MaterialIcon";
 import gsap from "gsap";
 import { PageShell } from "../components/layout/PageShell";
-import { MaterialIcon } from "../components/MaterialIcon";
 import { RequiredFieldLabel } from "../components/RequiredFieldLabel";
 import { demoTrajets, demoUser, demoVehicules } from "../data/demo";
 import {
@@ -21,6 +21,7 @@ import { Toast, ConfirmModal } from "../components/IHM";
 
 export function DriverDashboardPage() {
   const { user, setSession } = useAuth();
+  const navigate = useNavigate();
   const isDriver = user?.role === "CONDUCTEUR";
   const [trajets, setTrajets] = useState<TrajetResponse[]>(demoTrajets);
   const [vehicules, setVehicules] = useState<VehiculeResponse[]>(demoVehicules);
@@ -371,6 +372,16 @@ export function DriverDashboardPage() {
   return (
     <PageShell>
       <main className="mx-auto flex w-full max-w-7xl flex-col flex-1 px-6 pb-24 pt-32">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate(-1)}
+          className="mb-6 flex items-center gap-2 px-4 py-2 font-bold text-primary hover:text-primary-dim transition-colors"
+          aria-label="Retour"
+        >
+          <MaterialIcon name="arrow_back" className="text-2xl" />
+          Retour
+        </button>
+
         {/* Header & Tabs */}
         <div className="mb-12 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
           <div>
@@ -432,14 +443,17 @@ export function DriverDashboardPage() {
                     ))}
                   </div>
                 ) : reservations.filter((r) => r.statut === "EN_ATTENTE")
-                  .length === 0 ? (
-                  <div className="rounded-3xl border border-dashed border-outline-variant/30 bg-surface-container-lowest p-10 text-center">
+                    .length === 0 ? (
+                  <div className="rounded-3xl border border-dashed border-outline-variant/30 bg-surface-container-lowest p-16 text-center">
                     <MaterialIcon
                       name="done_all"
-                      className="text-4xl text-on-surface-variant/30 mb-2"
+                      className="text-8xl text-primary/30 mb-6 inline-block"
                     />
+                    <h3 className="text-2xl font-headline font-bold uppercase mb-3 text-on-surface">
+                      Aucune demande en attente
+                    </h3>
                     <p className="text-on-surface-variant font-medium">
-                      Aucune demande en attente.
+                      Les demandes de réservation apparaîtront ici.
                     </p>
                   </div>
                 ) : (
@@ -516,14 +530,21 @@ export function DriverDashboardPage() {
                   </div>
                 ) : trajets.length === 0 ? (
                   <div className="rounded-3xl border border-dashed border-outline-variant/30 bg-surface-container-lowest p-16 text-center">
-                    <p className="text-on-surface-variant font-medium">
-                      Vous n'avez pas encore publié de trajet.
+                    <MaterialIcon
+                      name="commute"
+                      className="text-8xl text-primary/30 mb-6 inline-block"
+                    />
+                    <h3 className="text-2xl font-headline font-bold uppercase mb-3 text-on-surface">
+                      Vous n'avez pas encore de trajet publié
+                    </h3>
+                    <p className="text-on-surface-variant font-medium mb-6">
+                      Commencez à gagner en publiant votre premier trajet.
                     </p>
                     <button
                       onClick={() => setActiveTab("publish")}
-                      className="mt-4 px-6 py-2 bg-surface-container hover:bg-surface-variant rounded-xl font-bold transition-colors"
+                      className="px-8 py-3 bg-primary text-on-primary rounded-xl font-bold hover:bg-primary-dim transition-colors"
                     >
-                      Créer un trajet
+                      Publier un trajet
                     </button>
                   </div>
                 ) : (

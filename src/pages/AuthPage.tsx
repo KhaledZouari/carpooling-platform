@@ -56,6 +56,14 @@ export function AuthPage() {
   return (
     <PageShell>
       <main className="mx-auto flex min-h-[80vh] w-full max-w-7xl items-center justify-center px-6 py-32 relative">
+        <button
+          onClick={() => navigate(-1)}
+          className="absolute top-6 left-6 flex items-center gap-2 px-4 py-2 font-bold text-primary hover:text-primary-dim transition-colors"
+          aria-label="Retour"
+        >
+          <MaterialIcon name="arrow_back" className="text-2xl" />
+          Retour
+        </button>
         <div className="w-full max-w-md">
           <form
             ref={formRef}

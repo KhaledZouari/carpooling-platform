@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { MaterialIcon } from "../components/MaterialIcon";
 import {
   MapPin,
   Cigarette,
@@ -205,9 +206,14 @@ export function RideDetailsPage() {
     <PageShell>
       <main className="mx-auto grid w-full max-w-7xl gap-6 px-4 pb-20 pt-28 sm:px-6 lg:grid-cols-[1fr_360px]">
         <section className="grid gap-6">
-          <Link to="/rides" className="app-button-secondary w-fit">
-            Retour résultats
-          </Link>
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 w-fit px-4 py-2 font-bold text-primary hover:text-primary-dim transition-colors"
+            aria-label="Retour"
+          >
+            <MaterialIcon name="arrow_back" className="text-2xl" />
+            Retour
+          </button>
 
           <article className="transport-panel overflow-hidden">
             <div className="route-map border-b-2 border-outline p-5">
@@ -388,8 +394,16 @@ export function RideDetailsPage() {
                   );
                 })
               ) : (
-                <div className="border-2 border-outline bg-surface p-4 font-mono text-sm font-bold uppercase text-on-surface-variant">
-                  Aucun avis pour le moment.
+                <div className="rounded-3xl border border-dashed border-outline-variant/30 bg-surface-container-lowest p-12 text-center">
+                  <div className="text-6xl text-primary/30 mb-4 inline-block">
+                    ★
+                  </div>
+                  <h3 className="text-2xl font-headline font-bold uppercase mb-3 text-on-surface">
+                    Pas encore d'avis
+                  </h3>
+                  <p className="text-on-surface-variant font-medium">
+                    Soyez le premier à noter ce conducteur.
+                  </p>
                 </div>
               )}
             </div>
@@ -605,7 +619,7 @@ export function RideDetailsPage() {
                             "En attente de confirmation"}
                           {userReservation.statut === "CONFIRMEE" &&
                             "Confirmée"}
-                          {userReservation.statut === "ANNULEA" && "Annulée"}
+                          {userReservation.statut === "ANNULEE" && "Annulée"}
                           {userReservation.statut === "REFUSEE" && "Refusée"}
                         </span>
                       </p>

@@ -44,6 +44,7 @@ export type TrajetResponse = {
   conducteurId?: number | null;
   conducteurNom?: string | null;
   conducteurNote?: number | null;
+  conducteurTrajets?: number | null;
   vehiculeId?: number | null;
   vehiculeDescription?: string | null;
   vehiculeType?: string | null;
@@ -126,6 +127,7 @@ export type TrajetRequest = {
   animauxAutorises?: boolean | null;
   nbBagagesMax?: number | null;
   typeBagage?: string | null;
+  statut?: StatutTrajet | null;
   vehiculeId?: number | null;
 };
 

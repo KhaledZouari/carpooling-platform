@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { PageShell } from "../components/layout/PageShell";
@@ -315,12 +315,12 @@ function HeroCarpoolSignal() {
 
 export function HomePage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [recentTrips, setRecentTrips] = useState<TrajetResponse[]>([]);
   const [isLoadingRecent, setIsLoadingRecent] = useState(true);
   const homeRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    setIsLoadingRecent(true);
     trajetApi
       .search()
       .then((data) =>
@@ -388,6 +388,14 @@ export function HomePage() {
 
   return (
     <PageShell>
+      <button
+        onClick={() => navigate(-1)}
+        className="fixed top-24 left-6 flex items-center gap-2 px-4 py-2 font-bold text-primary hover:text-primary-dim transition-colors z-40"
+        aria-label="Retour"
+      >
+        <MaterialIcon name="arrow_back" className="text-2xl" />
+        Retour
+      </button>
       <section
         ref={homeRef}
         className="route-map transport-rule relative min-h-[calc(100vh-76px)] border-b-2 border-outline pt-28"

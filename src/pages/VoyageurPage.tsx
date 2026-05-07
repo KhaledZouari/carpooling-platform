@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { MaterialIcon } from "../components/MaterialIcon";
 import gsap from "gsap";
 import {
   authApi,
@@ -8,7 +9,6 @@ import {
   avisApi,
   reclamationApi,
 } from "../api/covoiturage";
-import { MaterialIcon } from "../components/MaterialIcon";
 import { PageShell } from "../components/layout/PageShell";
 import { useAuth } from "../context/AuthContext";
 import { demoTrajets } from "../data/demo";
@@ -22,6 +22,7 @@ import { Toast, ConfirmModal } from "../components/IHM";
 
 export function VoyageurPage() {
   const { user, updateUser } = useAuth();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<UserResponse | null>(user);
   const [trips, setTrips] = useState<TrajetResponse[]>(demoTrajets);
   const [reservations, setReservations] = useState<ReservationResponse[]>([]);
@@ -218,6 +219,16 @@ export function VoyageurPage() {
   return (
     <PageShell>
       <main className="mx-auto flex w-full max-w-7xl flex-col flex-1 px-6 pb-24 pt-32">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate(-1)}
+          className="mb-6 flex items-center gap-2 px-4 py-2 font-bold text-primary hover:text-primary-dim transition-colors"
+          aria-label="Retour"
+        >
+          <MaterialIcon name="arrow_back" className="text-2xl" />
+          Retour
+        </button>
+
         {/* Header & Tabs */}
         <div className="mb-12 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
           <div>
@@ -280,19 +291,19 @@ export function VoyageurPage() {
                 <div className="col-span-full rounded-3xl border border-dashed border-outline-variant/30 bg-surface-container-lowest p-16 text-center">
                   <MaterialIcon
                     name="directions_car"
-                    className="text-6xl text-on-surface-variant/30 mb-4"
+                    className="text-8xl text-primary/30 mb-6 inline-block"
                   />
-                  <h3 className="text-2xl font-headline font-bold mb-2">
+                  <h3 className="text-2xl font-headline font-bold uppercase mb-3 text-on-surface">
                     Aucune réservation active
                   </h3>
-                  <p className="text-on-surface-variant">
-                    Vous n'avez pas encore réservé de trajet.
+                  <p className="text-on-surface-variant mb-6 font-medium">
+                    Trouvez un trajet et réservez votre place.
                   </p>
                   <button
                     onClick={() => setActiveTab("discover")}
-                    className="mt-6 px-6 py-3 bg-surface-container-high hover:bg-surface-variant rounded-xl font-bold transition-colors"
+                    className="mt-6 px-8 py-3 bg-primary text-on-primary rounded-xl font-bold hover:bg-primary-dim transition-colors"
                   >
-                    Découvrir des trajets
+                    Parcourir les trajets
                   </button>
                 </div>
               ) : (
