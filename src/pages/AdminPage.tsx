@@ -231,7 +231,7 @@ export function AdminPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all duration-300 whitespace-nowrap ${
                   activeTab === tab.id
-                    ? "bg-secondary text-white shadow-lg shadow-secondary/20 scale-105"
+                    ? "bg-secondary text-on-secondary shadow-lg shadow-secondary/20 scale-105"
                     : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container"
                 }`}
               >
@@ -368,7 +368,7 @@ export function AdminPage() {
                       </td>
                       <td className="py-4 px-4">
                         <span
-                          className={`flex items-center gap-1 text-xs font-bold ${u.actif ? "text-green-500" : "text-error"}`}
+                          className={`flex items-center gap-1 text-xs font-bold ${u.actif ? "text-secondary" : "text-error"}`}
                         >
                           <MaterialIcon
                             name="circle"

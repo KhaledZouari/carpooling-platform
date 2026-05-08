@@ -1,29 +1,37 @@
 /** @type {import('tailwindcss').Config} */
+const colorVar = (name) => ({ opacityValue }) =>
+  opacityValue === undefined
+    ? `rgb(var(${name}))`
+    : `rgb(var(${name}) / ${opacityValue})`;
+
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       colors: {
-        primary: "#ff5a00",
-        "primary-dim": "#d94800",
-        "primary-container": "#fff0e7",
-        "on-primary": "#000000",
-        "on-primary-container": "#2a1200",
-        surface: "#ffffff",
-        "surface-container-lowest": "#ffffff",
-        "surface-container-low": "#f4f4f1",
-        "surface-container": "#e8e8e2",
-        "surface-container-high": "#d6d6ce",
-        "surface-variant": "#c6c6bd",
-        "on-surface": "#050505",
-        "on-surface-variant": "#4a4a44",
-        outline: "#111111",
-        "outline-variant": "#b9b9af",
-        secondary: "#0a7f3c",
-        "secondary-container": "#e7f6ed",
-        "on-secondary-container": "#052c17",
-        warning: "#b85f00",
-        error: "#b00020",
+        primary: colorVar("--color-primary"),
+        "primary-dim": colorVar("--color-primary-dim"),
+        "primary-container": colorVar("--color-primary-container"),
+        "on-primary": colorVar("--color-on-primary"),
+        "on-primary-container": colorVar("--color-on-primary-container"),
+        surface: colorVar("--color-surface"),
+        "surface-container-lowest": colorVar("--color-surface-container-lowest"),
+        "surface-container-low": colorVar("--color-surface-container-low"),
+        "surface-container": colorVar("--color-surface-container"),
+        "surface-container-high": colorVar("--color-surface-container-high"),
+        "surface-variant": colorVar("--color-surface-variant"),
+        "on-surface": colorVar("--color-on-surface"),
+        "on-surface-variant": colorVar("--color-on-surface-variant"),
+        outline: colorVar("--color-outline"),
+        "outline-variant": colorVar("--color-outline-variant"),
+        secondary: colorVar("--color-secondary"),
+        "on-secondary": colorVar("--color-on-secondary"),
+        "secondary-container": colorVar("--color-secondary-container"),
+        "on-secondary-container": colorVar("--color-on-secondary-container"),
+        warning: colorVar("--color-warning"),
+        error: colorVar("--color-error"),
+        "on-error": colorVar("--color-on-error"),
+        scrim: colorVar("--color-scrim"),
       },
       borderRadius: {
         DEFAULT: "0",

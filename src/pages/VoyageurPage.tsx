@@ -282,9 +282,9 @@ export function VoyageurPage() {
                     key={i}
                     className="col-span-full rounded-2xl border-2 border-outline bg-surface p-6 animate-pulse"
                   >
-                    <div className="h-6 w-40 bg-gray-200 mb-4" />
-                    <div className="h-4 w-28 bg-gray-200 mb-2" />
-                    <div className="mt-6 h-8 w-full bg-gray-200" />
+                    <div className="h-6 w-40 bg-surface-container-high mb-4" />
+                    <div className="h-4 w-28 bg-surface-container-high mb-2" />
+                    <div className="mt-6 h-8 w-full bg-surface-container-high" />
                   </div>
                 ))
               ) : reservations.length === 0 ? (
@@ -328,7 +328,7 @@ export function VoyageurPage() {
                               : res.statut === "EN_ATTENTE"
                                 ? "bg-amber-500/20 text-amber-500"
                                 : res.statut === "REFUSEE"
-                                  ? "bg-red-500/20 text-red-500"
+                                  ? "bg-error/20 text-error"
                                   : "bg-surface-variant text-on-surface-variant"
                           }`}
                         >
@@ -410,7 +410,7 @@ export function VoyageurPage() {
                         className="absolute -bottom-4 -right-4 text-8xl text-on-surface/5 transform group-hover:rotate-12 transition-transform"
                       />
                       <div className="absolute top-4 left-4 z-20">
-                        <span className="bg-black/50 backdrop-blur-md text-primary font-bold px-3 py-1 rounded-full text-xs">
+                        <span className="bg-scrim/60 backdrop-blur-md text-primary font-bold px-3 py-1 rounded-full text-xs">
                           €{trip.prix.toFixed(0)}
                         </span>
                       </div>
@@ -628,7 +628,7 @@ export function VoyageurPage() {
 
       {/* Review Modal powered by GSAP in IHM components isn't built for full custom forms, so we inline a GSAP modal here or just use CSS. We will use a simple CSS one for now, or build a custom one if needed. */}
       {reviewModal.isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-scrim/60 backdrop-blur-md p-4 animate-in fade-in duration-300">
           <div className="w-full max-w-md rounded-none bg-surface border-2 border-on-surface p-8 shadow-[0_12px_32px_rgba(31,41,51,0.08)] animate-in zoom-in-95 duration-300">
             <h3 className="text-3xl font-headline font-extrabold uppercase text-on-surface mb-1">
               Laisser un avis

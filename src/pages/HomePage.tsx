@@ -176,25 +176,25 @@ function HeroCarpoolSignal() {
           y="1"
           width="418"
           height="258"
-          fill="#fff"
-          stroke="#050505"
+          fill="rgb(var(--color-surface))"
+          stroke="rgb(var(--color-outline))"
           strokeWidth="2"
         />
         <path
           d="M26 52H394M26 104H394M26 156H394M26 208H394"
-          stroke="#d6d6ce"
+          stroke="rgb(var(--color-surface-container-high))"
           strokeWidth="2"
         />
         <path
           d="M76 24V236M154 24V236M232 24V236M310 24V236"
-          stroke="#d6d6ce"
+          stroke="rgb(var(--color-surface-container-high))"
           strokeWidth="2"
         />
         <path
           className="hero-route-line"
           d="M58 178C102 120 142 118 188 154S280 202 360 82"
           fill="none"
-          stroke="#ff5a00"
+          stroke="rgb(var(--color-primary))"
           strokeWidth="8"
           strokeLinecap="square"
         />
@@ -203,44 +203,44 @@ function HeroCarpoolSignal() {
             <g className="hero-carpool-car">
               <path
                 d="M98 122h202l34 42v40H64v-40l34-42Z"
-                fill="#fff"
-                stroke="#050505"
+                fill="rgb(var(--color-surface))"
+                stroke="rgb(var(--color-outline))"
                 strokeWidth="6"
                 strokeLinejoin="miter"
               />
-              <path d="M128 96h142l30 26H98l30-26Z" fill="#050505" />
-              <path d="M134 108h44M204 108h44" stroke="#fff" strokeWidth="12" />
+              <path d="M128 96h142l30 26H98l30-26Z" fill="rgb(var(--color-outline))" />
+              <path d="M134 108h44M204 108h44" stroke="rgb(var(--color-surface))" strokeWidth="12" />
               <g className="hero-wheel-mark">
                 <circle
                   cx="116"
                   cy="204"
                   r="24"
-                  fill="#fff"
-                  stroke="#050505"
+                  fill="rgb(var(--color-surface))"
+                  stroke="rgb(var(--color-outline))"
                   strokeWidth="6"
                 />
                 <path
                   d="M116 180v48M92 204h48"
-                  stroke="#050505"
+                  stroke="rgb(var(--color-outline))"
                   strokeWidth="4"
                 />
-                <circle cx="116" cy="204" r="7" fill="#050505" />
+                <circle cx="116" cy="204" r="7" fill="rgb(var(--color-outline))" />
               </g>
               <g className="hero-wheel-mark">
                 <circle
                   cx="282"
                   cy="204"
                   r="24"
-                  fill="#fff"
-                  stroke="#050505"
+                  fill="rgb(var(--color-surface))"
+                  stroke="rgb(var(--color-outline))"
                   strokeWidth="6"
                 />
                 <path
                   d="M282 180v48M258 204h48"
-                  stroke="#050505"
+                  stroke="rgb(var(--color-outline))"
                   strokeWidth="4"
                 />
-                <circle cx="282" cy="204" r="7" fill="#050505" />
+                <circle cx="282" cy="204" r="7" fill="rgb(var(--color-outline))" />
               </g>
             </g>
             {[122, 174, 226, 278].map((x, index) => (
@@ -249,14 +249,14 @@ function HeroCarpoolSignal() {
                   cx={x}
                   cy="152"
                   r="15"
-                  fill={index === 0 ? "#ff5a00" : "#fff"}
-                  stroke="#050505"
+                  fill={index === 0 ? "rgb(var(--color-primary))" : "rgb(var(--color-surface))"}
+                  stroke="rgb(var(--color-outline))"
                   strokeWidth="5"
                 />
                 <path
                   d={`M${x - 22} 184c5-18 39-18 44 0`}
                   fill="none"
-                  stroke="#050505"
+                  stroke="rgb(var(--color-outline))"
                   strokeWidth="5"
                 />
               </g>
@@ -269,14 +269,14 @@ function HeroCarpoolSignal() {
           y="36"
           width="86"
           height="42"
-          fill="#050505"
+          fill="rgb(var(--color-on-surface))"
         />
         <text
           className="hero-badge"
           x="325"
           y="63"
           textAnchor="middle"
-          fill="#fff"
+          fill="rgb(var(--color-surface))"
           fontFamily="IBM Plex Mono, monospace"
           fontSize="18"
           fontWeight="700"
@@ -289,8 +289,8 @@ function HeroCarpoolSignal() {
           y="36"
           width="88"
           height="42"
-          fill="#ff5a00"
-          stroke="#050505"
+          fill="rgb(var(--color-primary))"
+          stroke="rgb(var(--color-outline))"
           strokeWidth="4"
         />
         <text
@@ -298,7 +298,7 @@ function HeroCarpoolSignal() {
           x="84"
           y="64"
           textAnchor="middle"
-          fill="#000"
+          fill="rgb(var(--color-on-primary))"
           fontFamily="IBM Plex Mono, monospace"
           fontSize="20"
           fontWeight="700"

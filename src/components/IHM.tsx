@@ -55,7 +55,7 @@ export function ConfirmModal({
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-scrim/60 backdrop-blur-sm p-4"
     >
       <div
         ref={modalRef}
@@ -78,7 +78,7 @@ export function ConfirmModal({
             type="button"
             onClick={onConfirm}
             className={`rounded-xl px-5 py-2.5 text-sm font-bold text-on-primary transition-all hover:scale-105 active:scale-95 ${
-              danger ? "bg-error text-white hover:bg-error/90" : "bg-primary hover:bg-primary-dim"
+              danger ? "bg-error text-on-error hover:bg-error/90" : "bg-primary hover:bg-primary-dim"
             }`}
           >
             {confirmText}
@@ -124,7 +124,7 @@ export function Toast({
     type === "success"
       ? "bg-primary text-on-primary"
       : type === "error"
-        ? "bg-error text-white"
+        ? "bg-error text-on-error"
         : "bg-surface-container-high text-on-surface";
 
   const iconName =

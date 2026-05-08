@@ -1,10 +1,12 @@
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+import { useTheme } from "../../context/theme";
 import { MaterialIcon } from "../MaterialIcon";
 
 export function TopNav() {
   const { user, isAuthenticated, clearSession } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const dashboardHref = user?.role === "ADMIN" ? "/admin" : "/voyageur";
@@ -53,9 +55,18 @@ export function TopNav() {
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="app-icon-button"
+            aria-label={isDark ? "Activer le mode clair" : "Activer le mode sombre"}
+            title={isDark ? "Mode clair" : "Mode sombre"}
+          >
+            <MaterialIcon name={isDark ? "light_mode" : "dark_mode"} />
+          </button>
           <Link
             to={isAuthenticated ? dashboardHref : "/auth"}
-            className="flex h-11 min-h-11 w-11 items-center justify-center border-2 border-outline bg-surface font-mono text-xs font-bold uppercase text-on-surface transition-colors hover:bg-primary-container"
+            className="app-icon-button font-mono text-xs font-bold uppercase hover:bg-primary-container"
             aria-label={user ? `Ouvrir l'espace de ${user.prenom} ${user.nom}` : "Connexion"}
           >
             {user ? `${user.prenom?.[0] ?? "U"}${user.nom?.[0] ?? ""}` : "IN"}
@@ -64,7 +75,7 @@ export function TopNav() {
             <button
               type="button"
               onClick={clearSession}
-              className="hidden h-11 min-h-11 items-center justify-center border-2 border-outline bg-surface px-3 font-mono text-xs font-bold uppercase text-on-surface transition-colors hover:bg-surface-container sm:flex"
+              className="app-icon-button hidden sm:inline-flex"
               aria-label="Se déconnecter"
               title="Se déconnecter"
             >
@@ -73,7 +84,7 @@ export function TopNav() {
           ) : null}
           <button
             type="button"
-            className="flex h-11 w-11 items-center justify-center border-2 border-outline bg-surface text-on-surface transition-colors hover:bg-surface-container md:hidden"
+            className="app-icon-button md:hidden"
             aria-label="Ouvrir le menu"
             aria-expanded={isMenuOpen}
             onClick={() => setIsMenuOpen((open) => !open)}

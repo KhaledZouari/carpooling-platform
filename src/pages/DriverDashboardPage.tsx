@@ -436,9 +436,9 @@ export function DriverDashboardPage() {
                         key={i}
                         className="rounded-2xl border border-primary/20 bg-primary/5 p-5 shadow-lg shadow-primary/5 animate-pulse"
                       >
-                        <div className="h-6 w-48 bg-gray-200 mb-3" />
-                        <div className="h-4 w-32 bg-gray-200 mb-3" />
-                        <div className="h-10 w-full bg-gray-200 rounded-lg" />
+                        <div className="h-6 w-48 bg-surface-container-high mb-3" />
+                        <div className="h-4 w-32 bg-surface-container-high mb-3" />
+                        <div className="h-10 w-full bg-surface-container-high rounded-lg" />
                       </div>
                     ))}
                   </div>
@@ -520,10 +520,10 @@ export function DriverDashboardPage() {
                         key={i}
                         className="flex flex-col gap-6 rounded-3xl p-6 md:flex-row shadow-[0_8px_24px_rgba(31,41,51,0.06)] border border-outline-variant/60 animate-pulse"
                       >
-                        <div className="h-24 w-full md:w-32 bg-gray-200 rounded-2xl" />
+                        <div className="h-24 w-full md:w-32 bg-surface-container-high rounded-2xl" />
                         <div className="flex-1 space-y-4">
-                          <div className="h-6 w-64 bg-gray-200" />
-                          <div className="h-4 w-40 bg-gray-200" />
+                          <div className="h-6 w-64 bg-surface-container-high" />
+                          <div className="h-4 w-40 bg-surface-container-high" />
                         </div>
                       </div>
                     ))}

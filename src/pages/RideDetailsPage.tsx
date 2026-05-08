@@ -31,9 +31,9 @@ type ApiError = {
 };
 
 function seatTone(seats: number) {
-  if (seats <= 1) return "bg-error text-white scarcity-flicker";
+  if (seats <= 1) return "bg-error text-on-error scarcity-flicker";
   if (seats === 2) return "bg-primary text-on-primary";
-  return "bg-secondary text-white";
+  return "bg-secondary text-on-secondary";
 }
 
 export function RideDetailsPage() {

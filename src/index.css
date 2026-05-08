@@ -7,9 +7,59 @@
 @layer base {
   :root {
     color-scheme: light;
+    --color-primary: 255 90 0;
+    --color-primary-dim: 217 72 0;
+    --color-primary-container: 255 240 231;
+    --color-on-primary: 0 0 0;
+    --color-on-primary-container: 42 18 0;
+    --color-surface: 255 255 255;
+    --color-surface-container-lowest: 255 255 255;
+    --color-surface-container-low: 244 244 241;
+    --color-surface-container: 232 232 226;
+    --color-surface-container-high: 214 214 206;
+    --color-surface-variant: 198 198 189;
+    --color-on-surface: 5 5 5;
+    --color-on-surface-variant: 74 74 68;
+    --color-outline: 17 17 17;
+    --color-outline-variant: 185 185 175;
+    --color-secondary: 10 127 60;
+    --color-on-secondary: 255 255 255;
+    --color-secondary-container: 231 246 237;
+    --color-on-secondary-container: 5 44 23;
+    --color-warning: 184 95 0;
+    --color-error: 176 0 32;
+    --color-on-error: 255 255 255;
+    --color-scrim: 0 0 0;
     --motion-fast: 160ms;
     --motion-medium: 280ms;
     --motion-page: 520ms;
+  }
+
+  :root.dark {
+    color-scheme: dark;
+    --color-primary: 255 138 61;
+    --color-primary-dim: 255 173 117;
+    --color-primary-container: 73 34 11;
+    --color-on-primary: 20 10 2;
+    --color-on-primary-container: 255 220 199;
+    --color-surface: 17 19 22;
+    --color-surface-container-lowest: 12 14 17;
+    --color-surface-container-low: 24 27 32;
+    --color-surface-container: 33 37 43;
+    --color-surface-container-high: 45 51 58;
+    --color-surface-variant: 58 65 74;
+    --color-on-surface: 247 245 239;
+    --color-on-surface-variant: 201 195 184;
+    --color-outline: 226 230 236;
+    --color-outline-variant: 89 97 109;
+    --color-secondary: 74 222 128;
+    --color-on-secondary: 5 24 12;
+    --color-secondary-container: 19 51 33;
+    --color-on-secondary-container: 198 248 217;
+    --color-warning: 255 184 77;
+    --color-error: 255 90 112;
+    --color-on-error: 35 0 6;
+    --color-scrim: 0 0 0;
   }
 
   * {
@@ -18,7 +68,7 @@
 
   html {
     min-width: 320px;
-    background: #ffffff;
+    background: rgb(var(--color-surface));
   }
 
   body {
@@ -84,7 +134,7 @@
 
   input:invalid:not(:placeholder-shown),
   textarea:invalid:not(:placeholder-shown) {
-    @apply border-error bg-red-50;
+    @apply border-error bg-error/10;
   }
 
   input:valid:not(:placeholder-shown),
@@ -93,7 +143,7 @@
   }
 
   input[type="date"]:invalid {
-    @apply border-error bg-red-50;
+    @apply border-error bg-error/10;
   }
 }
 
@@ -103,11 +153,15 @@
   }
 
   .app-button-primary {
-    @apply inline-flex min-h-11 items-center justify-center border-2 border-outline bg-primary px-6 py-3 font-mono text-sm font-bold uppercase text-on-primary transition-[background-color,transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:bg-primary-dim active:translate-y-0 disabled:cursor-not-allowed disabled:border-outline-variant disabled:bg-surface-container disabled:text-on-surface-variant;
+    @apply inline-flex min-h-11 items-center justify-center border-2 border-outline bg-primary px-6 py-3 font-mono text-sm font-bold uppercase text-on-primary transition-[background-color,color,transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:bg-primary-dim active:translate-y-0 disabled:cursor-not-allowed disabled:border-outline-variant disabled:bg-surface-container disabled:text-on-surface-variant;
   }
 
   .app-button-secondary {
-    @apply inline-flex min-h-11 items-center justify-center border-2 border-outline bg-surface px-6 py-3 font-mono text-sm font-bold uppercase text-on-surface transition-[background-color,transform] duration-200 hover:-translate-y-0.5 hover:bg-surface-container active:translate-y-0 disabled:cursor-not-allowed disabled:border-outline-variant disabled:text-on-surface-variant;
+    @apply inline-flex min-h-11 items-center justify-center border-2 border-outline bg-surface px-6 py-3 font-mono text-sm font-bold uppercase text-on-surface transition-[background-color,color,transform] duration-200 hover:-translate-y-0.5 hover:bg-surface-container active:translate-y-0 disabled:cursor-not-allowed disabled:border-outline-variant disabled:text-on-surface-variant;
+  }
+
+  .app-icon-button {
+    @apply inline-flex h-11 min-h-11 w-11 items-center justify-center border-2 border-outline bg-surface text-on-surface transition-[background-color,color,transform] duration-200 hover:-translate-y-0.5 hover:bg-surface-container active:translate-y-0 disabled:cursor-not-allowed disabled:border-outline-variant disabled:text-on-surface-variant;
   }
 
   .field-label {
@@ -120,19 +174,19 @@
 
   .transport-rule {
     background-image:
-      linear-gradient(90deg, rgba(5, 5, 5, 0.08) 1px, transparent 1px),
-      linear-gradient(0deg, rgba(5, 5, 5, 0.08) 1px, transparent 1px);
+      linear-gradient(90deg, rgb(var(--color-outline) / 0.08) 1px, transparent 1px),
+      linear-gradient(0deg, rgb(var(--color-outline) / 0.08) 1px, transparent 1px);
     background-size: 24px 24px;
   }
 
   .route-map {
     background:
-      radial-gradient(circle at 14% 22%, rgba(255, 90, 0, 0.18) 0 7px, transparent 8px),
-      radial-gradient(circle at 78% 70%, rgba(255, 90, 0, 0.18) 0 7px, transparent 8px),
-      linear-gradient(135deg, transparent 0 48%, rgba(5, 5, 5, 0.18) 49% 51%, transparent 52%),
-      linear-gradient(22deg, transparent 0 46%, rgba(5, 5, 5, 0.12) 47% 49%, transparent 50%),
-      linear-gradient(90deg, rgba(5, 5, 5, 0.08) 1px, transparent 1px),
-      linear-gradient(0deg, rgba(5, 5, 5, 0.08) 1px, transparent 1px);
+      radial-gradient(circle at 14% 22%, rgb(var(--color-primary) / 0.18) 0 7px, transparent 8px),
+      radial-gradient(circle at 78% 70%, rgb(var(--color-primary) / 0.18) 0 7px, transparent 8px),
+      linear-gradient(135deg, transparent 0 48%, rgb(var(--color-outline) / 0.18) 49% 51%, transparent 52%),
+      linear-gradient(22deg, transparent 0 46%, rgb(var(--color-outline) / 0.12) 47% 49%, transparent 50%),
+      linear-gradient(90deg, rgb(var(--color-outline) / 0.08) 1px, transparent 1px),
+      linear-gradient(0deg, rgb(var(--color-outline) / 0.08) 1px, transparent 1px);
     background-size: auto, auto, auto, auto, 32px 32px, 32px 32px;
   }
 
@@ -145,7 +199,7 @@
     position: absolute;
     inset: 0;
     transform: translateX(-100%);
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.72), transparent);
+    background: linear-gradient(90deg, transparent, rgb(var(--color-surface-container-high) / 0.72), transparent);
     animation: skeleton-pass 1.2s ease-out infinite;
   }
 
@@ -189,7 +243,7 @@
   .route-arrow {
     position: relative;
     height: 2px;
-    background: #050505;
+    background: rgb(var(--color-outline));
   }
 
   .route-arrow::after {
@@ -199,8 +253,8 @@
     inset-inline-end: 0;
     width: 12px;
     height: 12px;
-    border-block-start: 2px solid #050505;
-    border-inline-end: 2px solid #050505;
+    border-block-start: 2px solid rgb(var(--color-outline));
+    border-inline-end: 2px solid rgb(var(--color-outline));
     transform: rotate(45deg);
   }
 
@@ -242,10 +296,10 @@
 @keyframes scarcity-flicker {
   0%,
   100% {
-    background-color: #b00020;
+    background-color: rgb(var(--color-error));
   }
   50% {
-    background-color: #ff5a00;
+    background-color: rgb(var(--color-primary));
   }
 }
 

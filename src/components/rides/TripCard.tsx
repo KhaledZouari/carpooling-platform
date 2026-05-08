@@ -15,9 +15,9 @@ function durationLabel(trip: TrajetResponse) {
 }
 
 function seatTone(seats: number) {
-  if (seats <= 1) return "bg-error text-white scarcity-flicker";
+  if (seats <= 1) return "bg-error text-on-error scarcity-flicker";
   if (seats === 2) return "bg-primary text-on-primary";
-  return "bg-secondary text-white";
+  return "bg-secondary text-on-secondary";
 }
 
 function ratingTone(rating: number) {
@@ -47,15 +47,15 @@ export function TripCard({
 
   return (
     <article
-      className={`card-reveal grid border-2 border-outline bg-surface transition-[background-color,transform] duration-200 ${loading ? "animate-pulse bg-gray-200" : "hover:-translate-y-1 hover:bg-primary-container/25"} md:grid-cols-[148px_1fr_188px]`}
+      className={`card-reveal grid border-2 border-outline bg-surface transition-[background-color,transform] duration-200 ${loading ? "animate-pulse bg-surface-container-high" : "hover:-translate-y-1 hover:bg-primary-container/25"} md:grid-cols-[148px_1fr_188px]`}
       style={{ animationDelay: `${revealDelayMs}ms` }}
     >
       <div className="border-b-2 border-outline p-4 md:border-b-0 md:border-r-2">
         {loading ? (
           <>
-            <div className="h-10 w-32 bg-gray-200" />
-            <div className="mt-2 h-4 w-20 bg-gray-200" />
-            <div className="mt-3 h-3 w-28 bg-gray-200" />
+            <div className="h-10 w-32 bg-surface-container-high" />
+            <div className="mt-2 h-4 w-20 bg-surface-container-high" />
+            <div className="mt-3 h-3 w-28 bg-surface-container-high" />
           </>
         ) : (
           <>
@@ -84,9 +84,9 @@ export function TripCard({
           <div className="grid grid-cols-[1fr_52px_1fr] items-center gap-3">
             {loading ? (
               <>
-                <div className="h-6 w-36 bg-gray-200" />
-                <div className="h-6 w-10 bg-gray-200 mx-auto" />
-                <div className="h-6 w-36 bg-gray-200 ml-auto" />
+                <div className="h-6 w-36 bg-surface-container-high" />
+                <div className="h-6 w-10 bg-surface-container-high mx-auto" />
+                <div className="h-6 w-36 bg-surface-container-high ml-auto" />
               </>
             ) : (
               <>
@@ -106,10 +106,10 @@ export function TripCard({
           <div className="flex min-w-0 items-center gap-3">
             {loading ? (
               <>
-                <div className="h-11 w-11 bg-gray-200" />
+                <div className="h-11 w-11 bg-surface-container-high" />
                 <div className="ml-2">
-                  <div className="h-3 w-24 bg-gray-200 mb-2" />
-                  <div className="h-3 w-28 bg-gray-200" />
+                  <div className="h-3 w-24 bg-surface-container-high mb-2" />
+                  <div className="h-3 w-28 bg-surface-container-high" />
                 </div>
               </>
             ) : (
@@ -137,7 +137,7 @@ export function TripCard({
                       </span>
                     )}
                     {rating >= 4.5 && (
-                      <span className="bg-green-100 text-green-800 px-2 py-0.5 text-[10px] font-bold uppercase rounded flex items-center gap-1">
+                      <span className="bg-secondary-container text-on-secondary-container px-2 py-0.5 text-[10px] font-bold uppercase rounded flex items-center gap-1">
                         ✓ Fiable
                       </span>
                     )}
@@ -152,7 +152,7 @@ export function TripCard({
             aria-live="polite"
           >
             {loading ? (
-              <span className="h-3 w-12 inline-block bg-gray-200" />
+              <span className="h-3 w-12 inline-block bg-surface-container-high" />
             ) : (
               `${visualSeats} place(s) restante(s)`
             )}
@@ -163,7 +163,7 @@ export function TripCard({
       <div className="grid border-t-2 border-outline md:border-l-2 md:border-t-0">
         <div className="p-4 text-right">
           {loading ? (
-            <div className="h-10 w-20 bg-gray-200 ml-auto" />
+            <div className="h-10 w-20 bg-surface-container-high ml-auto" />
           ) : (
             <>
               <p className="font-mono text-[2.75rem] font-bold leading-none text-primary">
@@ -187,7 +187,7 @@ export function TripCard({
             {isLoading ? (
               <span className="skeleton h-5 w-28 bg-on-primary/30" />
             ) : loading ? (
-              <div className="h-8 w-full bg-gray-200" />
+              <div className="h-8 w-full bg-surface-container-high" />
             ) : (
               <>
                 <span className="book-label">Réserver</span>
