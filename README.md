@@ -1,73 +1,93 @@
-# React + TypeScript + Vite
+# Covoiturage — frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interface web d’une plateforme de covoiturage reliant voyageurs, conducteurs
+et administrateurs à une API Spring Boot dédiée.
 
-Currently, two official plugins are available:
+## Fonctionnalités
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Recherche et consultation de trajets.
+- Inscription, connexion et mise à jour du profil utilisateur.
+- Réservation, confirmation, refus et annulation de places.
+- Gestion des trajets et véhicules côté conducteur.
+- Avis, réclamations et espace d’administration.
 
-## React Compiler
+## Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+React 19, TypeScript, Vite, React Router, Axios, Tailwind CSS, GSAP, ESLint et
+Vitest.
 
-## Expanding the ESLint configuration
+## Architecture
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```mermaid
+flowchart LR
+    Browser[Interface React] --> Router[React Router]
+    Router --> Pages[Pages par rôle]
+    Pages --> Context[Auth et thème]
+    Pages --> API[Client Axios]
+    API --> Backend[API Spring Boot]
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Les contrats TypeScript sont regroupés dans `src/types`, les appels réseau
+dans `src/api`, l’état transversal dans `src/context` et les interfaces par
+rôle dans `src/pages`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Installation
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Prérequis : Node.js 20 et npm.
+
+```bash
+git clone https://github.com/KhaledZouari/cov.git
+cd cov
+cp .env.example .env
+npm ci
+npm run dev
 ```
+
+Sous PowerShell, utiliser `Copy-Item .env.example .env` à la place de `cp`.
+L’application de développement est servie sur `http://localhost:5173`.
+
+## Configuration
+
+| Variable | Description | Valeur locale |
+|---|---|---|
+| `VITE_API_BASE_URL` | URL de base de l’API. | `http://localhost:8089/api` |
+
+Le fichier `.env.example` documente la configuration sans contenir de secret.
+
+## Tests et qualité
+
+```bash
+npm run lint
+npm test
+npm run build
+```
+
+La CI exécute l’installation reproductible, ESLint, les tests Vitest et le
+build de production sur chaque pull request et chaque push sur `main`.
+
+## API
+
+Le client couvre les ressources `/auth`, `/trajets`, `/reservations`,
+`/vehicules`, `/avis`, `/reclamations` et `/admin`. Le dépôt backend associé
+reste privé.
+
+## Captures d’écran
+
+Les futures captures sont regroupées dans `docs/screenshots/`.
+
+## Choix techniques
+
+- Axios centralise l’URL de base et la transmission du jeton d’accès.
+- Les types partagés sécurisent les contrats entre les pages et l’API.
+- Les thèmes par rôle différencient les espaces public, voyageur, conducteur
+  et administrateur.
+
+## Pistes d’amélioration
+
+- Remplacer l’URL absolue des images de véhicules par une variable dédiée.
+- Découper le bundle principal avec des imports dynamiques par page.
+- Étendre les tests aux parcours d’authentification et de réservation.
+
+## Licence
+
+Ce projet est distribué sous licence MIT. Voir [LICENSE](LICENSE).
