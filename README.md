@@ -50,7 +50,7 @@ L’application de développement est servie sur `http://localhost:5173`.
 
 | Variable | Description | Valeur locale |
 |---|---|---|
-| `VITE_API_BASE_URL` | URL de base de l’API de covoiturage. | `http://localhost:8089/api` |
+| `VITE_API_BASE_URL` | URL de base de l’API. | `http://localhost:8089/api` |
 
 Le fichier `.env.example` documente la configuration sans contenir de secret.
 
