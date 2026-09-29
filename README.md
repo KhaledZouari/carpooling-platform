@@ -20,11 +20,14 @@ Vitest.
 
 ```mermaid
 flowchart LR
-    Browser[Interface React] --> Router[React Router]
-    Router --> Pages[Pages par rôle]
-    Pages --> Context[Auth et thème]
+    Browser[Interface React / TypeScript] --> Router[React Router]
+    Router --> Pages[Espaces administrateur, conducteur et voyageur]
+    Pages --> Context[Contexte JWT et thème]
     Pages --> API[Client Axios]
-    API --> Backend[API Spring Boot]
+    API --> Backend[API REST Spring Boot]
+    Backend --> Security[Spring Security + JWT]
+    Backend --> JPA[Spring Data JPA]
+    JPA --> DB[(MySQL)]
 ```
 
 Les contrats TypeScript sont regroupés dans `src/types`, les appels réseau
@@ -36,8 +39,8 @@ rôle dans `src/pages`.
 Prérequis : Node.js 20 et npm.
 
 ```bash
-git clone https://github.com/KhaledZouari/cov.git
-cd cov
+git clone https://github.com/KhaledZouari/carpooling-platform.git
+cd carpooling-platform
 cp .env.example .env
 npm ci
 npm run dev
@@ -67,9 +70,36 @@ build de production sur chaque pull request et chaque push sur `main`.
 
 ## API
 
-Le client couvre les ressources `/auth`, `/trajets`, `/reservations`,
-`/vehicules`, `/avis`, `/reclamations` et `/admin`. Le dépôt backend associé
-reste privé.
+Le client couvre les ressources principales suivantes, vérifiées dans les
+contrôleurs Spring Boot :
+
+| Ressource | Endpoints principaux |
+| --- | --- |
+| Authentification | `POST /api/auth/register`, `POST /api/auth/login`, `GET /api/auth/me` |
+| Trajets | `GET/POST /api/trajets`, `GET/PUT/DELETE /api/trajets/{id}` |
+| Réservations | `POST /api/reservations`, `GET /api/reservations/mes-reservations`, actions confirmer/refuser/annuler |
+| Véhicules | `POST /api/vehicules`, `GET /api/vehicules/mes-vehicules`, suppression et ajout d’image |
+| Avis et réclamations | `POST /api/avis`, `POST /api/reclamations`, consultation de ses réclamations |
+| Administration | utilisateurs, trajets, réclamations et statistiques sous `/api/admin` |
+
+Le backend Spring Boot est privé sur demande ; son code peut être présenté en
+entretien. Il utilise Spring Security, JWT, Spring Data JPA et MySQL, avec les
+trois rôles `ADMIN`, `CONDUCTEUR` et `VOYAGEUR`.
+
+## Modèle de données simplifié
+
+```mermaid
+erDiagram
+    UTILISATEUR ||--o| CONDUCTEUR : devient
+    UTILISATEUR ||--o| VOYAGEUR : devient
+    CONDUCTEUR ||--o{ VEHICULE : possede
+    CONDUCTEUR ||--o{ TRAJET : publie
+    VEHICULE ||--o{ TRAJET : assure
+    VOYAGEUR ||--o{ RESERVATION : effectue
+    TRAJET ||--o{ RESERVATION : recoit
+    UTILISATEUR ||--o{ AVIS : redige
+    UTILISATEUR ||--o{ RECLAMATION : ouvre
+```
 
 ## Captures d’écran
 
