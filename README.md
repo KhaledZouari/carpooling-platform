@@ -1,5 +1,7 @@
 # Covoiturage — frontend
 
+[![CI](https://github.com/KhaledZouari/carpooling-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/KhaledZouari/carpooling-platform/actions/workflows/ci.yml)
+
 Interface web d’une plateforme de covoiturage reliant voyageurs, conducteurs
 et administrateurs à une API Spring Boot dédiée.
 
@@ -112,11 +114,14 @@ Les futures captures sont regroupées dans `docs/screenshots/`.
 - Les thèmes par rôle différencient les espaces public, voyageur, conducteur
   et administrateur.
 
-## Pistes d’amélioration
+## Limites connues et pistes d’amélioration
 
 - Remplacer l’URL absolue des images de véhicules par une variable dédiée.
 - Découper le bundle principal avec des imports dynamiques par page.
-- Étendre les tests aux parcours d’authentification et de réservation.
+- La couverture actuelle cible la logique de thème par rôle ; les parcours
+  d’authentification et de réservation nécessitent encore des tests.
+- Le backend reste privé tant que ses secrets historiques ne sont pas révoqués
+  et son historique assaini.
 
 ## Licence
 
