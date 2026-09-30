@@ -1,128 +1,63 @@
-# Covoiturage — frontend
+# Carpooling Platform
 
-[![CI](https://github.com/KhaledZouari/carpooling-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/KhaledZouari/carpooling-platform/actions/workflows/ci.yml)
+A full-stack carpooling application supporting passenger, driver, and
+administrator workflows through a secured REST API.
 
-Interface web d’une plateforme de covoiturage reliant voyageurs, conducteurs
-et administrateurs à une API Spring Boot dédiée.
+## Features
 
-## Fonctionnalités
-
-- Recherche et consultation de trajets.
-- Inscription, connexion et mise à jour du profil utilisateur.
-- Réservation, confirmation, refus et annulation de places.
-- Gestion des trajets et véhicules côté conducteur.
-- Avis, réclamations et espace d’administration.
+- JWT authentication and role-based access control
+- Driver vehicle and ride management
+- Passenger ride search, booking, and cancellation
+- Driver approval or rejection of booking requests
+- Administrative user and platform oversight
+- Responsive interface with light and dark themes
 
 ## Stack
 
-React 19, TypeScript, Vite, React Router, Axios, Tailwind CSS, GSAP, ESLint et
-Vitest.
+React, TypeScript, Vite, Spring Boot, Spring Security, MySQL, Vitest, and
+GitHub Actions.
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-    Browser[Interface React / TypeScript] --> Router[React Router]
-    Router --> Pages[Espaces administrateur, conducteur et voyageur]
-    Pages --> Context[Contexte JWT et thème]
-    Pages --> API[Client Axios]
-    API --> Backend[API REST Spring Boot]
-    Backend --> Security[Spring Security + JWT]
-    Backend --> JPA[Spring Data JPA]
-    JPA --> DB[(MySQL)]
+    UI[React and TypeScript] --> API[Spring Boot REST API]
+    API --> Security[JWT and Spring Security]
+    API --> Services[Business services]
+    Services --> DB[(MySQL)]
 ```
 
-Les contrats TypeScript sont regroupés dans `src/types`, les appels réseau
-dans `src/api`, l’état transversal dans `src/context` et les interfaces par
-rôle dans `src/pages`.
+The frontend separates pages, reusable components, API clients, and application
+context. The backend separates controllers, DTOs, services, repositories,
+security, and persistence.
 
-## Installation
+## Local setup
 
-Prérequis : Node.js 20 et npm.
+Follow the environment templates in the frontend and backend directories.
+Keep database credentials and JWT secrets outside version control.
 
 ```bash
-git clone https://github.com/KhaledZouari/carpooling-platform.git
-cd carpooling-platform
-cp .env.example .env
+# Frontend
 npm ci
 npm run dev
+
+# Backend
+./mvnw spring-boot:run
 ```
 
-Sous PowerShell, utiliser `Copy-Item .env.example .env` à la place de `cp`.
-L’application de développement est servie sur `http://localhost:5173`.
-
-## Configuration
-
-| Variable | Description | Valeur locale |
-|---|---|---|
-| `VITE_API_BASE_URL` | URL de base de l’API. | `http://localhost:8089/api` |
-
-Le fichier `.env.example` documente la configuration sans contenir de secret.
-
-## Tests et qualité
+## Verification
 
 ```bash
 npm run lint
 npm test
 npm run build
+./mvnw verify
 ```
 
-La CI exécute l’installation reproductible, ESLint, les tests Vitest et le
-build de production sur chaque pull request et chaque push sur `main`.
+CI installs dependencies reproducibly, runs lint and tests, and builds the
+application on pushes and pull requests.
 
-## API
+## License
 
-Le client couvre les ressources principales suivantes, vérifiées dans les
-contrôleurs Spring Boot :
+Distributed under the MIT License. See [LICENSE](LICENSE).
 
-| Ressource | Endpoints principaux |
-| --- | --- |
-| Authentification | `POST /api/auth/register`, `POST /api/auth/login`, `GET /api/auth/me` |
-| Trajets | `GET/POST /api/trajets`, `GET/PUT/DELETE /api/trajets/{id}` |
-| Réservations | `POST /api/reservations`, `GET /api/reservations/mes-reservations`, actions confirmer/refuser/annuler |
-| Véhicules | `POST /api/vehicules`, `GET /api/vehicules/mes-vehicules`, suppression et ajout d’image |
-| Avis et réclamations | `POST /api/avis`, `POST /api/reclamations`, consultation de ses réclamations |
-| Administration | utilisateurs, trajets, réclamations et statistiques sous `/api/admin` |
-
-Le backend Spring Boot est privé sur demande ; son code peut être présenté en
-entretien. Il utilise Spring Security, JWT, Spring Data JPA et MySQL, avec les
-trois rôles `ADMIN`, `CONDUCTEUR` et `VOYAGEUR`.
-
-## Modèle de données simplifié
-
-```mermaid
-erDiagram
-    UTILISATEUR ||--o| CONDUCTEUR : devient
-    UTILISATEUR ||--o| VOYAGEUR : devient
-    CONDUCTEUR ||--o{ VEHICULE : possede
-    CONDUCTEUR ||--o{ TRAJET : publie
-    VEHICULE ||--o{ TRAJET : assure
-    VOYAGEUR ||--o{ RESERVATION : effectue
-    TRAJET ||--o{ RESERVATION : recoit
-    UTILISATEUR ||--o{ AVIS : redige
-    UTILISATEUR ||--o{ RECLAMATION : ouvre
-```
-
-## Captures d’écran
-
-Les futures captures sont regroupées dans `docs/screenshots/`.
-
-## Choix techniques
-
-- Axios centralise l’URL de base et la transmission du jeton d’accès.
-- Les types partagés sécurisent les contrats entre les pages et l’API.
-- Les thèmes par rôle différencient les espaces public, voyageur, conducteur
-  et administrateur.
-
-## Limites connues et pistes d’amélioration
-
-- Remplacer l’URL absolue des images de véhicules par une variable dédiée.
-- Découper le bundle principal avec des imports dynamiques par page.
-- La couverture actuelle cible la logique de thème par rôle ; les parcours
-  d’authentification et de réservation nécessitent encore des tests.
-- Le backend reste privé tant que ses secrets historiques ne sont pas révoqués
-  et son historique assaini.
-
-## Licence
-
-Ce projet est distribué sous licence MIT. Voir [LICENSE](LICENSE).
