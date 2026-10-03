@@ -1,0 +1,30 @@
+{
+  "captured_on": "2026-10-03",
+  "kind": "runtime screenshots",
+  "images": [
+    {
+      "file": "home.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "b96d6f1cdcb135a3171f720feb3fb98eee09b9912ff6925e4542fd337d0b1e21"
+    },
+    {
+      "file": "ride-search.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "48de3c28c58767c21c4608b5742551b103f3597053e005204ae5570073a272cb"
+    },
+    {
+      "file": "driver-dashboard.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "4a947b6abf167c325b566dde3237794c3cf54fa11fd9783593c21ab1d747fe53"
+    },
+    {
+      "file": "admin-dashboard.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "faeb498a4fa0422f89d6c1ad61ce20a2e566ece005ee11c1c48334d53f5040ca"
+    }
+  ]
+}
